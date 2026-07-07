@@ -1,16 +1,17 @@
 // The chat "brain" — runTurn(sessionId, userText, onEvent). §7.
 //
 // One full turn: build the active toolset (gate vs post-gate), call the LLM,
-// execute any tool calls (MCP public or local), append tool results, repeat
-// until the LLM ends its turn or MAX_TOOL_ROUNDS is hit. Streams events to the
-// caller via onEvent() for SSE delivery.
+// execute any tool calls (MCP public or local), feed tool results back via
+// proper native tool-role messages (not synthetic user text), and repeat until
+// the LLM ends its turn or MAX_TOOL_ROUNDS is hit. Streams assistant tokens
+// via onEvent() for SSE delivery.
 
 import { randomUUID } from 'node:crypto';
 import type { Db } from '@livingcv/db';
 import { LLM_PROVIDERS, SETTING_KEYS } from '@livingcv/shared';
 import { getSetting } from './settings.js';
 import { MAX_TOOL_ROUNDS, MAX_INPUT_CHARS } from './llm/types.js';
-import type { ChatMessage, ToolCall } from './llm/types.js';
+import type { ChatMessage, ToolCall, ToolResult } from './llm/types.js';
 import { getLlmConfig } from './llm/index.js';
 import { connectMcpPublic, callTool, type McpSession } from './mcpClient.js';
 import {
@@ -87,8 +88,11 @@ export async function runTurn(
   const siteTitle = String(getSetting(db, SETTING_KEYS.siteTitle) || 'Portfolio');
   const systemPrompt = buildSystemPrompt(db, siteTitle);
 
-  // Conversation (this turn) — we mutate this on each round, then loop.
-  // We persist user/assistant/tool messages to chat_messages at each step.
+  // Conversation history. We persist user/assistant/tool messages to
+  // chat_messages at each step, and pass them to the LLM as plain
+  // ChatMessage[]. Tool results from each round are bundled as
+  // `toolResults` on the next ChatRequest — each adapter constructs
+  // its own native tool-role messages from them.
   const messages: ChatMessage[] = [{ role: 'user', content: userText.slice(0, MAX_INPUT_CHARS) }];
   recordChatMessage(db, {
     sessionId, role: 'user', content: userText.slice(0, MAX_INPUT_CHARS),
@@ -96,6 +100,7 @@ export async function runTurn(
   });
 
   let finalText = '';
+  let pendingToolResults: ToolResult[] = [];
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     const r = await llm.adapter.chat({
@@ -104,31 +109,32 @@ export async function runTurn(
       tools,
       model: llm.model,
       apiKey: llm.apiKey,
-      onToken: (chunk) => onEvent({ type: 'token', text: chunk }),
+      onToken: (chunk: string) => onEvent({ type: 'token', text: chunk }),
+      toolResults: pendingToolResults.length > 0 ? pendingToolResults : undefined,
     });
     finalText = r.text;
+    // Pending results consumed — next round starts fresh.
+    pendingToolResults = [];
 
     if (r.stopReason !== 'tool_use' || r.toolCalls.length === 0) {
       break;
     }
 
-    // Persist assistant turn (its text + the tool calls it made).
+    // Persist the assistant turn that made tool calls (the text portion).
     recordChatMessage(db, {
       sessionId, role: 'assistant', content: r.text,
       toolName: null, toolArgs: null, toolResult: null,
     });
     if (r.text) {
-      // ensure last user message has a paired assistant in our `messages` for next round
       messages.push({ role: 'assistant', content: r.text });
     }
 
-    // Execute each tool call (in declared order) and append a synthetic tool
-    // response. The LLM loop is via the next chat() call where we add a
-    // synthetic "tool" turn. We do that by passing synthetic messages via the
-    // next Anthropic request — but our adapter does not yet support tool role
-    // turns. For Phase 2 we instead push the tool inputs back into the user
-    // slot for the next round; this is a known limitation documented for Phase 5.
-    // The simpler approach is to feed tool results as a synthetic user message.
+    // Execute each tool call. Build native tool-result payloads
+    // that the adapter will turn into tool-role messages on the
+    // next LLM call (tool_use/tool_result for Anthropic,
+    // tool_calls/tool for OpenAI, functionCall/functionResponse
+    // for Gemini).
+    const results: ToolResult[] = [];
     for (const tc of r.toolCalls) {
       onEvent({ type: 'tool_start', id: tc.id, name: tc.name });
       const result = await executeTool(db, mcp, sessionId, tc);
@@ -137,13 +143,18 @@ export async function runTurn(
         sessionId, role: 'tool', content: result.ok ? result.valueText : '',
         toolName: tc.name, toolArgs: tc.args, toolResult: result.valueText,
       });
-      messages.push({
-        role: 'user',
-        content:
-          `[Tool ${tc.name} result]\n` +
-          (result.ok ? JSON.stringify(result.valueText).slice(0, 2000) : `ERROR: ${result.valueText}`),
+      results.push({
+        toolCallId: tc.id,
+        toolName: tc.name,
+        args: tc.args,
+        content: result.ok ? result.valueText : `ERROR: ${result.valueText}`,
       });
     }
+    pendingToolResults = results;
+
+    // The adapter will embed these as native tool-role messages in the
+    // next `chat()` call via the `toolResults` field — no need to push
+    // synthetic user messages into `messages`.
   }
 
   // Persist final assistant text.
@@ -157,7 +168,7 @@ export async function runTurn(
   onEvent({ type: 'done' });
 }
 
-interface ToolResult {
+interface ToolResultInternal {
   ok: boolean;
   valueText: string;
 }
@@ -167,7 +178,7 @@ async function executeTool(
   mcp: McpSession | null,
   sessionId: string,
   call: ToolCall,
-): Promise<ToolResult> {
+): Promise<ToolResultInternal> {
   if (call.name === 'submit_work_email') {
     const r = submitWorkEmailImpl(db, sessionId, call.args);
     return { ok: r.ok, valueText: r.message };
@@ -191,5 +202,5 @@ async function executeTool(
   return { ok: false, valueText: 'unknown tool' };
 }
 
-void randomUUID; // keep linter quiet if unused
+void randomUUID;
 void LLM_PROVIDERS;

@@ -1,9 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { ChatRequest, ChatResult, LlmAdapter, ToolCall } from './types.js';
 
-// Anthropic Messages API. Tool use is the native function-calling shape there.
-// System goes in the top-level `system` field. `onToken` is invoked with each
-// text delta from the streaming response.
+// Anthropic Messages API with real multi-turn tool calling (§5 of REMEDIATION.md).
+// Tool results are fed in as assistant tool_use blocks followed by user
+// tool_result blocks — the canonical Anthropic shape.
 
 export const anthropicAdapter: LlmAdapter = {
   name: 'anthropic',
@@ -11,27 +11,52 @@ export const anthropicAdapter: LlmAdapter = {
     if (!req.apiKey) throw new Error('Anthropic API key not set (agent.llm_api_key).');
     const client = new Anthropic({ apiKey: req.apiKey });
 
-    // Translate our narrower ToolDef to Anthropic's Tool shape.
-    const tools = req.tools.map((t) => ({
+    const tools = req.tools.map((t: { name: string; description: string; inputSchema: Record<string, unknown> }) => ({
       name: t.name,
       description: t.description,
       input_schema: t.inputSchema as unknown as Anthropic.Messages.Tool.InputSchema,
     })) as unknown as Anthropic.Messages.Tool[];
 
-    // System goes to the top-level `system` field. Pass only user/assistant
-    // messages here. Our request shape disallows 'system' in messages anyway,
-    // but TS would still complain — assert the narrower type.
-    const messages = req.messages.map((m) => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    })) as Anthropic.Messages.MessageParam[];
+    // Build the full message list: the caller's history + any pending
+    // tool results from the prior turn, expressed as native blocks.
+    const rawMessages: Anthropic.Messages.MessageParam[] = [];
+
+    // 1. Copy the caller's conversation history.
+    for (const m of req.messages) {
+      rawMessages.push({ role: m.role as 'user' | 'assistant', content: m.content });
+    }
+
+    // 2. If the prior turn produced tool calls, embed them as a proper
+    //    assistant tool_use + user tool_result pair.
+    if (req.toolResults && req.toolResults.length > 0) {
+      // Assistant message with one tool_use block per tool call.
+      rawMessages.push({
+        role: 'assistant',
+        content: req.toolResults.map((r: { toolCallId: string; toolName: string; args: Record<string, unknown>; content: string }) => ({
+          type: 'tool_use' as const,
+          id: r.toolCallId,
+          name: r.toolName,
+          input: r.args,
+        })),
+      } as Anthropic.Messages.MessageParam);
+
+      // User message with one tool_result block per tool call.
+      rawMessages.push({
+        role: 'user',
+        content: req.toolResults.map((r: { toolCallId: string; toolName: string; args: Record<string, unknown>; content: string }) => ({
+          type: 'tool_result' as const,
+          tool_use_id: r.toolCallId,
+          content: r.content,
+        })),
+      } as Anthropic.Messages.MessageParam);
+    }
 
     const stream = client.messages.stream({
       model: req.model,
       max_tokens: 4096,
       system: req.system,
       tools,
-      messages,
+      messages: rawMessages,
     });
 
     let text = '';

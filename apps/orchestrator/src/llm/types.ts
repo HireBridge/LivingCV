@@ -1,7 +1,8 @@
 // LLM adapter (§7). One interface; three providers (Anthropic, OpenAI, Gemini).
-// Provider + key + model are read from app_settings at session start. The tool-
-// calling shape is normalized: each provider maps its native function-calling
-// representation into ToolCall {name, args} and the orchestrator dispatches.
+// Each adapter builds its own native tool-role messages internally — the turn
+// loop passes tool results back as `ChatRequest.toolResults` and the adapter
+// interleaves the correct provider-specific message blocks (tool_use/tool_result,
+// tool_calls/tool, functionCall/functionResponse).
 
 export interface ToolDef {
   name: string;
@@ -15,10 +16,16 @@ export interface ToolCall {
   args: Record<string, unknown>;
 }
 
+export interface ToolResult {
+  toolCallId: string;
+  toolName: string;
+  args: Record<string, unknown>;   // original tool call args — needed by Anthropic tool_use blocks
+  content: string;
+}
+
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
-  // For prior tool-call turns, we attach a synthetic assistant+tool block via provider mapping.
 }
 
 export interface ChatRequest {
@@ -27,15 +34,18 @@ export interface ChatRequest {
   tools: ToolDef[];
   model: string;
   apiKey: string;
-  signal?: AbortSignal;
   onToken?: (chunk: string) => void;
+  signal?: AbortSignal;
+
+  // Results from tool calls in the prior turn, if any. Each adapter uses
+  // these to construct its native tool-role messages before the next API call.
+  // Empty/undefined = fresh call with no tool context.
+  toolResults?: ToolResult[];
 }
 
 export interface ChatResult {
   text: string;
   toolCalls: ToolCall[];
-  // When stop_reason === 'tool_use', the caller should execute the tools and loop
-  // (up to MAX_TOOL_ROUNDS). When 'end_turn', the caller finishes the turn.
   stopReason: 'end_turn' | 'tool_use' | 'max_tokens' | 'error';
 }
 
