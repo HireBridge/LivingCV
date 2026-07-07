@@ -154,5 +154,5 @@ export const ENCRYPTED_SETTING_KEYS: ReadonlySet<string> = new Set<string>([
 ]);
 
 // LLM provider for the orchestrator (§7). Read from app_settings[agent.llm_provider].
-export const LLM_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const;
+export const LLM_PROVIDERS = ['anthropic', 'openai', 'gemini', 'deepseek'] as const;
 export type LlmProvider = (typeof LLM_PROVIDERS)[number];

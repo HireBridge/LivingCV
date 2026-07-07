@@ -6,10 +6,11 @@ import type { ChatRequest, ChatResult, LlmAdapter } from './types.js';
 //   2. One role:"tool" message per result, keyed by tool_call_id
 // The model sees these as standard multi-turn tool-call history.
 
-export const openaiAdapter: LlmAdapter = {
-  name: 'openai',
+function makeOpenAiCompatAdapter(name: 'openai' | 'deepseek', endpoint: string): LlmAdapter {
+  return {
+  name,
   async chat(req: ChatRequest): Promise<ChatResult> {
-    if (!req.apiKey) throw new Error('OpenAI API key not set (agent.llm_api_key).');
+    if (!req.apiKey) throw new Error(`${name} API key not set (agent.llm_api_key).`);
 
     const openaiTools = req.tools.map((t: { name: string; description: string; inputSchema: Record<string, unknown> }) => ({
       type: 'function' as const,
@@ -45,7 +46,7 @@ export const openaiAdapter: LlmAdapter = {
       }
     }
 
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    const r = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -62,7 +63,7 @@ export const openaiAdapter: LlmAdapter = {
     });
     if (!r.ok) {
       const err = await r.text().catch(() => '');
-      throw new Error(`OpenAI API error ${r.status}: ${err.slice(0, 200)}`);
+      throw new Error(`${name} API error ${r.status}: ${err.slice(0, 200)}`);
     }
 
     let text = '';
@@ -111,7 +112,18 @@ export const openaiAdapter: LlmAdapter = {
     const stopReason = toolCalls.length > 0 ? 'tool_use' : 'end_turn';
     return { text, toolCalls, stopReason };
   },
-};
+  };
+}
+
+export const openaiAdapter: LlmAdapter = makeOpenAiCompatAdapter(
+  'openai',
+  'https://api.openai.com/v1/chat/completions',
+);
+
+export const deepseekAdapter: LlmAdapter = makeOpenAiCompatAdapter(
+  'deepseek',
+  'https://api.deepseek.com/chat/completions',
+);
 
 export const geminiAdapter: LlmAdapter = {
   name: 'gemini',

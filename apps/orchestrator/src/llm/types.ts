@@ -50,12 +50,12 @@ export interface ChatResult {
 }
 
 export interface LlmAdapter {
-  readonly name: 'anthropic' | 'openai' | 'gemini';
+  readonly name: 'anthropic' | 'openai' | 'gemini' | 'deepseek';
   chat(req: ChatRequest): Promise<ChatResult>;
 }
 
 export interface LlmConfig {
-  provider: 'anthropic' | 'openai' | 'gemini';
+  provider: 'anthropic' | 'openai' | 'gemini' | 'deepseek';
   apiKey: string;
   model: string;
 }

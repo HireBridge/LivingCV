@@ -2,7 +2,7 @@ import { getSetting } from '../settings.js';
 import { LlmProvider, LLM_PROVIDERS } from '@livingcv/shared';
 import type { Db } from '@livingcv/db';
 import { anthropicAdapter } from './anthropic.js';
-import { openaiAdapter, geminiAdapter } from './openai.js';
+import { openaiAdapter, geminiAdapter, deepseekAdapter } from './openai.js';
 import type { LlmAdapter } from './types.js';
 
 // Dispatch by provider. Provider+key+model are read from app_settings at
@@ -23,6 +23,7 @@ export function getLlmConfig(db: Db): {
   const adapter: LlmAdapter =
     provider === 'anthropic' ? anthropicAdapter
     : provider === 'openai' ? openaiAdapter
+    : provider === 'deepseek' ? deepseekAdapter
     : geminiAdapter;
   return { provider, adapter, apiKey, model };
 }
@@ -31,6 +32,7 @@ function defaultModelFor(provider: LlmProvider): string {
   switch (provider) {
     case 'anthropic': return 'claude-sonnet-4-5';
     case 'openai':    return 'gpt-4o-mini';
+    case 'deepseek':  return 'deepseek-chat';
     case 'gemini':    return 'gemini-1.5-flash';
   }
 }
