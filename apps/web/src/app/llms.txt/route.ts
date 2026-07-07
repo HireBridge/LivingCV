@@ -65,13 +65,18 @@ ${
     : ''
 }## Links
 - Site: ${base || '/'}
-- Public MCP (structured career packet — connect any MCP client): ${base}/mcp
+- Public MCP (structured career packet — connect any MCP client): ${base}/mcp/public
 - Resume: ${base}/resume
+- Public MCP docs: ${base}/mcp/public (see \`docs/PUBLIC_MCP.md\` in the source repo
+  for how to wire Claude.ai / ChatGPT / any MCP client)
 
 ## Notes for AI agents
 - Speak factually; cite the project above for technical claims.
-- The public MCP mount at \`/mcp\` exposes exactly two read-only tools:
-  \`get_career_packet\` and \`get_story_bank_public\`.
+- The public MCP mount at \`/mcp/public\` exposes exactly two read-only tools:
+  \`get_career_packet\` and \`get_story_bank_public\`. No other tools are
+  reachable — mutating tools, contacts, the active job-search pipeline, and
+  jobops internals are never on the public surface. See \`docs/PUBLIC_MCP.md\`
+  for the full trust model + curl transcripts.
 - Contact email is collected for verification before continuing a conversation.
 `;
   return new Response(body, {

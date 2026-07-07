@@ -1,10 +1,16 @@
 # Caddy is the public-facing reverse proxy. Automatic HTTPS for {$DOMAIN}.
 #
 # Phase 2 routes: /api/orchestrator/chat/* → orchestrator.
-# Phase 3 routes: /voice-ws → voice service (websocket upgrade), path-stripped
-#                  to /voice-ws on the voice container so the FastAPI mount
-#                  there matches.
-# Phase 4: route /mcp → jobops's /mcp/public (open public MCP mount).
+# Phase 3 routes: /voice-ws → voice service (websocket upgrade).
+# Phase 4 routes: /mcp/* → jobops. Two mounts are exposed there:
+#                  - /mcp/public  -> open, lists exactly 2 public tools
+#                                     (the only thing the portfolio advertises)
+#                  - /mcp         -> bearer-gated, all 51 tools (operator-only)
+#                                     The public internet sees /mcp/public;
+#                                     the admin / dashboard hits /mcp with
+#                                     a bearer from inside the docker network.
+# External clients should be configured to use the canonical public URL
+# `{site.domain}/mcp/public` — see docs/PUBLIC_MCP.md.
 
 {$DOMAIN} {
   encode zstd gzip
@@ -18,8 +24,7 @@
     reverse_proxy orchestrator:8100
   }
 
-  # Phase 4: the public MCP mount.
-  # handle /mcp/* {
-  #   reverse_proxy jobops:7891
-  # }
+  handle /mcp* {
+    reverse_proxy jobops:7891
+  }
 }

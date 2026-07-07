@@ -18,3 +18,4 @@ coverage/
 __pycache__/
 *.pyc
 apps/voice/src/voice_service.egg-info/
+infra/jobops/jobops-local.tgz

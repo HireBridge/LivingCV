@@ -178,6 +178,7 @@ upsertSection(TEMPLATE, 'footer', {
     { label: 'github.com/example', href: 'https://example.com/alex' },
     { label: 'linkedin.com/in/example', href: 'https://example.com/in/alex' },
     { label: '[email protected]', href: 'mailto:[email protected]' },
+    { label: 'Public MCP (AI agents)', href: '/mcp/public' },
   ],
   note: 'Alex Rivera · fictional demo persona · content flow from the database, not from code',
 });
