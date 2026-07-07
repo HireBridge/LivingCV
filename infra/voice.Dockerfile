@@ -36,6 +36,7 @@ RUN pip install --no-cache-dir . && pip uninstall -y pip || true
 COPY src ./src
 
 ENV VOICE_PORT=8200
+ENV PYTHONPATH=/app/src
 EXPOSE 8200
 
 RUN useradd --create-home --uid 10001 voice 2>/dev/null || true
