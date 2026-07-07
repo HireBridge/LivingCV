@@ -1,0 +1,36 @@
+[project]
+name = "voice-service"
+version = "0.1.0"
+description = "Portfolio voice service — WebSocket relay to orchestrator with VAD + STT/TTS (Pipecat-shaped interface; real Deepgram/Cartesia or Whisper/Piper slot in)."
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "MIT" }
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "websockets>=13.0",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.7",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# Phase 3 hard rules: no unused, no surprises; type-correctness catches the rest.
+select = ["E", "F", "I", "W", "B", "UP"]
+# UP007 wants X | Y but we target Python 3.11 where `type` statement is 3.12+.
+ignore = ["B008", "UP007"]
+
+
+[tool.pytest.ini_options] 
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -12,3 +12,9 @@ coverage/
 .vite/
 .next/
 *.tsbuildinfo
+.ruff_cache/
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+apps/voice/src/voice_service.egg-info/

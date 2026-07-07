@@ -16,7 +16,9 @@
     "@portfolio/crypto": "*",
     "@portfolio/db": "*",
     "@portfolio/shared": "*",
+    "@types/ws": "^8.18.1",
     "express": "^4.21.0",
+    "ws": "^8.21.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

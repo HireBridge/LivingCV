@@ -16,6 +16,8 @@ services:
         condition: service_healthy
       orchestrator:
         condition: service_healthy
+      voice:
+        condition: service_healthy
 
   web:
     build:
@@ -54,6 +56,7 @@ services:
       JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
       IP_HASH_SALT: ${IP_HASH_SALT}
       ORCHESTRATOR_PORT: 8100
+      ORCHESTRATOR_URL: http://orchestrator:8100
     volumes:
       - portfolio-data:/data
     depends_on:
@@ -65,6 +68,25 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+
+  voice:
+    build:
+      context: .
+      dockerfile: infra/voice.Dockerfile
+    restart: unless-stopped
+    environment:
+      ORCHESTRATOR_URL: http://orchestrator:8100
+      VOICE_PORT: 8200
+      VOICE_WS_PATH: /voice-ws
+    depends_on:
+      orchestrator:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8200/healthz', timeout=3).status == 200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   jobops:
     build:
@@ -78,13 +100,6 @@ services:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     volumes:
       - jobops-data:/data
-
-  # Phase 3: voice-service (Pipecat WebRTC). STT/TTS from app_settings.
-  # voice:
-  #   build:
-  #     context: .
-  #     dockerfile: infra/voice.Dockerfile
-  #   depends_on: [orchestrator]
 
 volumes:
   portfolio-data:

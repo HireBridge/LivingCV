@@ -1,25 +1,42 @@
-// Orchestrator HTTP server (§7). Long-lived Express process. Caddy proxies
-// /api/chat/* to this service from the public web app; /internal/voice is for
-// Phase 3 (not exposed via Caddy).
+// Orchestrator HTTP + WS server (§7 + §8). Long-lived Express process.
+//
+// Routes (proxied by Caddy from the public web app and by the voice
+// container directly):
+//
+//   POST /api/chat/session   -> { sessionId }        (rate-limited)
+//   POST /api/chat/message   -> SSE stream of an LLM turn
+//   POST /api/chat/submit-email -> { ok, message }    (text fallback for the
+//                                                   email gate; voice widget
+//                                                   uses the same endpoint)
+//   GET  /healthz
+//
+// Internal-only (docker-network, NOT exposed via Caddy):
+//
+//   GET  /internal/voice?session_id=...   WS upgrade → voice bridge
+//
+// Voice bridge protocol is defined in apps/voice/src/voice_service/protocol.py.
 
 import express from 'express';
+import type { Server } from 'node:http';
+import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { getDb } from './db.js';
 import { createRecruiterSession, getSession, countIpSessionsToday, bumpSessionActivity } from './db.js';
 import { hashIp, EMAIL_RX, submitWorkEmailImpl } from './gate.js';
 import { getLimits, checkPreTurnGuards } from './limits.js';
 import { runTurn, type SseEvent } from './turn.js';
+import { attachVoiceBridge } from './voiceBridge.js';
 
 const PORT = Number(process.env.ORCHESTRATOR_PORT || 8100);
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
 
-app.get('/healthz', (_req, res) => res.json({ ok: true }));
+app.get('/healthz', (_req: Request, res: Response) => res.json({ ok: true }));
 
 // Create a new recruiter session. Body: { channel?: 'text'|'voice' }.
 // Returns { sessionId }. Rate-limited per ip_hash.
-app.post('/api/chat/session', (req, res) => {
+app.post('/api/chat/session', (req: Request, res: Response) => {
   const db = getDb();
   const ip = (req.ip || req.socket.remoteAddress || null);
   const ipHash = hashIp(ip);
@@ -37,7 +54,7 @@ app.post('/api/chat/session', (req, res) => {
 });
 
 // Send one user message and stream the LLM turn as Server-Sent Events.
-app.post('/api/chat/message', async (req, res) => {
+app.post('/api/chat/message', async (req: Request, res: Response) => {
   const db = getDb();
   const sessionId = String(req.body?.sessionId ?? '');
   const text = String(req.body?.text ?? '');
@@ -73,9 +90,9 @@ app.post('/api/chat/message', async (req, res) => {
 });
 
 // Direct endpoint for the chat widget to *test* the email-gate without going
-// through the LLM (so the UI can show "verifying..."). Useful in Phase 1
-// (no LLM key yet) and stays as a debugging handle.
-app.post('/api/chat/submit-email', (req, res) => {
+// through the LLM (so the UI can show "verifying..."). Useful when LLM key is
+// missing OR for the voice widget's typed email-input fallback.
+app.post('/api/chat/submit-email', (req: Request, res: Response) => {
   const db = getDb();
   const sessionId = String(req.body?.sessionId ?? '');
   const email = String(req.body?.email ?? '');
@@ -86,6 +103,9 @@ app.post('/api/chat/submit-email', (req, res) => {
   res.json({ ok: r.ok, message: r.message });
 });
 
-app.listen(PORT, () => {
+const server: Server = app.listen(PORT, () => {
   console.log(`[orchestrator] listening on :${PORT}`);
 });
+
+// Attach the internal voice bridge after the HTTP server is up.
+attachVoiceBridge(server);

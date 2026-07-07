@@ -4,9 +4,9 @@ import { setSetting } from '@/lib/settings';
 import { setActiveTemplate } from '@/lib/content';
 import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@portfolio/shared';
 
-// Generic settings writer. Maps a "group" (site/limits/connections) to a list of
-// known setting keys, reads each from the form, and writes via setSetting (which
-// auto-encrypts keys in ENCRYPTED_SETTING_KEYS).
+// Generic settings writer. Maps a "group" (site/limits/connections/voice) to a
+// list of known setting keys, reads each from the form, and writes via
+// setSetting (which auto-encrypts keys in ENCRYPTED_SETTING_KEYS).
 const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   site: {
     keys: ['site.title', 'site.domain', 'site.meta_description', 'site.og_image_path', 'site.active_template'],
@@ -17,7 +17,7 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
       SETTING_KEYS.limitsDailyMessageBudget,
       SETTING_KEYS.limitsIpSessionsPerDay,
     ],
-    checkboxKeys: [SETTING_KEYS.agentEnabled, SETTING_KEYS.voiceEnabled, SETTING_KEYS.gateEnabled],
+    checkboxKeys: [SETTING_KEYS.agentEnabled, SETTING_KEYS.gateEnabled],
   },
   connections: {
     keys: [
@@ -27,14 +27,19 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
       'agent.llm_api_key',
       'agent.llm_model',
       'agent.system_prompt_extra',
+      'notify.webhook_url',
+    ],
+  },
+  voice: {
+    keys: [
       'voice.mode',
       'voice.stt_provider',
       'voice.stt_api_key',
       'voice.tts_provider',
       'voice.tts_api_key',
       'voice.tts_voice_id',
-      'notify.webhook_url',
     ],
+    checkboxKeys: [SETTING_KEYS.voiceEnabled],
   },
 };
 
