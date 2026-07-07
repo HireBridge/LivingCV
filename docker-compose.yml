@@ -71,8 +71,8 @@ services:
 
   voice:
     build:
-      context: .
-      dockerfile: infra/voice.Dockerfile
+      context: ./apps/voice
+      dockerfile: ../../infra/voice.Dockerfile
     restart: unless-stopped
     environment:
       ORCHESTRATOR_URL: http://orchestrator:8100
