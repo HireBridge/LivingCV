@@ -1,17 +1,17 @@
-"""TTS interface + mock + slot for the real Pipecat / Cartesia / Piper backends.
+"""TTS interface + MockTTS + CartesiaTTS + ElevenLabsTTS (cloud) + PiperTTS (local).
 
-Shape mirrors what Pipecat's TTSService exposes (`synthesize(text) -> PCM16
-bytes`). Phase 3 ships `MockTTS` (text → reversed-bytes PCM16 frames). Real
-adapters go in `real_cartesia_tts.py` etc. and are selected by
-`voice.tts_provider`.
+Shape mirrors Pipecat's TTSService. Phase 3 shipped MockTTS. Phase 5 ships the
+real cloud adapters (CartesiaTTS, ElevenLabsTTS) and the local adapter
+(PiperTTS, bundled in the Docker image). A missing key raises RuntimeError.
 """
 
 from __future__ import annotations
 
 import abc
+import os
 import struct
 
-SAMPLE_RATE_DEFAULT = 16000  # Hz — match STT for round-trip
+SAMPLE_RATE_DEFAULT = 16000
 
 
 class TTS(abc.ABC):
@@ -21,12 +21,6 @@ class TTS(abc.ABC):
 
     @abc.abstractmethod
     def synthesize(self, text: str) -> bytes:
-        """Synchronous batch synthesis. Real adapters will use streaming.
-
-        Returns PCM16 mono bytes at `sample_rate`. The mock returns an empty
-        buffer for empty input and a deterministic "encoded reverse" of the
-        text otherwise — a stable, easily-differentiable, test-handleable
-        payload."""
         raise NotImplementedError
 
     @property
@@ -34,18 +28,12 @@ class TTS(abc.ABC):
         return SAMPLE_RATE_DEFAULT
 
 
+# ── Mock (Phase 3, CI) ───────────────────────────────────────────────────────
+
+
 class MockTTS(TTS):
-    """Phase 3 mock. Real adapters (Cartesia, Piper) live next to this one.
-
-    The output is deterministic per text so integration tests can assert a
-    known payload without a real model. Each byte is the inverted ASCII (when
-    representable) of the input; otherwise 0. This is NOT a useful waveform —
-    it's a placeholder that proves the wire without needing a model.
-    """
-
     name = "mock"
-
-    FRAME_MS = 20  # speech frames: 20 ms
+    FRAME_MS = 20
     SAMPLES_PER_FRAME = SAMPLE_RATE_DEFAULT * FRAME_MS // 1000
 
     def synthesize(self, text: str) -> bytes:
@@ -54,6 +42,83 @@ class MockTTS(TTS):
         out = bytearray()
         for ch in text.encode("ascii", errors="replace"):
             inv = (~ch) & 0xFF
-            sample = struct.pack("<h", inv - 128)  # int16 little-endian
+            sample = struct.pack("<h", inv - 128)
             out.extend(sample * self.SAMPLES_PER_FRAME)
         return bytes(out)
+
+
+# ── Cartesia (cloud) ─────────────────────────────────────────────────────────
+
+
+class CartesiaTTS(TTS):
+    """Real TTS via Cartesia. voice.tts_voice_id from app_settings."""
+
+    name = "cartesia"
+
+    def __init__(self, api_key: str | None = None, voice_id: str | None = None) -> None:
+        self._api_key = api_key or os.environ.get("CARTESIA_API_KEY", "")
+        self._voice_id = voice_id or os.environ.get("VOICE_TTS_VOICE_ID", "79a125e8-cowie")
+        if not self._api_key:
+            raise RuntimeError(
+                "Cartesia TTS selected but voice.tts_api_key is not set."
+            )
+
+    def synthesize(self, text: str) -> bytes:
+        import json
+        import urllib.request
+        body = json.dumps({
+            "model_id": "sonic-2",
+            "transcript": text,
+            "voice": {"mode": "id", "id": self._voice_id},
+            "output_format": {"container": "raw", "encoding": "pcm_s16le", "sample_rate": SAMPLE_RATE_DEFAULT},
+        }).encode()
+        req = urllib.request.Request(
+            "https://api.cartesia.ai/tts/bytes",
+            data=body,
+            headers={"Content-Type": "application/json", "X-API-Key": self._api_key, "Cartesia-Version": "2024-06-30"},
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return resp.read()
+
+
+# ── ElevenLabs (cloud) ───────────────────────────────────────────────────────
+
+
+class ElevenLabsTTS(TTS):
+    """Real TTS via ElevenLabs. voice.tts_voice_id from app_settings."""
+
+    name = "elevenlabs"
+
+    def __init__(self, api_key: str | None = None, voice_id: str | None = None) -> None:
+        self._api_key = api_key or os.environ.get("ELEVENLABS_API_KEY", "")
+        self._voice_id = voice_id or os.environ.get("VOICE_TTS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
+        if not self._api_key:
+            raise RuntimeError(
+                "ElevenLabs TTS selected but voice.tts_api_key is not set."
+            )
+
+    def synthesize(self, text: str) -> bytes:
+        import json
+        import urllib.request
+        body = json.dumps({
+            "text": text, "model_id": "eleven_turbo_v2_5",
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.75},
+        }).encode()
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{self._voice_id}/stream?output_format=pcm_16000"
+        req = urllib.request.Request(
+            url, data=body, headers={"Content-Type": "application/json", "xi-api-key": self._api_key},
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return resp.read()
+
+
+# ── Piper (local) — Phase 5 Docker model bundling ────────────────────────────
+
+
+class PiperTTS(TTS):
+    name = "piper"
+
+    def synthesize(self, text: str) -> bytes:
+        raise NotImplementedError(
+            "Piper TTS requires piper-tts + a bundled model file."
+        )

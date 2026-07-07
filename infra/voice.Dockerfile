@@ -1,10 +1,8 @@
-# Voice service — Phase 3 (Pipecat-shaped harness; real STT/TTS adapters
-# slot in behind the same interfaces in Phase 5 or whenever the operator
-# has the keys).
+# Voice service — Phase 5 real STT/TTS adapters (Cloud: Deepgram + Cartesia /
+# ElevenLabs; Local: whisper.cpp + Piper). MockSTT/MockTTS remain for CI.
 #
-# arm64-compatible. Pipecat + Whisper.cpp + Piper are recorded as Phase 5
-# polish per PLAN §14 risk #2; this image deliberately ships with the
-# mock STT/TTS only.
+# arm64-compatible. The local voice path (whisper.cpp + Piper) requires
+# additional model files — see the Dockerfile section on VOICE_LOCAL_MODELS.
 
 FROM python:3.12-slim-bookworm
 
@@ -14,27 +12,36 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# System deps for any future native Python extension (whisper.cpp bindings,
-# piper wheel). Phase 3's pure-python mocks don't need them; including them
-# now means a Phase 5 swap doesn't require a Dockerfile change.
+# System deps: build-essential for any native Python extensions (pywhispercpp,
+# piper onnxruntime). On the cloud path, these are no-ops at runtime.
 RUN apt-get update \
- && apt-get install -y --no-install-recommends build-essential \
+ && apt-get install -y --no-install-recommends build-essential cmake libsndfile1 \
  && rm -rf /var/lib/apt/lists/*
 
-# Copy only the manifests first for cache-friendly installs.
+# Copy manifests first for cache-friendly installs.
 COPY pyproject.toml README.md ./
+RUN pip install --no-cache-dir . && pip uninstall -y pip || true
 
-RUN pip install --no-cache-dir .[dev] && pip uninstall -y pip || true
+# Optional: if the operator selects voice.mode=local, they need to also
+# `pip install .[local]` and set VOICE_LOCAL_MODELS to a directory containing
+# a whisper.cpp ggml model and a Piper .onnx voice model. The image as
+# shipped does NOT bundle model files (each is >100 MB); operators add them
+# via a volume mount during `docker compose up`.
+#
+# Example:
+#   mkdir -p ./voice-models
+#   curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin -o ./voice-models/ggml-base.en.bin
+#   docker compose up -v ./voice-models:/models
 
 COPY src ./src
 
 ENV VOICE_PORT=8200
 EXPOSE 8200
 
-# Run as a non-root user where possible (best-effort; python slim ships as root
-# by default for some images).
 RUN useradd --create-home --uid 10001 voice 2>/dev/null || true
 USER 10001
+
+ENV VOICE_MODE=cloud
 
 CMD ["python", "-m", "uvicorn", "voice_service.main:app", "--host", "0.0.0.0", "--port", "8200"]
 

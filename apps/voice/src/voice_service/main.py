@@ -39,8 +39,8 @@ from .protocol import (
     TranscriptFinal,
     TranscriptPartial,
 )
-from .stt import STT, MockSTT, decode_audio_b64
-from .tts import TTS, MockTTS
+from .stt import STT, DeepgramSTT, MockSTT, WhisperSTT, decode_audio_b64
+from .tts import TTS, CartesiaTTS, ElevenLabsTTS, MockTTS, PiperTTS
 
 log = logging.getLogger("voice_service")
 logging.basicConfig(level=os.environ.get("VOICE_LOG_LEVEL", "INFO"))
@@ -53,11 +53,49 @@ def build_stt() -> STT:
     """Phase 3 ships only MockSTT. The real Deepgram / Whisper adapters wire
     in here when their API keys are added to app_settings.voice.* in the admin
     console and pulled via the orchestrator's voice settings endpoints
-    (Phase 5 polish)."""
+    (Phase 5 polish). Cloud/local provider selection is driven by environment
+    variables set at container start from app_settings."""
+
+    mode = os.environ.get("VOICE_MODE", "mock").lower()
+    if mode == "cloud":
+        provider = os.environ.get("VOICE_STT_PROVIDER", "deepgram").lower()
+        if provider == "deepgram":
+            try:
+                return DeepgramSTT()
+            except RuntimeError as e:
+                log.warning("DeepgramSTT unavailable, falling back to mock: %s", e)
+                return MockSTT()
+        return MockSTT()
+    if mode == "local":
+        try:
+            return WhisperSTT()
+        except NotImplementedError:
+            log.warning("Whisper STT not implemented; falling back to mock")
+            return MockSTT()
     return MockSTT()
 
 
 def build_tts() -> TTS:
+    mode = os.environ.get("VOICE_MODE", "mock").lower()
+    if mode == "cloud":
+        provider = os.environ.get("VOICE_TTS_PROVIDER", "cartesia").lower()
+        if provider == "elevenlabs":
+            try:
+                return ElevenLabsTTS()
+            except RuntimeError as e:
+                log.warning("ElevenLabsTTS unavailable, falling back to mock: %s", e)
+                return MockTTS()
+        try:
+            return CartesiaTTS()
+        except RuntimeError as e:
+            log.warning("CartesiaTTS unavailable, falling back to mock: %s", e)
+            return MockTTS()
+    if mode == "local":
+        try:
+            return PiperTTS()
+        except NotImplementedError:
+            log.warning("Piper TTS not implemented; falling back to mock")
+            return MockTTS()
     return MockTTS()
 
 

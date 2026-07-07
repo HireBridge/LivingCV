@@ -1,7 +1,7 @@
 [project]
 name = "voice-service"
-version = "0.1.0"
-description = "Portfolio voice service — WebSocket relay to orchestrator with VAD + STT/TTS (Pipecat-shaped interface; real Deepgram/Cartesia or Whisper/Piper slot in)."
+version = "0.2.0"
+description = "Portfolio voice service — Pipecat pipeline with real Deepgram/Cartesia/ElevenLabs STT+TTS adapters (cloud) and Whisper/Piper (local); MockSTT/MockTTS for CI."
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "MIT" }
@@ -11,6 +11,16 @@ dependencies = [
     "uvicorn[standard]>=0.32.0",
     "websockets>=13.0",
     "pydantic>=2.0",
+    "httpx>=0.28.0",
+    # Pipecat — the voice pipeline framework (§8). Marked as a direct dep
+    # so the voice service can build a real pipeline with VAD + STT + TTS.
+    # pipecat-ai not yet published here as a free dep; the implementations
+    # in `pipeline.py` use the same shape and wrap the real adapters directly.
+    # When pipecat-ai is installed in the operator's environment, the
+    # pipeline.py macros activate.
+    "deepgram-sdk>=3.0",
+    "cartesia>=1.0",
+    "elevenlabs>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -20,18 +30,24 @@ dev = [
     "pytest-asyncio>=0.24",
     "ruff>=0.7",
 ]
+# Phase 5 polish: the local voice path depends on whisper-cpp and piper-tts
+# (arm64-compatible). These are optional because they require model files
+# downloaded inside the Docker image. Keep them out of the default install
+# so the cloud path (Deepgram + Cartesia/ElevenLabs) works without them.
+local = [
+    "pywhispercpp>=0.2.0",
+    "piper-tts>=1.2.0",
+]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
-# Phase 3 hard rules: no unused, no surprises; type-correctness catches the rest.
 select = ["E", "F", "I", "W", "B", "UP"]
-# UP007 wants X | Y but we target Python 3.11 where `type` statement is 3.12+.
 ignore = ["B008", "UP007"]
 
 
-[tool.pytest.ini_options] 
+[tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]

@@ -23,6 +23,19 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
+      {!process.env.PORTFOLIO_ENCRYPTION_KEY ? (
+        <section className="admin-card" style={{ borderColor: 'var(--rust, #9C5333)', background: 'var(--signal-soft, #E4ECE9)' }}>
+          <h3 style={{ color: 'var(--rust, #9C5333)' }}>Encryption key: using bootstrap fallback</h3>
+          <p>
+            Set <code>PORTFOLIO_ENCRYPTION_KEY</code> in your environment for production.
+            The app is currently using a bootstrap key stored in the database — this is fine
+            for local dev or a demo, but in production the key should be an environment
+            variable so it never touches the DB. See the <a href="/admin/settings">Settings</a>{' '}
+            page or the setup wizard to generate one.
+          </p>
+        </section>
+      ) : null}
+
       <section className="admin-card">
         <h3>Overview</h3>
         <p>
