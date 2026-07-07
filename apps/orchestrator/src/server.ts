@@ -17,7 +17,7 @@
 // Voice bridge protocol is defined in apps/voice/src/voice_service/protocol.py.
 
 import express from 'express';
-import type { Server } from 'node:http';
+
 import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { getDb } from './db.js';
@@ -25,7 +25,7 @@ import { createRecruiterSession, getSession, countIpSessionsToday, bumpSessionAc
 import { hashIp, EMAIL_RX, submitWorkEmailImpl } from './gate.js';
 import { getLimits, checkPreTurnGuards } from './limits.js';
 import { runTurn, type SseEvent } from './turn.js';
-import { attachVoiceBridge } from './voiceBridge.js';
+
 import { attachMasterMcp } from './masterMcp.js';
 
 const PORT = Number(process.env.ORCHESTRATOR_PORT || 8100);
@@ -104,12 +104,11 @@ app.post('/api/chat/submit-email', (req: Request, res: Response) => {
   res.json({ ok: r.ok, message: r.message });
 });
 
-const server: Server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`[orchestrator] listening on :${PORT}`);
 });
 
-// Attach the internal voice bridge after the HTTP server is up.
-attachVoiceBridge(server);
+
 
 // Attach the Master MCP server endpoints
 attachMasterMcp(app);

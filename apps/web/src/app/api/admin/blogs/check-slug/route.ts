@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const db = getDb();
   
   let query = 'SELECT id FROM blogs WHERE slug = ?';
-  const params: any[] = [slug];
+  const params: (string | number)[] = [slug];
 
   if (excludeId) {
     query += ' AND id != ?';

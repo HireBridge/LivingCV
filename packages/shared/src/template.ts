@@ -160,6 +160,12 @@ export const SETTING_KEYS = {
   notifyWebhookUrl: 'notify.webhook_url', // encrypted
   gateEnabled: 'gate.enabled',
   resumeFilename: 'resume.filename',
+  mcpMasterKey: 'mcp.master_key',
+  siteTwitterHandle: 'site.twitter_handle',
+  siteLang: 'site.lang',
+  siteKeywords: 'site.keywords',
+  seoGoogleSiteVerification: 'seo.google_site_verification',
+  seoBingVerification: 'seo.bing_verification',
 } as const;
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
 
@@ -174,6 +180,7 @@ export const ENCRYPTED_SETTING_KEYS: ReadonlySet<string> = new Set<string>([
   SETTING_KEYS.telegramBotToken,
   SETTING_KEYS.emailApiKey,
   SETTING_KEYS.googleClientSecret,
+  SETTING_KEYS.mcpMasterKey,
 ]);
 
 // LLM provider for the orchestrator (§7). Read from app_settings[agent.llm_provider].

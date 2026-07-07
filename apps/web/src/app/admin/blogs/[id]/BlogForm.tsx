@@ -11,7 +11,17 @@ function generateRandomSlug() {
   return 'post-' + Math.random().toString(36).substring(2, 10);
 }
 
-export default function BlogForm({ blog }: { blog: any }) {
+type BlogData = {
+  id?: number | string;
+  title?: string;
+  slug?: string;
+  summary?: string;
+  body_markdown?: string;
+  tags?: string;
+  published?: number;
+};
+
+export default function BlogForm({ blog }: { blog: BlogData }) {
   const [markdown, setMarkdown] = useState(blog.body_markdown || '');
   const [slug, setSlug] = useState(blog.slug || (!blog.id ? generateRandomSlug() : ''));
   const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);

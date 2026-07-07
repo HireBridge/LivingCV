@@ -45,14 +45,45 @@ export async function generateMetadata({
   let blog = null;
   try {
     blog = getBlogBySlug(db, slug);
-  } catch(e) {}
+  } catch {}
   if (!blog || !blog.published) return { title: 'Not found' };
   
   const s = getAllSettings(db);
+  const domain = s['site.domain'] || '';
   const site = s['site.title'] || s['site.domain'] || 'Portfolio';
+  
+  // Blog uses DB columns mostly
+  let customOgTitle, customOgDesc, customOgImage;
+
+  const title = customOgTitle || blog.title;
+  const description = customOgDesc || blog.summary;
+  const ogImage = customOgImage || s['site.og_image_path'] || `/og?title=${encodeURIComponent(title)}&kind=blog`;
+  const url = domain ? `https://${domain}/blog/${slug}` : `/blog/${slug}`;
+  const twitter = s['site.twitter_handle'] || '';
+
   return {
-    title: { absolute: `${blog.title} · ${site}` },
-    description: blog.summary,
+    title: { absolute: `${title} · ${site}` },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: site,
+      type: 'article',
+      images: [ogImage],
+      locale: s['site.lang'] || 'en',
+      publishedTime: blog.created_at,
+      modifiedTime: blog.updated_at || blog.created_at,
+      tags: blog.tags ? blog.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+      ...(twitter && { creator: twitter, site: twitter }),
+    },
   };
 }
 
@@ -66,7 +97,7 @@ export default async function BlogPostPage({
   let blog = null;
   try {
     blog = getBlogBySlug(db, slug);
-  } catch(e) {}
+  } catch {}
   
   if (!blog || !blog.published) notFound();
   
@@ -81,8 +112,48 @@ export default async function BlogPostPage({
     }
   });
   
+  const s = getAllSettings(db);
+  const site = s['site.title'] || 'Portfolio';
+  const domain = s['site.domain'] || '';
+  const url = domain ? `https://${domain}/blog/${slug}` : `/blog/${slug}`;
+  
+  let customOgImage;
+  const ogImage = customOgImage || s['site.og_image_path'] || `/og?title=${encodeURIComponent(blog.title)}&kind=blog`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        headline: blog.title,
+        description: blog.summary,
+        image: ogImage,
+        datePublished: blog.created_at,
+        dateModified: blog.updated_at || blog.created_at,
+        author: {
+          '@type': 'Person',
+          name: site,
+          url: domain ? `https://${domain}` : '/',
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': url,
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: domain ? `https://${domain}` : '/' },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: domain ? `https://${domain}/blog` : '/blog' },
+          { '@type': 'ListItem', position: 3, name: blog.title, item: url },
+        ],
+      }
+    ]
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
       <style dangerouslySetInnerHTML={{ __html: ARTICLE_CSS }} />
       <main className="article-wrap">

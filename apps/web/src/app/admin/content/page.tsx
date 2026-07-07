@@ -1,7 +1,7 @@
 import { getDb } from '@/lib/db';
 import { getActiveTemplateSlug, listProjects, listCaseStudies, getSection } from '@/lib/content';
 import type { HeroContent, BackgroundContent, FooterContent } from '@/lib/types';
-import type { ThemeProps } from '@livingcv/shared';
+
 import { parseJson } from '@/lib/parse-json';
 import { ProjectsTab } from './ProjectsTab';
 import { CaseStudiesTab } from './CaseStudiesTab';

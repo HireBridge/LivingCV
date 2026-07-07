@@ -22,9 +22,10 @@ export async function POST(request: Request) {
   try {
     upsertBlog(db, { id, slug, title, summary, body_markdown, published });
     return NextResponse.redirect(new URL('/admin/blogs', request.url), { status: 303 });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error('Failed to save blog:', err);
     // If unique constraint fails or something
-    return NextResponse.redirect(new URL(`/admin/blogs/${id || 'new'}?error=${encodeURIComponent(err.message)}`, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/admin/blogs/${id || 'new'}?error=${encodeURIComponent(msg)}`, request.url), { status: 303 });
   }
 }

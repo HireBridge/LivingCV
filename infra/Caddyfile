@@ -31,11 +31,14 @@
     Server ""   # Strip the Caddy server header (no version disclosure).
   }
 
-  handle /voice-ws* {
-    reverse_proxy voice:8200
+
+  handle /api/orchestrator/api/chat/* {
+    uri strip_prefix /api/orchestrator
+    reverse_proxy orchestrator:8100
   }
 
-  handle_path /api/orchestrator/* {
+  handle_path /mcp-admin/* {
+    rewrite * /api/mcp{path}
     reverse_proxy orchestrator:8100
   }
 

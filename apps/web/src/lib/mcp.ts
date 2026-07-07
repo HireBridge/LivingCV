@@ -44,7 +44,7 @@ export async function getCareerPacket(db: Db) {
   }
 }
 
-export async function updateCareerPacket(db: Db, args: Record<string, any>) {
+export async function updateCareerPacket(db: Db, args: Record<string, unknown>) {
   const mcp = await getMcpClient(db);
   try {
     await mcp.client.callTool({ name: 'update_career_packet', arguments: args });

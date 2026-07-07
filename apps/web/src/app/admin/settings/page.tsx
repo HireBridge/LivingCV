@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 
 function listDisposableDomains(db: Db, search: string, page: number, perPage: number) {
   let query = 'SELECT domain, source FROM disposable_domains';
-  const params: any[] = [];
+  const params: (string | number)[] = [];
   
   if (search) {
     query += ' WHERE domain LIKE ?';
@@ -20,17 +20,17 @@ function listDisposableDomains(db: Db, search: string, page: number, perPage: nu
   query += ' ORDER BY domain ASC LIMIT ? OFFSET ?';
   params.push(perPage, (page - 1) * perPage);
   
-  return db.prepare<any[], { domain: string; source: string }>(query).all(...params);
+  return db.prepare<(string | number)[], { domain: string; source: string }>(query).all(...params);
 }
 
 function countDisposableDomains(db: Db, search: string) {
   let query = 'SELECT COUNT(*) as count FROM disposable_domains';
-  const params: any[] = [];
+  const params: string[] = [];
   if (search) {
     query += ' WHERE domain LIKE ?';
     params.push(`%${search}%`);
   }
-  const row = db.prepare<any[], { count: number }>(query).get(...params);
+  const row = db.prepare<string[], { count: number }>(query).get(...params);
   return row?.count ?? 0;
 }
 
@@ -65,6 +65,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const TabNav = () => (
     <div style={{ display: 'flex', gap: 24, borderBottom: '1px solid var(--rule)', marginBottom: 24, paddingBottom: 10, fontSize: '1.05rem' }}>
       <a href="?tab=general" style={{ textDecoration: 'none', color: currentTab === 'general' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'general' ? 'bold' : 'normal' }}>General</a>
+      <a href="?tab=seo" style={{ textDecoration: 'none', color: currentTab === 'seo' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'seo' ? 'bold' : 'normal' }}>SEO</a>
       <a href="?tab=connections" style={{ textDecoration: 'none', color: currentTab === 'connections' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'connections' ? 'bold' : 'normal' }}>AI & LLM</a>
       <a href="?tab=connectivity" style={{ textDecoration: 'none', color: currentTab === 'connectivity' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'connectivity' ? 'bold' : 'normal' }}>Connectivity</a>
       <a href="?tab=voice" style={{ textDecoration: 'none', color: currentTab === 'voice' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'voice' ? 'bold' : 'normal' }}>Voice</a>
@@ -136,6 +137,52 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </>
       )}
 
+      {currentTab === 'seo' && (
+        <section className="admin-card">
+          <h3>SEO & Metadata</h3>
+          <form method="post" action="/api/admin/settings/save" className="row">
+            <input type="hidden" name="group" value="seo" />
+            <input type="hidden" name="redirect" value="/admin/settings?tab=seo" />
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div>
+                <label>Twitter Handle (e.g. @username)</label>
+                <input name="site.twitter_handle" defaultValue={all['site.twitter_handle'] ?? ''} />
+              </div>
+              <div>
+                <label>Site Language (e.g. en)</label>
+                <input name="site.lang" defaultValue={all['site.lang'] ?? 'en'} />
+              </div>
+            </div>
+
+            <div className="row" style={{ marginTop: 14 }}>
+              <label>Custom OG Image Path (Leave blank to use auto-generated next/og)</label>
+              <input name="site.og_image_path" defaultValue={all['site.og_image_path'] ?? ''} placeholder="/og?title=..." />
+            </div>
+
+            <div className="row">
+              <label>Keywords (Comma separated)</label>
+              <input name="site.keywords" defaultValue={all['site.keywords'] ?? ''} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 14 }}>
+              <div>
+                <label>Google Site Verification ID</label>
+                <input name="seo.google_site_verification" defaultValue={all['seo.google_site_verification'] ?? ''} />
+              </div>
+              <div>
+                <label>Bing Verification ID</label>
+                <input name="seo.bing_verification" defaultValue={all['seo.bing_verification'] ?? ''} />
+              </div>
+            </div>
+
+            <div className="actions">
+              <button type="submit">Save</button>
+            </div>
+          </form>
+        </section>
+      )}
+
       {currentTab === 'connections' && (
         <section className="admin-card">
           <h3>Connections</h3>
@@ -146,6 +193,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               'agent.llm_model': all['agent.llm_model'] || '',
               'agent.llm_api_key': getSettingForBrowser(db, SETTING_KEYS.agentLlmApiKey),
               'agent.system_prompt_extra': all['agent.system_prompt_extra'] || '',
+              'agent.search_provider': all['agent.search_provider'] || '',
+              'agent.search_api_key': getSettingForBrowser(db, SETTING_KEYS.agentSearchApiKey),
             }} 
           />
         </section>
@@ -153,7 +202,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
       {currentTab === 'connectivity' && (
         <section className="admin-card">
-          <ConnectivityForm initialData={all} />
+          <ConnectivityForm initialData={{
+            'telegram.chat_id': all['telegram.chat_id'] || '',
+            'telegram.bot_token': getSettingForBrowser(db, SETTING_KEYS.telegramBotToken),
+            'email.provider': all['email.provider'] || 'none',
+            'email.api_key': getSettingForBrowser(db, SETTING_KEYS.emailApiKey),
+            'google.client_id': all['google.client_id'] || '',
+            'google.client_secret': getSettingForBrowser(db, SETTING_KEYS.googleClientSecret),
+          }} />
         </section>
       )}
 
@@ -234,7 +290,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             domain={all['site.domain'] || 'localhost:3000'}
             initialData={{
               'mcp.enabled': all['mcp.enabled'] || '0',
-              'mcp.master_key': all['mcp.master_key'] || '',
+              'mcp.master_key': getSettingForBrowser(db, SETTING_KEYS.mcpMasterKey) || '',
             }}
           />
         </section>

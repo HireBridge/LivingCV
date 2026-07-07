@@ -5,10 +5,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminBlogsPage() {
   const db = getDb();
-  let blogs: any[] = [];
+type BlogEntry = { id: number; title: string; slug: string; published: number; created_at: string; };
+  let blogs: BlogEntry[] = [];
   try {
-    blogs = listBlogs(db);
-  } catch(e) {
+    blogs = listBlogs(db) as BlogEntry[];
+  } catch {
     // Table might not be ready yet
   }
 

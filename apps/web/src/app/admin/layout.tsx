@@ -9,6 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Control Panel - LivingCV',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 const ADMIN_CSS = `

@@ -61,9 +61,40 @@ export async function generateMetadata({
   });
   const s = getAllSettings(db);
   const site = s['site.title'] || s['site.domain'] || 'Portfolio';
+  const domain = s['site.domain'] || '';
+  const customOgTitle = (fm as { og_title?: string }).og_title;
+  const customOgDesc = (fm as { og_description?: string }).og_description;
+  const customOgImage = (fm as { og_image?: string }).og_image;
+
+  const title = customOgTitle || fm.title;
+  const description = customOgDesc || fm.summary;
+  const ogImage = customOgImage || s['site.og_image_path'] || `/og?title=${encodeURIComponent(title)}&kind=case-study`;
+  const url = domain ? `https://${domain}/projects/${slug}` : `/projects/${slug}`;
+  const twitter = s['site.twitter_handle'] || '';
+
   return {
-    title: { absolute: `${fm.title} · ${site}` },
-    description: fm.summary,
+    title: { absolute: `${title} · ${site}` },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: site,
+      type: 'article',
+      images: [ogImage],
+      locale: s['site.lang'] || 'en',
+      publishedTime: cs.created_at,
+      modifiedTime: cs.updated_at,
+      tags: fm.stack || [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+      ...(twitter && { creator: twitter, site: twitter }),
+    },
   };
 }
 
@@ -93,8 +124,48 @@ export default async function CaseStudyPage({
   const repo = fm.links?.repo;
   const pkg = fm.links?.package;
   const demo = fm.links?.demo;
+
+  const s = getAllSettings(db);
+  const site = s['site.title'] || 'Portfolio';
+  const domain = s['site.domain'] || '';
+  const url = domain ? `https://${domain}/projects/${slug}` : `/projects/${slug}`;
+  const customOgImage = (fm as { og_image?: string }).og_image;
+  const ogImage = customOgImage || s['site.og_image_path'] || `/og?title=${encodeURIComponent(fm.title)}&kind=case-study`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: fm.title,
+        description: fm.summary,
+        image: ogImage,
+        datePublished: cs.created_at,
+        dateModified: cs.updated_at || cs.created_at,
+        author: {
+          '@type': 'Person',
+          name: site,
+          url: domain ? `https://${domain}` : '/',
+        },
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': url,
+        },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: domain ? `https://${domain}` : '/' },
+          { '@type': 'ListItem', position: 2, name: 'Projects', item: domain ? `https://${domain}/#projects` : '/#projects' },
+          { '@type': 'ListItem', position: 3, name: fm.title, item: url },
+        ],
+      }
+    ]
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
       <style dangerouslySetInnerHTML={{ __html: ARTICLE_CSS }} />
       <main className="article-wrap">

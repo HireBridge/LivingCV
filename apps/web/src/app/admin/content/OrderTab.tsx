@@ -7,12 +7,12 @@ export function OrderTab({ initialOrder, slug }: { initialOrder: string[]; slug:
   const [items, setItems] = useState<string[]>(initialOrder.length > 0 ? initialOrder : defaultOrder);
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
 
-  const handleDragStart = (e: any, index: number) => {
+  const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIdx(index);
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDragOver = (e: any, index: number) => {
+  const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     if (draggedIdx === null || draggedIdx === index) return;
     const newItems = [...items];
@@ -22,7 +22,7 @@ export function OrderTab({ initialOrder, slug }: { initialOrder: string[]; slug:
     setItems(newItems);
   };
 
-  const handleDrop = (e: any) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDraggedIdx(null);
   };

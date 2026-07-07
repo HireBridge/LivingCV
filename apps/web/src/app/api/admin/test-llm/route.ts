@@ -59,8 +59,9 @@ export async function POST(request: Request) {
 
     if (isJson) return NextResponse.json({ success: true });
     return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_success=1', request.url), { status: 303 });
-  } catch (err: any) {
-    if (isJson) return NextResponse.json({ success: false, error: `Network error: ${err.message}` }, { status: 400 });
-    return NextResponse.redirect(new URL(`/admin/settings?tab=connections&test_error=Network error: ${encodeURIComponent(err.message)}`, request.url), { status: 303 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (isJson) return NextResponse.json({ success: false, error: `Network error: ${msg}` }, { status: 400 });
+    return NextResponse.redirect(new URL(`/admin/settings?tab=connections&test_error=Network error: ${encodeURIComponent(msg)}`, request.url), { status: 303 });
   }
 }

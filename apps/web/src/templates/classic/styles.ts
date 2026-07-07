@@ -30,12 +30,13 @@ export const BASE_CSS = `
   --ink: #1B2430;
   --ink-soft: #4A5568;
   --rule: #C9C4B6;
+  --signal: #2F6F5E;
   --signal-soft: #E4ECE9;
   --rust: #9C5333;
   --max: 880px;
-  --font-body: 'Source Serif 4', Georgia, serif;
-  --font-heading: 'Space Grotesk', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: var(--next-font-body, 'Source Serif 4', Georgia, serif);
+  --font-heading: var(--next-font-heading, 'Space Grotesk', system-ui, sans-serif);
+  --font-mono: var(--next-font-mono, 'JetBrains Mono', monospace);
   --font-size-base: 18px;
 }
 

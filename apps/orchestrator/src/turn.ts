@@ -25,6 +25,42 @@ import {
 import { buildSystemPrompt } from './prompts.js';
 import { checkPreTurnGuards } from './limits.js';
 
+function searchWebToolDef() {
+  return {
+    name: 'search_web',
+    description: 'Search the public internet for current events, news, or factual information not in your training data.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        query: { type: 'string', description: 'The search query' }
+      },
+      required: ['query']
+    }
+  };
+}
+
+async function searchWebImpl(provider: string, apiKey: string, query: string): Promise<string> {
+  if (provider === 'tavily') {
+    const res = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: apiKey, query, search_depth: 'basic' })
+    });
+    if (!res.ok) throw new Error(`Tavily error: ${res.statusText}`);
+    const data = await res.json() as { results?: unknown[] };
+    return JSON.stringify(data.results || []);
+  }
+  // DuckDuckGo fallback
+  const res = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`);
+  if (!res.ok) throw new Error(`DuckDuckGo error: ${res.statusText}`);
+  const data = await res.json() as { Abstract?: string; RelatedTopics?: Array<{ Text?: string }> };
+  if (data.Abstract) return data.Abstract;
+  if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+    return JSON.stringify(data.RelatedTopics.map((t) => t.Text).filter(Boolean));
+  }
+  return "No results found.";
+}
+
 export type SseEvent =
   | { type: 'token'; text: string }
   | { type: 'tool_start'; id: string; name: string }
@@ -68,6 +104,11 @@ export async function runTurn(
   const tools = session.email_verified === 0
     ? [submitWorkEmailToolDef()]
     : [submitWorkEmailToolDef(), ...listProjectsToolDefs(), ...getCaseStudyToolDefs()];
+
+  const searchProvider = getSetting(db, SETTING_KEYS.agentSearchProvider);
+  if (searchProvider && searchProvider !== 'none') {
+    tools.push(searchWebToolDef());
+  }
 
   // Connect to jobops /mcp/public iff we're post-gate. Pre-gate we hand the LLM
   // only the submit_work_email tool (no MCP), so a hostile prompt cannot reach
@@ -189,6 +230,18 @@ async function executeTool(
   if (call.name === 'get_case_study') {
     const r = getCaseStudyImpl(db, call.args);
     return r ? { ok: true, valueText: JSON.stringify(r) } : { ok: false, valueText: 'case study not found or not published' };
+  }
+  if (call.name === 'search_web') {
+    const searchProvider = getSetting(db, SETTING_KEYS.agentSearchProvider);
+    const searchApiKey = getSetting(db, SETTING_KEYS.agentSearchApiKey) || '';
+    if (!searchProvider) return { ok: false, valueText: 'Search not configured' };
+    try {
+      const q = typeof call.args.query === 'string' ? call.args.query : '';
+      const text = await searchWebImpl(searchProvider, searchApiKey, q);
+      return { ok: true, valueText: text.slice(0, 4000) };
+    } catch (e) {
+      return { ok: false, valueText: (e as Error).message.slice(0, 400) };
+    }
   }
   // MCP tool (post-gate) — narrow to jobops /mcp/public toolset.
   if (mcp && mcp.tools.some((t) => t.name === call.name)) {

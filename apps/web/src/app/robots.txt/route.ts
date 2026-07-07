@@ -11,6 +11,8 @@ export async function GET() {
   return new Response(
     `User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/
 
 Sitemap: ${base}/sitemap.xml
 `,

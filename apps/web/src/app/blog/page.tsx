@@ -9,8 +9,34 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
   const db = getDb();
   const s = getAllSettings(db);
+  const domain = s['site.domain'] || '';
   const site = s['site.title'] || s['site.domain'] || 'Portfolio';
-  return { title: `Blog · ${site}` };
+  const url = domain ? `https://${domain}/blog` : `/blog`;
+  const twitter = s['site.twitter_handle'] || '';
+  const ogImage = s['site.og_image_path'] || `/og?title=${encodeURIComponent('Blog')}`;
+  const description = 'Thoughts, tutorials, and engineering deep-dives.';
+
+  return {
+    title: { absolute: `Blog · ${site}` },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `Blog · ${site}`,
+      description,
+      url,
+      siteName: site,
+      type: 'website',
+      images: [ogImage],
+      locale: s['site.lang'] || 'en',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Blog · ${site}`,
+      description,
+      images: [ogImage],
+      ...(twitter && { creator: twitter, site: twitter }),
+    }
+  };
 }
 
 export default async function BlogIndexPage({ searchParams }: { searchParams: Promise<{ q?: string; tag?: string }> }) {
@@ -18,10 +44,11 @@ export default async function BlogIndexPage({ searchParams }: { searchParams: Pr
   const q = sp.q?.toLowerCase() || '';
   const tag = sp.tag?.toLowerCase() || '';
   const db = getDb();
-  let blogs: any[] = [];
+  type BlogListEntry = { id: number; slug: string; title: string; summary: string; tags: string | null; created_at: string; };
+  let blogs: BlogListEntry[] = [];
   try {
-    blogs = listBlogs(db, true); // true = published only
-  } catch(e) {
+    blogs = listBlogs(db, true) as BlogListEntry[]; // true = published only
+  } catch {
     // Migration not run yet
   }
 

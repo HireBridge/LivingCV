@@ -51,8 +51,11 @@ export async function verifyAdminPassword(db: Db, password: string): Promise<boo
   const row = db
     .prepare<[string], { value: string }>('SELECT value FROM app_settings WHERE key = ?')
     .get(SETTING_KEYS.adminPasswordHash);
-  if (!row || !row.value) return false;
-  return compare(password, row.value);
+  // Constant-time check: if no hash exists, compare against a dummy hash so it always takes roughly the same time
+  const dummyHash = '$2a$12$R9h/cIPz0gi.URNNX3cd2OOQQENDtD9CwLjcdM0l.yqTfF.N9n1tq';
+  const hashToCompare = row?.value || dummyHash;
+  const match = await compare(password, hashToCompare);
+  return Boolean(row?.value && match);
 }
 
 export async function createSession(): Promise<void> {

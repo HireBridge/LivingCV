@@ -6,7 +6,6 @@ import { recordPageView } from '@/lib/page-views';
 import { getAllSettings, getSetting } from '@/lib/settings';
 import { ChatWidget } from '@/components/ChatWidget';
 import { VoiceWidget } from '@/components/VoiceWidget';
-import { headers } from 'next/headers';
 
 // Landing page — renders the active template from the DB on every request
 // (content is runtime-editable, never build-time). §9.
@@ -17,9 +16,31 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = getAllSettings(db);
   const title = s['site.title'] || s['site.domain'] || 'Portfolio';
   const description = s['site.meta_description'] || '';
+  const domain = s['site.domain'] || '';
+  const twitter = s['site.twitter_handle'] || '';
+  const ogImage = s['site.og_image_path'] || `/og?title=${encodeURIComponent(title)}`;
+  const url = domain ? `https://${domain}` : '/';
+
   return {
     title: { absolute: title },
     description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: title,
+      type: 'website',
+      images: [ogImage],
+      locale: s['site.lang'] || 'en',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+      ...(twitter && { creator: twitter, site: twitter }),
+    },
   };
 }
 
@@ -32,34 +53,44 @@ export default async function LandingPage() {
   recordPageView(db, '/');
 
   // Voice widget config (Phase 3). voice.enabled is the master gate; the
-  // widget renders nothing when off. voice.mode is informational in the
-  // widget label (Phase 3 ships MockSTT/MockTTS regardless of mode).
+  // widget renders nothing when off.
   const voiceEnabled = (getSetting(db, 'voice.enabled') ?? '0').trim() === '1';
-  const voiceModeRaw = (getSetting(db, 'voice.mode') ?? 'cloud').trim().toLowerCase();
-  const voiceMode: 'cloud' | 'local' = voiceModeRaw === 'local' ? 'local' : 'cloud';
-
-  // Compose the WS URL the browser opens. In docker, the orchestrator sits
-  // behind Caddy which routes /voice-ws to the voice service. In local dev,
-  // `window.location.host` is used so the browser talks to localhost:3000 →
-  // Caddy → voice. We pass the path only; the browser injects the host.
-  const h = await headers();
-  const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000';
-  const proto = h.get('x-forwarded-proto') ?? 'http';
-  const wsProto = proto === 'https' ? 'wss' : 'ws';
   const agentEnabled = (getSetting(db, 'agent.enabled') ?? '1').trim() === '1';
 
   const Component = entry.Component;
+
+  const s = getAllSettings(db);
+  const title = s['site.title'] || 'Portfolio';
+  const domain = s['site.domain'] || '';
+  const url = domain ? `https://${domain}` : '/';
+  
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        name: title,
+        url,
+      },
+      {
+        '@type': 'Person',
+        name: title,
+        url,
+        description: s['site.meta_description'] || '',
+        sameAs: [s['social.github'], s['social.linkedin'], s['social.twitter']].filter(Boolean),
+      }
+    ]
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Component {...props} />
       {agentEnabled && <ChatWidget />}
-      <VoiceWidget
-        config={{
-          enabled: voiceEnabled,
-          mode: voiceMode,
-          wsUrl: `${wsProto}://${host}/voice-ws`,
-        }}
-      />
+      <VoiceWidget config={{ enabled: voiceEnabled }} />
     </>
   );
 }

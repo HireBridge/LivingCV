@@ -17,7 +17,7 @@ export default async function PacketPage({ searchParams }: { searchParams: Promi
   try {
     if (fs.existsSync(cvPath)) cvContent = fs.readFileSync(cvPath, 'utf8');
     if (fs.existsSync(profilePath)) profileContent = fs.readFileSync(profilePath, 'utf8');
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to read career data:', err);
   }
 

@@ -16,12 +16,16 @@ export async function POST(request: Request) {
   }
   
   const expectedEmail = process.env.ADMIN_EMAIL;
-  if (!expectedEmail || email.toLowerCase().trim() !== expectedEmail.toLowerCase().trim()) {
-    return NextResponse.json({ error: 'Wrong email or password.' }, { status: 401 });
-  }
-
+  // Constant-time check: always verify the password hash even if the email fails
+  // to avoid timing attacks enumerating the admin email.
+  // We use crypto.timingSafeEqual for the email string? No, just run both.
+  
+  // We still do string comparison for email, but don't early return.
+  const emailMatch = Boolean(expectedEmail && email.toLowerCase().trim() === expectedEmail.toLowerCase().trim());
+  
   const ok = await verifyAdminPassword(db, password);
-  if (!ok) {
+  
+  if (!emailMatch || !ok) {
     return NextResponse.json({ error: 'Wrong email or password.' }, { status: 401 });
   }
   await createSession();

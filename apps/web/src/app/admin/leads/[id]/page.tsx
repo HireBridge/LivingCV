@@ -5,12 +5,15 @@ import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+type RecruiterSession = { id: string; started_at: string; channel: string; work_email?: string; message_count: number; };
+type ChatMessage = { id: number; role: string; content?: string; tool_name?: string; tool_args?: string; tool_result?: string; created_at: string; };
+
 function getSessionDetails(db: Db, id: string) {
-  const session = db.prepare<[string], any>('SELECT * FROM recruiter_sessions WHERE id = ?').get(id);
+  const session = db.prepare<[string], RecruiterSession>('SELECT * FROM recruiter_sessions WHERE id = ?').get(id);
   if (!session) return null;
   
   const messages = db
-    .prepare<[string], any>('SELECT * FROM chat_messages WHERE session_id = ? ORDER BY created_at ASC')
+    .prepare<[string], ChatMessage>('SELECT * FROM chat_messages WHERE session_id = ? ORDER BY created_at ASC')
     .all(id);
     
   return { session, messages };

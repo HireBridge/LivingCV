@@ -35,9 +35,9 @@ export function LlmConnectionsForm({ initialData }: { initialData: Record<string
         setTestStatus('error');
         setErrorMessage(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setTestStatus('error');
-      setErrorMessage(err.message);
+      setErrorMessage(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -76,8 +76,9 @@ export function LlmConnectionsForm({ initialData }: { initialData: Record<string
           <label>Web Search Provider</label>
           <select name="agent.search_provider" value={searchProvider} onChange={e => { setSearchProvider(e.target.value); }}>
             <option value="none">None</option>
+            <option value="duckduckgo">DuckDuckGo</option>
             <option value="tavily">Tavily</option>
-            <option value="brave">Brave</option>
+            <option value="mock">Mock</option>
           </select>
         </div>
         <div>

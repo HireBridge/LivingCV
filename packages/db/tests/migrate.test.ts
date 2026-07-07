@@ -1,8 +1,12 @@
 import { describe, it, expect, afterAll } from 'vitest';
 import { openDb, runInWriteLock } from '../src/index.js';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const expectedMigrations = readdirSync(join(__dirname, '../migrations')).filter(f => f.endsWith('.sql')).length + 1;
 
 const dir = mkdtempSync(join(tmpdir(), 'portfolio-db-'));
 const dbPath = join(dir, 'test.db');
@@ -62,8 +66,8 @@ describe('openDb + migrations', () => {
     expect(after).toBe(before);
 
     const { m } = db2.prepare<[], { m: number }>('SELECT COUNT(*) AS m FROM _migrations').get()!;
-    // 001_initial.sql + seed:disposable_domains
-    expect(m).toBe(2);
+    // all sql migrations + seed:disposable_domains
+    expect(m).toBe(expectedMigrations);
     db2.close();
   });
 
@@ -86,7 +90,7 @@ describe('openDb + migrations', () => {
       const a = openDb(freshPath);
       const b = openDb(freshPath);
       const { m } = b.prepare<[], { m: number }>('SELECT COUNT(*) AS m FROM _migrations').get()!;
-      expect(m).toBe(2);
+      expect(m).toBe(expectedMigrations);
       a.close();
       b.close();
     } finally {

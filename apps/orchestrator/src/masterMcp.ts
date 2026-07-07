@@ -1,9 +1,10 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema, Tool, CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type express from 'express';
+import crypto from 'node:crypto';
 import { getDb } from './db.js';
 import { getSetting } from './settings.js';
 
@@ -22,7 +23,7 @@ export function attachMasterMcp(app: express.Express) {
       const token = req.get('Authorization')?.replace('Bearer ', '');
       const masterKey = getSetting(db, 'mcp.master_key');
       
-      if (!masterKey || token !== masterKey) {
+      if (!masterKey || !token || token.length !== masterKey.length || !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(masterKey))) {
         return res.status(401).send('Unauthorized');
       }
 
@@ -30,14 +31,13 @@ export function attachMasterMcp(app: express.Express) {
       const jobopsUrl = process.env.JOBOPS_BASE_URL || 'http://jobops:7891';
       const jobopsToken = getSetting(db, 'jobops.auth_token') || process.env.JOBOPS_AUTH_TOKEN || '';
       
-      const jobopsTransport = new StreamableHTTPClientTransport(new URL(`${jobopsUrl}/mcp/sse`));
+      const jobopsTransport = new StreamableHTTPClientTransport(new URL(`${jobopsUrl}/mcp`), {
+        requestInit: { headers: { Authorization: `Bearer ${jobopsToken}` } },
+      });
       const jobopsClient = new Client({ name: 'master-relay', version: '1.0.0' });
       
       try {
         await jobopsClient.connect(jobopsTransport);
-        // Authorize with JobOps via custom initialization or via headers.
-        // Wait, StreamableHTTPClientTransport doesn't natively support custom headers.
-        // But JobOps might just accept the connection. We'll find out!
       } catch (e) {
         console.error('[masterMcp] failed to connect to jobops', e);
       }
@@ -66,7 +66,7 @@ export function attachMasterMcp(app: express.Express) {
           }
         ];
 
-        let jobopsTools: any[] = [];
+        let jobopsTools: Tool[] = [];
         try {
           const res = await jobopsClient.listTools();
           jobopsTools = res.tools;
@@ -81,7 +81,8 @@ export function attachMasterMcp(app: express.Express) {
 
       server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (request.params.name === 'portfolio_execute_sql') {
-          const { query, params = [], method } = request.params.arguments as any;
+          const { query, params = [], method } = request.params.arguments as { query: string; params?: unknown[]; method: string };
+          console.log(`[masterMcp] executing SQL (method=${method}): ${query}`);
           try {
             const db = getDb();
             let result;
@@ -95,9 +96,10 @@ export function attachMasterMcp(app: express.Express) {
             return {
               content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
             };
-          } catch (e: any) {
+          } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : String(e);
             return {
-              content: [{ type: 'text', text: `SQL Error: ${e.message}` }],
+              content: [{ type: 'text', text: `SQL Error: ${msg}` }],
               isError: true
             };
           }
@@ -108,10 +110,11 @@ export function attachMasterMcp(app: express.Express) {
               name: request.params.name,
               arguments: request.params.arguments
             });
-            return result as any;
-          } catch (e: any) {
+            return result as CallToolResult;
+          } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : String(e);
             return {
-              content: [{ type: 'text', text: `JobOps Error: ${e.message}` }],
+              content: [{ type: 'text', text: `JobOps Error: ${msg}` }],
               isError: true
             };
           }

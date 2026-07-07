@@ -17,8 +17,9 @@ export async function POST(request: Request) {
     fs.writeFileSync(path.join(dataDir, 'profile.yaml'), profileYaml);
 
     return NextResponse.redirect(new URL('/admin/packet?saved=1', request.url), { status: 303 });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error('Failed to update career data:', err);
-    return NextResponse.redirect(new URL('/admin/packet?error=' + encodeURIComponent(err.message), request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/packet?error=' + encodeURIComponent(msg), request.url), { status: 303 });
   }
 }
