@@ -7,6 +7,7 @@ import { ProjectsTab } from './ProjectsTab';
 import { CaseStudiesTab } from './CaseStudiesTab';
 import { OrderTab } from './OrderTab';
 import { ThemeTab } from './ThemeTab';
+import { CustomSectionsTab } from './CustomSectionsTab';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,6 +57,7 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
         <a href="?tab=projects" style={{ textDecoration: 'none', color: currentTab === 'projects' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'projects' ? 'bold' : 'normal' }}>Projects</a>
         <a href="?tab=case-studies" style={{ textDecoration: 'none', color: currentTab === 'case-studies' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'case-studies' ? 'bold' : 'normal' }}>Case Studies</a>
         <a href="?tab=order" style={{ textDecoration: 'none', color: currentTab === 'order' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'order' ? 'bold' : 'normal' }}>Order</a>
+        <a href="?tab=custom" style={{ textDecoration: 'none', color: currentTab === 'custom' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'custom' ? 'bold' : 'normal' }}>Custom Sections</a>
       </div>
 
       {sp.err ? <div className="flash error">Error saving: {sp.err}</div> : null}
@@ -160,6 +162,15 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
         <OrderTab 
           slug={slug} 
           initialOrder={getSection<string[]>(db, slug, 'order', [])} 
+          initialHidden={getSection<string[]>(db, slug, 'hidden', [])}
+          customSections={getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', [])}
+        />
+      )}
+
+      {currentTab === 'custom' && (
+        <CustomSectionsTab 
+          slug={slug} 
+          initialSections={getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', [])} 
         />
       )}
     </div>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 import { setSection } from '@/lib/content';
 import { parseJson } from '@/lib/parse-json';
@@ -76,9 +77,22 @@ export async function POST(request: Request) {
     content = parseJson<Record<string, string>>(JSON.stringify(parsed.value), {});
   } else if (section === 'order') {
     const parsed = parseJsonField(String(form.get('order_json') || '[]'));
+    const parsedHidden = parseJsonField(String(form.get('hidden_json') || '[]'));
+    
+    if (!parsed.ok || !parsedHidden.ok) {
+      const errStr = !parsed.ok ? parsed.error : (parsedHidden as { ok: false; error: string }).error;
+      return NextResponse.redirect(
+        new URL(`/admin/content?tab=order&err=${encodeURIComponent(errStr)}`, request.url),
+        { status: 303 },
+      );
+    }
+    content = parsed.value;
+    setSection(db, templateSlug, 'hidden', parsedHidden.value);
+  } else if (section === 'custom_sections') {
+    const parsed = parseJsonField(String(form.get('custom_sections_json') || '[]'));
     if (!parsed.ok) {
       return NextResponse.redirect(
-        new URL(`/admin/content?tab=order&err=${encodeURIComponent(parsed.error)}`, request.url),
+        new URL(`/admin/content?tab=custom&err=${encodeURIComponent(parsed.error)}`, request.url),
         { status: 303 },
       );
     }
@@ -88,6 +102,9 @@ export async function POST(request: Request) {
   }
   setSection(db, templateSlug, section, content);
   
-  const tabParam = ['order', 'theme'].includes(section) ? `?tab=${section}` : '';
+  revalidatePath('/');
+  revalidatePath('/admin/content');
+  
+  const tabParam = ['order', 'theme', 'custom_sections'].includes(section) ? `?tab=${section === 'custom_sections' ? 'custom' : section}` : '';
   return NextResponse.redirect(new URL(`/admin/content${tabParam}`, request.url), { status: 303 });
 }

@@ -86,7 +86,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             <form method="post" action="/api/admin/settings/save" className="row">
               <input type="hidden" name="group" value="site" />
               <input type="hidden" name="redirect" value="/admin/settings?tab=general" />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 <div>
                   <label>Site title</label>
                   <input name="site.title" defaultValue={all['site.title'] ?? ''} />
@@ -94,6 +94,10 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 <div>
                   <label>Domain</label>
                   <input name="site.domain" defaultValue={all['site.domain'] ?? ''} />
+                </div>
+                <div>
+                  <label>Admin email</label>
+                  <input name="admin.email" type="email" defaultValue={all['admin.email'] ?? ''} />
                 </div>
               </div>
               <div className="row">

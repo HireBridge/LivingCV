@@ -24,6 +24,8 @@ export default function SetupWizard() {
   const [domain, setDomain] = useState('');
   const [metaDesc, setMetaDesc] = useState('');
 
+  const [generatedKey, setGeneratedKey] = useState<string | null>(null);
+
   useEffect(() => {
     void fetch('/api/admin/setup')
       .then((r) => r.json() as Promise<SetupState>)
@@ -51,6 +53,21 @@ export default function SetupWizard() {
       const j = (await r.json().catch(() => ({}))) as { error?: string };
       return setErr(j.error || 'Failed to save password.');
     }
+    
+    if (!state?.hasEnvKey && !state?.hasEncryptionKey) {
+      setBusy(true);
+      const kr = await fetch('/api/admin/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'generate_key' }),
+      });
+      setBusy(false);
+      if (kr.ok) {
+        const j = (await kr.json().catch(() => ({}))) as { key?: string };
+        if (j.key) setGeneratedKey(j.key);
+      }
+    }
+    
     setStep(1);
   }
 
@@ -149,6 +166,13 @@ export default function SetupWizard() {
               For production, move it to your <code>PORTFOLIO_ENCRYPTION_KEY</code> env
               var and delete the stored copy.
             </p>
+          ) : generatedKey ? (
+            <>
+              <p>Your encryption key has been generated. Please copy and save it securely now:</p>
+              <pre style={{ padding: '1rem', background: '#f4f4f5', borderRadius: '4px', overflowWrap: 'anywhere', userSelect: 'all', fontFamily: 'monospace', marginBottom: '1rem' }}>
+                {generatedKey}
+              </pre>
+            </>
           ) : (
             <p>An encryption key will be generated for you in the next step.</p>
           )}

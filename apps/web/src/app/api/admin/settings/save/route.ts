@@ -9,7 +9,7 @@ import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@livingcv/shared';
 // setSetting (which auto-encrypts keys in ENCRYPTED_SETTING_KEYS).
 const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   site: {
-    keys: ['site.title', 'site.domain', 'site.meta_description', 'site.og_image_path', 'site.active_template'],
+    keys: ['site.title', 'site.domain', 'site.meta_description', 'site.og_image_path', 'site.active_template', 'admin.email'],
   },
   limits: {
     keys: [

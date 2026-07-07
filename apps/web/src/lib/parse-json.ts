@@ -6,6 +6,10 @@ export function parseJson<T>(s: string | null | undefined, fallback: T): T {
   if (!s) return fallback;
   try {
     const parsed = JSON.parse(s);
+    if (Array.isArray(fallback)) {
+      if (Array.isArray(parsed)) return parsed as T;
+      return fallback;
+    }
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       return { ...fallback, ...parsed } as T;
     }

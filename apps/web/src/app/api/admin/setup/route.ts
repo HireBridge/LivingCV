@@ -35,6 +35,10 @@ export async function POST(request: Request) {
     await setAdminPassword(db, password);
     return NextResponse.json({ ok: true });
   }
+  if (action === 'generate_key') {
+    const key = ensureEncryptionKey(db);
+    return NextResponse.json({ ok: true, key });
+  }
   if (action === 'site') {
     const title = typeof body.title === 'string' ? body.title.trim() : '';
     const domain = typeof body.domain === 'string' ? body.domain.trim() : '';

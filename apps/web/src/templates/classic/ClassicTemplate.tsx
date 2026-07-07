@@ -12,6 +12,16 @@ export function ClassicTemplate(props: TemplateProps) {
   const brand = hero.name;
 
   const renderSection = (key: string) => {
+    if (props.hiddenSections?.includes(key)) return null;
+
+    if (key.startsWith('custom_')) {
+      const custom = props.customSections?.find(c => c.id === key);
+      if (!custom) return null;
+      return (
+        <section key={key} id={key} dangerouslySetInnerHTML={{ __html: custom.content }} />
+      );
+    }
+
     switch (key) {
       case 'hero':
         return <Hero key="hero" hero={hero} projects={projects} contactEnabled={props.contactEnabled} />;

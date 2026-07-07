@@ -281,6 +281,9 @@ export function buildTemplateProps(db: Db): TemplateProps {
   const theme = getSection<ThemeProps>(db, slug, 'theme', {});
   const sectionOrder = getSection<string[]>(db, slug, 'order', ['hero', 'projects', 'alsoShipped', 'background']);
 
+  const hiddenSections = getSection<string[]>(db, slug, 'hidden', []);
+  const customSections = getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', []);
+
   const projects = listProjects(db);
   const featured: ProjectProps[] = [];
   const alsoShipped: MiniProjectProps[] = [];
@@ -314,6 +317,8 @@ export function buildTemplateProps(db: Db): TemplateProps {
     footer: { links: footer.links, note: footer.note ?? '' },
     theme,
     sectionOrder,
+    hiddenSections,
+    customSections,
     contactEnabled,
   });
 }

@@ -108,6 +108,13 @@ export const ThemeProps = z.object({
 });
 export type ThemeProps = z.infer<typeof ThemeProps>;
 
+export const CustomSectionProps = z.object({
+  id: z.string(),
+  title: z.string(),
+  content: z.string(),
+});
+export type CustomSectionProps = z.infer<typeof CustomSectionProps>;
+
 export const TemplateProps = z.object({
   hero: HeroProps,
   projects: z.array(ProjectProps).default([]),
@@ -116,6 +123,8 @@ export const TemplateProps = z.object({
   footer: FooterProps,
   theme: ThemeProps.default({}),
   sectionOrder: z.array(z.string()).optional(),
+  hiddenSections: z.array(z.string()).default([]),
+  customSections: z.array(CustomSectionProps).default([]),
   contactEnabled: z.boolean().optional(),
 });
 export type TemplateProps = z.infer<typeof TemplateProps>;
@@ -130,6 +139,7 @@ export const SETTING_KEYS = {
   siteOgImagePath: 'site.og_image_path',
   siteActiveTemplate: 'site.active_template',
   adminPasswordHash: 'admin.password_hash',
+  adminEmail: 'admin.email',
   setupComplete: 'setup.complete',
   jobopsBaseUrl: 'jobops.base_url',
   jobopsAuthToken: 'jobops.auth_token', // encrypted
