@@ -1,0 +1,78 @@
+name: portfolio
+
+# Phase 1 ships caddy + web only. Orchestrator, voice, and jobops are commented
+# out; uncomment as each is implemented. The `jobops` service requires the
+# jobops image (`infra/jobops/Dockerfile`) which is provisioned in Phase 2.
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/web.Dockerfile
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+      PORTFOLIO_ENCRYPTION_KEY: ${PORTFOLIO_ENCRYPTION_KEY}
+      SESSION_SECRET: ${SESSION_SECRET}
+      JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
+      IP_HASH_SALT: ${IP_HASH_SALT}
+      # Next.js can read NEXT_PUBLIC_* at build time only; left unset so it falls
+      # back to defaults.
+    volumes:
+      - portfolio-data:/data
+    depends_on: {}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Phase 2: agent-orchestrator (text chat). Reads the same portfolio.db.
+  # orchestrator:
+  #   build:
+  #     context: .
+  #     dockerfile: infra/orchestrator.Dockerfile
+  #   environment: ...
+  #   depends_on: [web, jobops]
+  #
+  # Phase 3: voice-service (Pipecat WebRTC). STT/TTS from app_settings.
+  # voice:
+  #   build:
+  #     context: .
+  #     dockerfile: infra/voice.Dockerfile
+  #   environment: ...
+  #   depends_on: [orchestrator]
+  #
+  # Phase 2: jobops (the npm package, runs over MCP/HTTP).
+  # jobops:
+  #   build:
+  #     context: .
+  #     dockerfile: infra/jobops/Dockerfile
+  #   environment:
+  #     JOBOPS_HOST: 0.0.0.0
+  #     JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
+  #     JOBOPS_SCHEDULER_ENABLED: 'false'
+  #     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+  #   volumes:
+  #     - jobops-data:/data
+volumes:
+  portfolio-data:
+  jobops-data:
+  caddy-data:
+  caddy-config:

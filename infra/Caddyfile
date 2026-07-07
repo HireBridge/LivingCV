@@ -1,0 +1,19 @@
+# Caddy is the public-facing reverse proxy. Automatic HTTPS for {$DOMAIN}; the
+# /mcp path is wired through to the jobops container's /mcp/public mount once
+# Phase 4 lands (uncommented below as a placeholder for now).
+{$DOMAIN} {
+  encode zstd gzip
+  reverse_proxy web:3000
+
+  # Public MCP mount (Phase 4). Uncomment once the jobops container is in the
+  # stack. jobops exposes exactly two tools on /mcp/public; see §2 invariant 4.
+  # route /mcp {
+  #   reverse_proxy jobops:7891
+  # }
+  # respond /mcp/* "…"  // not used; the proxy handles it.
+
+  # Voice WebSocket (Phase 3).
+  # route /voice-ws {
+  #   reverse_proxy voice:8200
+  # }
+}

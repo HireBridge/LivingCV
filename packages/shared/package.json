@@ -3,13 +3,27 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./free-email-domains": "./src/free-email-domains.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./free-email-domains": {
+      "types": "./dist/free-email-domains.d.ts",
+      "default": "./dist/free-email-domains.js"
+    }
   },
+  "files": ["dist"],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "echo 'private package'"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
   },
   "license": "MIT"
 }
