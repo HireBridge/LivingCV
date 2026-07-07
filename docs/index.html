@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohith (Matt) Das — Builder / Applied AI Engineer</title>
+<meta name="description" content="Builder PM and applied AI engineer. Ships production MCP servers and agent infrastructure: wikimcp, jobops, leanswarm, hierocode.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F2F0EA;
+    --paper-deep: #E7E3D6;
+    --ink: #1B2430;
+    --ink-soft: #4A5568;
+    --rule: #C9C4B6;
+    --signal: #2F6F5E;
+    --signal-soft: #E4ECE9;
+    --rust: #9C5333;
+    --max: 880px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    font-size:18px;
+    line-height:1.6;
+  }
+
+  h1,h2,h3,.eyebrow,.nav-brand,.mono,.tag,button,code,.cmd{
+    font-family:'Space Grotesk', system-ui, sans-serif;
+  }
+  code, .cmd, .path{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.88em;
+  }
+
+  a{ color:var(--signal); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover{ color:var(--rust); }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--signal); outline-offset:3px; }
+
+  .wrap{ max-width:var(--max); margin:0 auto; padding:0 28px; }
+
+  /* NAV */
+  header.nav{
+    position:sticky; top:0; z-index:20;
+    background:rgba(242,240,234,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
+  }
+  .nav-inner{
+    max-width:var(--max); margin:0 auto; padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-brand{ font-weight:600; font-size:1.05rem; color:var(--ink); text-decoration:none; letter-spacing:-0.01em; }
+  .nav-links{ display:flex; gap:24px; list-style:none; margin:0; padding:0; }
+  .nav-links a{ color:var(--ink-soft); font-size:0.92rem; font-weight:500; text-decoration:none; }
+  .nav-links a:hover{ color:var(--signal); }
+  @media (max-width:600px){ .nav-links{ gap:14px; } .nav-links a{ font-size:0.82rem; } }
+
+  /* HERO */
+  .hero{ padding:76px 0 56px; }
+  .eyebrow{
+    display:inline-block; font-size:0.78rem; font-weight:600; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--signal); background:var(--signal-soft);
+    padding:5px 11px; border-radius:3px; margin-bottom:22px;
+  }
+  h1.name{
+    font-size:clamp(2.4rem, 5vw, 3.6rem);
+    font-weight:700; line-height:1.05; letter-spacing:-0.02em;
+    margin:0 0 18px;
+  }
+  .role-line{
+    font-family:'Source Serif 4', serif; font-size:1.28rem; color:var(--ink-soft);
+    max-width:620px; margin:0 0 30px; font-style:italic;
+  }
+  .role-line strong{ color:var(--ink); font-style:normal; }
+
+  .hero-links{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:56px; }
+  .pill{
+    font-size:0.86rem; font-weight:500; color:var(--ink);
+    border:1px solid var(--rule); border-radius:20px; padding:7px 15px;
+    text-decoration:none; background:var(--paper);
+  }
+  .pill:hover{ border-color:var(--signal); color:var(--signal); }
+
+  /* HERO DIAGRAM — the four systems as nodes */
+  .hero-diagram{ margin-top:8px; }
+  .hero-diagram svg{ width:100%; height:auto; display:block; }
+  .node-label{ font-family:'JetBrains Mono', monospace; font-size:11px; fill:var(--ink); }
+  .node-sub{ font-family:'Source Serif 4', serif; font-size:11px; fill:var(--ink-soft); font-style:italic; }
+
+  /* SECTIONS */
+  section{ padding:64px 0; border-top:1px solid var(--rule); }
+  section.no-rule{ border-top:none; }
+  h2.section-title{
+    font-size:1.6rem; font-weight:700; letter-spacing:-0.01em; margin:0 0 8px;
+  }
+  .section-kicker{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:0.08em; margin:0 0 34px;
+  }
+
+  /* PROJECT CARD */
+  .project{
+    display:grid; grid-template-columns: 1fr; gap:26px;
+    padding:36px 0;
+  }
+  .project + .project{ border-top:1px dashed var(--rule); }
+  .project-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:4px; }
+  .project-name{ font-size:1.5rem; font-weight:700; margin:0; letter-spacing:-0.01em; }
+  .project-links{ display:flex; gap:14px; font-size:0.86rem; font-family:'JetBrains Mono', monospace; }
+  .project-tagline{ color:var(--ink-soft); font-size:1.05rem; margin:0 0 22px; max-width:620px; }
+
+  .diagram-box{
+    background:var(--paper-deep); border:1px solid var(--rule); border-radius:6px;
+    padding:20px 18px; margin-bottom:22px;
+  }
+  .diagram-box svg{ width:100%; height:auto; display:block; }
+  .diagram-caption{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); margin-top:10px; text-align:center; letter-spacing:0.02em; }
+
+  .project-body{ display:grid; grid-template-columns: repeat(3, 1fr); gap:22px; }
+  @media (max-width:760px){ .project-body{ grid-template-columns:1fr; } }
+  .project-body h4{
+    font-family:'Space Grotesk'; font-size:0.76rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--rust); margin:0 0 8px;
+  }
+  .project-body p{ font-size:0.94rem; margin:0; color:var(--ink); }
+
+  .install-row{
+    margin-top:22px; background:#EDEAE0; border:1px solid var(--rule); border-radius:5px;
+    padding:11px 16px; display:flex; align-items:center; gap:10px; overflow-x:auto;
+  }
+  .install-row .prompt{ color:var(--ink-soft); user-select:none; }
+
+  /* also-built strip */
+  .mini-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+  @media (max-width:600px){ .mini-grid{ grid-template-columns:1fr; } }
+  .mini-card{ border:1px solid var(--rule); border-radius:6px; padding:18px 20px; background:var(--paper-deep); }
+  .mini-card h4{ margin:0 0 6px; font-size:1.02rem; font-weight:600; }
+  .mini-card p{ margin:0; font-size:0.9rem; color:var(--ink-soft); }
+
+  /* background section */
+  .bg-text{ max-width:640px; }
+  .bg-text p{ margin:0 0 16px; }
+
+  /* footer */
+  footer{ padding:52px 0 70px; }
+  .footer-links{ display:flex; flex-wrap:wrap; gap:22px; font-family:'JetBrains Mono', monospace; font-size:0.9rem; margin-bottom:18px; }
+  .footer-note{ color:var(--ink-soft); font-size:0.86rem; }
+
+  /* reveal on scroll */
+  .reveal{ opacity:0; transform:translateY(14px); transition:opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">mattdas.dev</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#background">Background</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+  <section class="hero no-rule">
+    <span class="eyebrow">Builder PM / Applied AI Engineer</span>
+    <h1 class="name">Mohith (Matt) Das</h1>
+    <p class="role-line">
+      I build the <strong>infrastructure layer</strong> for agent workflows: MCP servers,
+      routing systems, and durable memory. Four are public and installable right now.
+    </p>
+    <div class="hero-links">
+      <a class="pill" href="https://github.com/mohith-das" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="pill" href="https://www.linkedin.com/in/mohithkdas" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="pill" href="mailto:mkattdas@gmail.com">Email</a>
+      <a class="pill" href="#projects">See the work ↓</a>
+    </div>
+
+    <div class="hero-diagram reveal">
+      <svg viewBox="0 0 820 190" xmlns="http://www.w3.org/2000/svg">
+        <!-- center node -->
+        <rect x="360" y="80" width="100" height="34" rx="4" fill="none" stroke="#1B2430" stroke-width="1.4"/>
+        <text x="410" y="101" text-anchor="middle" class="node-label" font-weight="600">matt</text>
+
+        <!-- four project nodes -->
+        <g>
+          <rect x="20" y="10" width="150" height="34" rx="4" fill="none" stroke="#2F6F5E" stroke-width="1.4"/>
+          <text x="95" y="31" text-anchor="middle" class="node-label">wikimcp</text>
+          <path d="M95 44 C 95 70, 300 70, 385 88" fill="none" stroke="#C9C4B6" stroke-width="1.2"/>
+        </g>
+        <g>
+          <rect x="20" y="146" width="150" height="34" rx="4" fill="none" stroke="#2F6F5E" stroke-width="1.4"/>
+          <text x="95" y="167" text-anchor="middle" class="node-label">jobops</text>
+          <path d="M95 146 C 95 120, 300 120, 385 106" fill="none" stroke="#C9C4B6" stroke-width="1.2"/>
+        </g>
+        <g>
+          <rect x="650" y="10" width="150" height="34" rx="4" fill="none" stroke="#9C5333" stroke-width="1.4"/>
+          <text x="725" y="31" text-anchor="middle" class="node-label">leanswarm</text>
+          <path d="M725 44 C 725 70, 520 70, 435 88" fill="none" stroke="#C9C4B6" stroke-width="1.2"/>
+        </g>
+        <g>
+          <rect x="650" y="146" width="150" height="34" rx="4" fill="none" stroke="#9C5333" stroke-width="1.4"/>
+          <text x="725" y="167" text-anchor="middle" class="node-label">hierocode</text>
+          <path d="M725 146 C 725 120, 520 120, 435 106" fill="none" stroke="#C9C4B6" stroke-width="1.2"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section id="projects">
+    <p class="section-kicker">01 — Published, installable, running today</p>
+    <h2 class="section-title">Projects</h2>
+
+    <!-- WIKIMCP -->
+    <div class="project reveal">
+      <div class="project-head">
+        <h3 class="project-name">wikimcp</h3>
+        <div class="project-links">
+          <a href="https://github.com/mohith-das/wikimcp" target="_blank" rel="noopener">github</a>
+          <a href="https://pypi.org/project/wikimcp/" target="_blank" rel="noopener">pypi</a>
+        </div>
+      </div>
+      <p class="project-tagline">Long-term memory for AI agents. A git-backed personal wiki that any MCP client reads and writes to, so knowledge compounds across sessions instead of being re-derived by RAG every time.</p>
+
+      <div class="diagram-box">
+        <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="48" width="130" height="34" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="85" y="69" text-anchor="middle" class="node-label">raw/ sources</text>
+          <path d="M150 65 L 280 65" stroke="#1B2430" stroke-width="1.3" marker-end="url(#arrow1)"/>
+
+          <rect x="285" y="30" width="130" height="34" rx="4" fill="none" stroke="#2F6F5E" stroke-width="1.6"/>
+          <text x="350" y="51" text-anchor="middle" class="node-label" font-weight="600">AI agent</text>
+
+          <rect x="285" y="80" width="130" height="34" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="350" y="101" text-anchor="middle" class="node-label">CLAUDE.md schema</text>
+          <path d="M350 80 L 350 64" stroke="#1B2430" stroke-width="1.1" stroke-dasharray="2 2"/>
+
+          <path d="M415 47 L 545 47" stroke="#1B2430" stroke-width="1.3" marker-end="url(#arrow1)"/>
+          <rect x="550" y="30" width="130" height="34" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="615" y="51" text-anchor="middle" class="node-label">wiki/ (git-committed)</text>
+
+          <path d="M615 64 C 615 100, 420 110, 355 97" fill="none" stroke="#9C5333" stroke-width="1.1" stroke-dasharray="3 2" marker-end="url(#arrowrust)"/>
+          <text x="500" y="120" text-anchor="middle" class="node-sub">every write auto-commits, feeds next query</text>
+
+          <defs>
+            <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1B2430"/></marker>
+            <marker id="arrowrust" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9C5333"/></marker>
+          </defs>
+        </svg>
+        <p class="diagram-caption">raw sources are read, never edited — the agent owns the wiki layer entirely</p>
+      </div>
+
+      <div class="project-body">
+        <div>
+          <h4>Design decision</h4>
+          <p>Storage is plain git-backed markdown, not a database. That means any Obsidian vault pointed at the same folder gets graph view and backlinks for free, zero extra code written for it.</p>
+        </div>
+        <div>
+          <h4>What's real</h4>
+          <p>9 MCP tools over stdio or HTTP, multi-user server mode with per-user bearer tokens stored as SHA-256 hashes (never plaintext), a read-only web reader, and git hosting per user.</p>
+        </div>
+        <div>
+          <h4>Retrieval honesty</h4>
+          <p>Full-text search is lexical, not semantic. Curated pages retrieve well; dumping unfiltered logs into it would degrade retrieval quality, so the design rewards a maintained wiki over a firehose.</p>
+        </div>
+      </div>
+
+      <div class="install-row"><span class="prompt">$</span><code>pip install wikimcp && wikimcp init</code></div>
+    </div>
+
+    <!-- JOBOPS -->
+    <div class="project reveal">
+      <div class="project-head">
+        <h3 class="project-name">jobops</h3>
+        <div class="project-links">
+          <a href="https://github.com/mohith-das/jobops" target="_blank" rel="noopener">github</a>
+          <a href="https://www.npmjs.com/package/job_ops-mcp" target="_blank" rel="noopener">npm</a>
+        </div>
+      </div>
+      <p class="project-tagline">A 51-tool MCP server that runs an end-to-end pipeline: source postings, score JDs, tailor and render resumes, draft outreach, track the whole thing in SQLite.</p>
+
+      <div class="diagram-box">
+        <svg viewBox="0 0 700 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="15" width="190" height="36" rx="4" fill="none" stroke="#2F6F5E" stroke-width="1.5"/>
+          <text x="125" y="37" text-anchor="middle" class="node-label" font-weight="600">MCP plane (tools)</text>
+
+          <rect x="255" y="15" width="190" height="36" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="350" y="37" text-anchor="middle" class="node-label">HTTP plane (files + dashboard)</text>
+
+          <rect x="480" y="15" width="190" height="36" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="575" y="37" text-anchor="middle" class="node-label">SQLite (WAL mode)</text>
+
+          <path d="M125 51 L 350 100" stroke="#C9C4B6" stroke-width="1.2"/>
+          <path d="M350 51 L 350 100" stroke="#C9C4B6" stroke-width="1.2"/>
+          <path d="M575 51 L 350 100" stroke="#C9C4B6" stroke-width="1.2"/>
+
+          <rect x="270" y="100" width="160" height="34" rx="4" fill="none" stroke="#9C5333" stroke-width="1.4"/>
+          <text x="350" y="121" text-anchor="middle" class="node-label">runInWriteLock</text>
+        </svg>
+        <p class="diagram-caption">one process, one DB — every mutation serializes through a single write lock</p>
+      </div>
+
+      <div class="project-body">
+        <div>
+          <h4>Design decision</h4>
+          <p>Most tools default to chat mode: the server returns the rubric and context, the connected model reasons, then calls the tool again to persist. No API key required by default.</p>
+        </div>
+        <div>
+          <h4>Hard-coded safety rail</h4>
+          <p>A leakage scan runs inside resume rendering before persistence. A detected leak fails the call outright, not a prompt asking the model to be careful.</p>
+        </div>
+        <div>
+          <h4>Multi-client, one truth</h4>
+          <p>One server process shared concurrently by Claude Desktop, Claude Code, opencode, and Gemini CLI against the same DB, with a fresh MCP protocol instance per HTTP request so responses never cross-route between clients.</p>
+        </div>
+      </div>
+
+      <div class="install-row"><span class="prompt">$</span><code>npx job_ops-mcp@latest init</code></div>
+    </div>
+
+    <!-- LEANSWARM -->
+    <div class="project reveal">
+      <div class="project-head">
+        <h3 class="project-name">leanswarm</h3>
+        <div class="project-links">
+          <a href="https://github.com/mohith-das/leanswarm" target="_blank" rel="noopener">github</a>
+          <a href="https://pypi.org/project/leanswarm/" target="_blank" rel="noopener">pypi</a>
+        </div>
+      </div>
+      <p class="project-tagline">A cost-focused multi-agent simulation engine for narrative and opinion forecasting: aggressive batching, sparse activation, and strict model routing instead of running every agent at full cost.</p>
+
+      <div class="diagram-box">
+        <svg viewBox="0 0 700 140" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="10" width="130" height="30" rx="4" fill="none" stroke="#9C5333" stroke-width="1.4"/>
+          <text x="85" y="30" text-anchor="middle" class="node-label">FLAGSHIP tier</text>
+          <rect x="20" y="55" width="130" height="30" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="85" y="75" text-anchor="middle" class="node-label">STANDARD tier</text>
+          <rect x="20" y="100" width="130" height="30" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="85" y="120" text-anchor="middle" class="node-label">CHEAP tier</text>
+
+          <path d="M150 25 L 300 65" stroke="#C9C4B6" stroke-width="1.1"/>
+          <path d="M150 70 L 300 70" stroke="#C9C4B6" stroke-width="1.1"/>
+          <path d="M150 115 L 300 75" stroke="#C9C4B6" stroke-width="1.1"/>
+
+          <rect x="305" y="45" width="180" height="50" rx="4" fill="none" stroke="#2F6F5E" stroke-width="1.6"/>
+          <text x="395" y="65" text-anchor="middle" class="node-label" font-weight="600">simulation engine</text>
+          <text x="395" y="80" text-anchor="middle" class="node-sub" font-size="10">sparse activation per tick</text>
+
+          <path d="M485 70 L 600 70" stroke="#1B2430" stroke-width="1.2" marker-end="url(#arrow2)"/>
+          <rect x="605" y="52" width="80" height="34" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="645" y="73" text-anchor="middle" class="node-label" font-size="10">bench</text>
+          <defs><marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1B2430"/></marker></defs>
+        </svg>
+        <p class="diagram-caption">leanswarm bench reports cost_ratio, quality_delta, and runtime_ratio, lean vs naive activation</p>
+      </div>
+
+      <div class="project-body">
+        <div>
+          <h4>Design decision</h4>
+          <p>Only a bounded fraction of agents reason per tick, chosen by trigger heuristics, instead of every agent running every round. State is hybrid: numeric mood/energy/attention plus semantic memory backed by SQLite with vector search.</p>
+        </div>
+        <div>
+          <h4>Measured, not claimed</h4>
+          <p>The benchmark harness runs identical cases in lean and naive modes and reports the cost/quality tradeoff as a number, not a marketing line.</p>
+        </div>
+        <div>
+          <h4>Failure handling</h4>
+          <p>All model traffic routes through one chokepoint. Live responses are schema-validated with one repair attempt; anything still invalid falls back to a logged mock rather than corrupting the run silently.</p>
+        </div>
+      </div>
+
+      <div class="install-row"><span class="prompt">$</span><code>pip install leanswarm && leanswarm smoke</code></div>
+    </div>
+
+    <!-- HIEROCODE -->
+    <div class="project reveal">
+      <div class="project-head">
+        <h3 class="project-name">hierocode</h3>
+        <div class="project-links">
+          <a href="https://github.com/mohith-das/hierocode" target="_blank" rel="noopener">github</a>
+          <a href="https://pypi.org/project/hierocode/" target="_blank" rel="noopener">pypi</a>
+        </div>
+      </div>
+      <p class="project-tagline">Hierarchical coding CLI. A frontier model plans and reviews; a local Ollama model writes the code, at zero incremental cost on a bring-your-own-subscription setup.</p>
+
+      <div class="diagram-box">
+        <svg viewBox="0 0 700 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="55" width="140" height="36" rx="4" fill="none" stroke="#2F6F5E" stroke-width="1.5"/>
+          <text x="100" y="77" text-anchor="middle" class="node-label" font-weight="600">planner</text>
+          <path d="M170 73 L 290 73" stroke="#1B2430" stroke-width="1.2" marker-end="url(#arrow3)"/>
+
+          <rect x="295" y="55" width="140" height="36" rx="4" fill="none" stroke="#1B2430" stroke-width="1.3"/>
+          <text x="365" y="77" text-anchor="middle" class="node-label">drafter (local)</text>
+          <path d="M435 73 L 555 73" stroke="#1B2430" stroke-width="1.2" marker-end="url(#arrow3)"/>
+
+          <rect x="560" y="55" width="120" height="36" rx="4" fill="none" stroke="#9C5333" stroke-width="1.4"/>
+          <text x="620" y="77" text-anchor="middle" class="node-label">QA</text>
+
+          <path d="M560 91 C 480 130, 420 130, 365 92" fill="none" stroke="#9C5333" stroke-width="1.1" stroke-dasharray="3 2" marker-end="url(#arrowrust2)"/>
+          <text x="470" y="128" text-anchor="middle" class="node-sub" font-size="10">revise (capped)</text>
+
+          <path d="M620 55 C 620 20, 250 15, 130 52" fill="none" stroke="#9C5333" stroke-width="1.1" stroke-dasharray="3 2" marker-end="url(#arrowrust2)"/>
+          <text x="370" y="18" text-anchor="middle" class="node-sub" font-size="10">escalate (capped)</text>
+
+          <defs>
+            <marker id="arrow3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1B2430"/></marker>
+            <marker id="arrowrust2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9C5333"/></marker>
+          </defs>
+        </svg>
+        <p class="diagram-caption">plan → draft → QA, with bounded revise and escalate loops</p>
+      </div>
+
+      <div class="project-body">
+        <div>
+          <h4>Design decision</h4>
+          <p>A plan cache keyed on (task, skeleton, planner model, drafter model) skips replanning on repeat runs. Planner calls stay short, 5–20k input tokens, so two or three barely dent a Claude Pro or ChatGPT Plus quota.</p>
+        </div>
+        <div>
+          <h4>Real cost number</h4>
+          <p>A typical task costs 4 planner calls (1 plan + 3 QA rounds) against a subscription quota instead of metered API tokens, roughly $0.01–0.15 on the API path.</p>
+        </div>
+        <div>
+          <h4>Honest constraint</h4>
+          <p>Diffs print to stdout and never auto-apply. Every change needs manual review before it touches disk, a deliberate limit, not a missing feature.</p>
+        </div>
+      </div>
+
+      <div class="install-row"><span class="prompt">$</span><code>pip install hierocode && hierocode init --wizard</code></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-kicker">02 — Also shipped</p>
+    <h2 class="section-title">Smaller tools</h2>
+    <div class="mini-grid reveal">
+      <div class="mini-card">
+        <h4>wiview</h4>
+        <p>WiFi CSI-based presence, motion, and breathing detection on an M5Stack Cardputer-Adv plus a RuView node. Edge sensing on hardware, paired with self-hosted inference work on a Jetson Orin.</p>
+      </div>
+      <div class="mini-card">
+        <h4>clideck-macos-tray</h4>
+        <p>A native macOS menu bar and dock launcher for monitoring CliDeck AI coding agents at a glance.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="background">
+    <p class="section-kicker">03 — Before this</p>
+    <h2 class="section-title">Background</h2>
+    <div class="bg-text reveal">
+      <p>~5 years as a product manager and product analyst, most recently at Saras Analytics, where I owned Pulse BI end to end and built production AI agents on AutoGen and LlamaIndex.</p>
+      <p>MS in Engineering Science (Data Science), University at Buffalo. Now targeting builder PM, applied AI engineer, and forward-deployed engineer roles at lean, AI-first teams, the kind of place where the four projects above are the actual job, not a side project.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap" id="contact">
+  <div class="footer-links">
+    <a href="https://github.com/mohith-das" target="_blank" rel="noopener">github.com/mohith-das</a>
+    <a href="https://www.linkedin.com/in/mohithkdas" target="_blank" rel="noopener">linkedin.com/in/mohithkdas</a>
+    <a href="mailto:mkattdas@gmail.com">mkattdas@gmail.com</a>
+  </div>
+  <p class="footer-note">Mohith (Matt) Das · Buffalo, NY · open to relocate</p>
+</footer>
+
+<script>
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  els.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

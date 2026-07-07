@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.db
+*.db-wal
+*.db-shm
+*.tgz
+.DS_Store
+coverage/
+.vite/
+.next/
