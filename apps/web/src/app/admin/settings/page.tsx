@@ -100,6 +100,7 @@ export default function SettingsPage() {
               <select name="agent.llm_provider" defaultValue={all['agent.llm_provider'] ?? 'anthropic'}>
                 <option value="anthropic">anthropic</option>
                 <option value="openai">openai</option>
+                <option value="deepseek">deepseek</option>
                 <option value="gemini">gemini</option>
               </select>
             </div>
