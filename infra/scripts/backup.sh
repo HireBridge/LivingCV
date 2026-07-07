@@ -2,23 +2,48 @@
 # Backup portfolio.db + the resume/ directory under DATA_DIR into a single
 # timestamped tarball. Safe to run on a hot DB — sqlite3 .backup uses the
 # online-backup API and gets a consistent snapshot.
+#
+# Env:
+#   DATA_DIR     the live data directory (default /data)
+#   BACKUP_DIR   where to drop the tarball (default <parent of DATA_DIR>/backups)
+#   SQLITE_BIN   sqlite3 binary (default: sqlite3 on PATH)
+#
+# Usage:
+#   DATA_DIR=/data sudo ./infra/scripts/backup.sh
 set -euo pipefail
 
 DATA_DIR="${DATA_DIR:-/data}"
-OUT_DIR="${BACKUP_DIR:-$(dirname "$DATA_DIR")}/backups"
+PARENT_DIR="$(dirname "$DATA_DIR")"
+OUT_DIR="${BACKUP_DIR:-${PARENT_DIR}/backups}"
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
-OUT="$OUT_DIR/portfolio-$TS.tar.gz"
+SNAPSHOT="${OUT_DIR}/portfolio-${TS}.snapshot.db"
+OUT="${OUT_DIR}/portfolio-${TS}.tar.gz"
+SQLITE_BIN="${SQLITE_BIN:-sqlite3}"
 
 mkdir -p "$OUT_DIR"
 
-echo "Backing up $DATA_DIR -> $OUT"
-# SQLite online backup of the portfolio DB.
-TMP="$(mktemp -t portfolio-XXXXXX.db)"
-sqlite3 "$DATA_DIR/portfolio.db" ".backup '$TMP'"
+if [ ! -f "$DATA_DIR/portfolio.db" ]; then
+  echo "error: $DATA_DIR/portfolio.db not found" >&2
+  exit 1
+fi
 
-tar -czf "$OUT" -C "$(dirname "$DATA_DIR")" \
-  "$(basename "$DATA_DIR")/portfolio.db" "$([ -d "$DATA_DIR/resume" ] && printf '%s/resume ' "$(basename "$DATA_DIR")")" \
-  -T "$DATA_DIR"
-rm -f "$TMP"
+# Online backup: writes a consistent snapshot next to the eventual tarball.
+$SQLITE_BIN "$DATA_DIR/portfolio.db" ".backup '$SNAPSHOT'"
+
+# Build the tarball. The DB goes in under the symbolic name `portfolio.db`
+# (BSD tar -s flag is the equivalent of GNU --transform). If a resume/
+# directory exists, include it as a sibling. We use two -C args so each
+# segment is positioned correctly.
+RESUME_ARG=()
+if [ -d "$DATA_DIR/resume" ]; then
+  RESUME_ARG=(-C "$DATA_DIR" resume)
+fi
+
+tar -czf "$OUT" \
+  -C "$OUT_DIR" -s "|portfolio-${TS}\.snapshot\.db|portfolio.db|" \
+  "${SNAPSHOT##*/}" \
+  "${RESUME_ARG[@]}"
+
+rm -f "$SNAPSHOT"
 
 echo "Wrote $OUT ($(du -h "$OUT" | cut -f1))"
