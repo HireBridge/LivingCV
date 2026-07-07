@@ -3,8 +3,12 @@
 A self-hosted, monorepo-template portfolio platform with:
 
 - **A public website** that renders from a database (runtime-editable, never build-time).
-- **A classic template** (paper/ink/signal/rust, faithful port of `docs/index.html`) bundled; third parties can add templates without touching core code (see [`TEMPLATES.md`](./TEMPLATES.md)).
-- **An admin console** with a first-boot setup wizard, iron-session auth, AES-256-GCM-encrypted secrets, and full CRUD for content + projects + case studies + the resume PDF.
+- **A classic template** (paper/ink/signal/rust) bundled; third parties can add templates without touching core code (see [`TEMPLATES.md`](./TEMPLATES.md)).
+- **LivingCV Control Panel** (the Admin Console) with a first-boot setup wizard, iron-session auth, AES-256-GCM-encrypted secrets, and full CRUD for content + projects + case studies + the resume PDF.
+- **Drag-and-Drop Structural Ordering**: Easily reorder the sections of your portfolio via the admin UI.
+- **Advanced Theme Customization**: Real-time control panel for colors, typography, and a fallback JSON editor for fine-grained CSS override.
+- **Connectivity Suite**: Native integration for Telegram (bot relays) and Google OAuth (Admin Login/Calendar).
+- **Dynamic Contact Integrations**: The Hero section smartly enables a contact button only when connectivity tools are configured, routing to your interactive agent or email.
 - **A recruiter concierge** — chat and voice widgets powered by a self-hosted [jobops](https://www.npmjs.com/package/@mohith_das/jobops) instance + a portfolio-side orchestrator (text/voice LLM with tool use, email-gate, limits, transcripts, lead webhook).
 - **A public MCP endpoint** at `{site.domain}/mcp/public` that exposes exactly two read-only tools (`get_career_packet`, `get_story_bank_public`) to external recruiter-side AI agents (Claude.ai, ChatGPT, anything MCP). See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
 - **A machine-readable summary** at `/llms.txt` (per [llmstxt.org](https://llmstxt.org)) — the portfolio is legible to AI agents from day one.
