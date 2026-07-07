@@ -94,7 +94,7 @@ export default async function EditCaseStudyPage({
           </label>
         </div>
         <div className="row">
-          <label>Body (markdown — the case-study skeleton lives in docs/claude_conv_porfolio_casestudy.md)</label>
+          <label>Body (markdown — problem → what I built → key decisions → a real challenge → results → what&apos;s next)</label>
           <textarea name="body_markdown" defaultValue={row.body_markdown ?? ''} style={{ minHeight: 320 }} />
         </div>
         <div className="actions">

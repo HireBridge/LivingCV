@@ -19,3 +19,12 @@ __pycache__/
 *.pyc
 apps/voice/src/voice_service.egg-info/
 infra/jobops/jobops-local.tgz
+
+# Private / personal reference material — never commit to the public repo.
+# (A resume PDF and a Claude conversation were accidentally committed once;
+# see the cleanup in the plan. Keep such files out of the tree entirely.)
+docs/*.pdf
+docs/*.docx
+docs/claude_conv_*
+*resume*.pdf
+*Matt Das*
