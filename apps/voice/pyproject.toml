@@ -1,7 +1,7 @@
 [project]
 name = "voice-service"
 version = "0.2.0"
-description = "Portfolio voice service — Pipecat pipeline with real Deepgram/Cartesia/ElevenLabs STT+TTS adapters (cloud) and Whisper/Piper (local); MockSTT/MockTTS for CI."
+description = "Portfolio voice service — Pipecat pipeline with SileroVAD + Deepgram/Cartesia/ElevenLabs (cloud) + Whisper/Piper (local) + mock (CI)."
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "MIT" }
@@ -12,15 +12,8 @@ dependencies = [
     "websockets>=13.0",
     "pydantic>=2.0",
     "httpx>=0.28.0",
-    # Pipecat — the voice pipeline framework (§8). Marked as a direct dep
-    # so the voice service can build a real pipeline with VAD + STT + TTS.
-    # pipecat-ai not yet published here as a free dep; the implementations
-    # in `pipeline.py` use the same shape and wrap the real adapters directly.
-    # When pipecat-ai is installed in the operator's environment, the
-    # pipeline.py macros activate.
-    "deepgram-sdk>=3.0",
-    "cartesia>=1.0",
-    "elevenlabs>=1.0",
+    "pipecat-ai[silero,deepgram,cartesia,elevenlabs]>=1.5.0",
+    "mlx-whisper[local]>=0.4.3",
 ]
 
 [project.optional-dependencies]
@@ -30,13 +23,18 @@ dev = [
     "pytest-asyncio>=0.24",
     "ruff>=0.7",
 ]
-# Phase 5 polish: the local voice path depends on whisper-cpp and piper-tts
-# (arm64-compatible). These are optional because they require model files
-# downloaded inside the Docker image. Keep them out of the default install
-# so the cloud path (Deepgram + Cartesia/ElevenLabs) works without them.
+# Local voice path (whisper.cpp + Piper): these are optional so the
+# cloud path works without them. Add `[local]` when you want to
+# activate the keyless STT/TTS stack.
 local = [
-    "pywhispercpp>=0.2.0",
+    "faster-whisper>=1.0",
     "piper-tts>=1.2.0",
+]
+# Self-hosted WebRTC transport (aiortc). Optional — the voice service
+# falls back to Pipecat's Daily transport (documented fallback per
+# PLAN §14 risk #2) if this extra is omitted.
+webrtc = [
+    "aiortc>=1.9.0",
 ]
 
 [tool.ruff]
@@ -51,3 +49,11 @@ ignore = ["B008", "UP007"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "slow: marks tests that download models (deselect with '-m \"not slow\"')",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

@@ -1,37 +1,34 @@
-"""STT interface + MockSTT + DeepgramSTT (cloud) + WhisperSTT (local placeholder).
+"""STT service selection + MockSTT (CI). Real providers are Pipecat services.
 
-The shape mirrors Pipecat's STTService contract. Phase 3 shipped MockSTT only.
-Phase 5 ships the real cloud adapter (DeepgramSTT, tested with a live API key
-set in app_settings.voice.stt_api_key) and the local adapter
-(WhisperSTT, bundled in the Docker image). A missing key raises a clear
-RuntimeError so the operator knows exactly what's missing.
+voice.mode=mock  → MockSTT
+voice.mode=cloud → DeepgramSTTService (needs voice.stt_api_key)
+voice.mode=local → WhisperSTTService (faster-whisper, keyless)
 """
 
 from __future__ import annotations
 
-import abc
 import base64
 import binascii
 import os
-import urllib.request
+from typing import Protocol
+
+# ── Interface ────────────────────────────────────────────────────────────────
 
 
-class STT(abc.ABC):
+class STT(Protocol):
     """Speech-to-text: PCM16 mono-bytes @ 16 kHz → words."""
 
-    name: str = "abstract"
+    @property
+    def name(self) -> str: ...
 
-    @abc.abstractmethod
-    def transcribe(self, pcm16_mono_16k: bytes) -> str:
-        raise NotImplementedError
+    def transcribe(self, pcm16_mono_16k: bytes) -> str: ...
 
 
-# ── Mock (Phase 3, CI) ───────────────────────────────────────────────────────
+# ── Mock (CI) ────────────────────────────────────────────────────────────────
 
 
 class MockSTT(STT):
     name = "mock"
-
     HEADER = b"vmsg\x01"
 
     @classmethod
@@ -53,61 +50,40 @@ class MockSTT(STT):
         return (hint or "[mock-stt]").upper()
 
 
-# ── Deepgram (cloud) ─────────────────────────────────────────────────────────
+# ── Build helpers (called from pipeline.py at pipeline construction) ─────────
 
 
-class DeepgramSTT(STT):
-    """Real STT: posting raw PCM16 to Deepgram's listen endpoint.
+def build_pipecat_stt(mode: str, api_key: str = "", model: str = "") -> STT:
+    """Return the appropriate STT for voice.mode. Cloud returns a real Pipecat
+    service; raises RuntimeError if the key is missing. Local returns the
+    Pipecat WhisperSTTService (keyless). Mock returns MockSTT."""
 
-    Requires app_settings.voice.stt_api_key. Raises RuntimeError if
-    unset — the operator sees this instantly when voice.mode=cloud."""
-
-    name = "deepgram"
-
-    def __init__(self, api_key: str | None = None, model: str = "nova-3") -> None:
-        self._api_key = api_key or os.environ.get("DG_API_KEY", "")
-        self._model = model
-        if not self._api_key:
-            raise RuntimeError(
-                "Deepgram STT selected but voice.stt_api_key is not set. "
-                "Paste a valid key in /admin/voice or set DG_API_KEY in env."
-            )
-
-    def transcribe(self, pcm16_mono_16k: bytes) -> str:
-        req = urllib.request.Request(
-            f"https://api.deepgram.com/v1/listen?model={self._model}",
-            data=pcm16_mono_16k,
-            headers={
-                "Content-Type": "audio/pcm;rate=16000;channels=1;encoding=signed-integer",
-                "Authorization": f"Token {self._api_key}",
-            },
-        )
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            body = resp.read()
-        import json
-        result = json.loads(body)
-        chan = result.get("results", {}).get("channels", [{}])[0]
-        alt = chan.get("alternatives", [{}])[0]
-        transcript = alt.get("transcript", "")
-        return transcript
-
-
-# ── Whisper (local) — placeholder for Phase 5 Docker model bundling ──────────
-
-
-class WhisperSTT(STT):
-    name = "whisper"
-
-    def transcribe(self, pcm16_mono_16k: bytes) -> str:
-        raise NotImplementedError(
-            "whisper.cpp STT adapter requires pywhispercpp + a model file "
-            "bundled in the voice Docker image. Install the [local] extras "
-            "(e.g. 'uv sync --group local'). The adapter constructor loads "
-            "the model from VOICE_WHISPER_MODEL (default base.en)."
-        )
-
-
-# ── Helpers ─────────────────────────────────────────────────────────────────
+    mode = mode.lower()
+    if mode == "mock":
+        return MockSTT()
+    if mode == "cloud":
+        provider = os.environ.get("VOICE_STT_PROVIDER", "deepgram").lower()
+        if not api_key:
+            api_key = os.environ.get("VOICE_STT_API_KEY", "")
+        if provider == "deepgram":
+            if not api_key:
+                raise RuntimeError("Cloud STT selected but voice.stt_api_key is not set.")
+            from pipecat.services.deepgram.stt import DeepgramSTTService
+            svc = DeepgramSTTService(api_key=api_key, model=model or "nova-3")
+            pass  # name is read-only property
+            return svc
+    if mode == "local":
+        from pipecat.services.whisper.stt import Model as WhisperModel
+        from pipecat.services.whisper.stt import WhisperSTTService
+        m_str = model or os.environ.get("VOICE_WHISPER_MODEL", "base")
+        try:
+            m = WhisperModel(m_str)
+        except ValueError:
+            m = WhisperModel.BASE
+        svc = WhisperSTTService(model=m)
+        pass  # name is read-only property
+        return svc
+    raise RuntimeError(f"Unknown voice.mode: {mode}")
 
 
 def decode_audio_b64(blob: str) -> bytes:

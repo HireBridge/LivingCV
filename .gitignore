@@ -33,3 +33,4 @@ docs/claude_conv_*
 # (they contain the operator's real name, domain, and local filesystem paths).
 PLAN.md
 REMEDIATION.md
+VOICE.md
