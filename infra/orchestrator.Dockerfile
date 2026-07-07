@@ -16,10 +16,10 @@ COPY packages/crypto ./packages/crypto
 COPY packages/db ./packages/db
 COPY apps/orchestrator ./apps/orchestrator
 COPY tsconfig.base.json ./
-RUN npm run -w @portfolio/shared build \
- && npm run -w @portfolio/crypto build \
- && npm run -w @portfolio/db build \
- && npm run -w @portfolio/orchestrator build
+RUN npm run -w @livingcv/shared build \
+ && npm run -w @livingcv/crypto build \
+ && npm run -w @livingcv/db build \
+ && npm run -w @livingcv/orchestrator build
 
 FROM node:20-bookworm-slim AS run
 ENV NODE_ENV=production
@@ -33,6 +33,6 @@ COPY --chown=nodejs:nodejs --from=build /app/apps/orchestrator ./apps/orchestrat
 COPY --chown=nodejs:nodejs --from=build /app/packages ./packages
 COPY --chown=nodejs:nodejs --from=build /app/tsconfig.base.json ./
 USER nodejs
-CMD ["npm", "run", "start", "-w", "@portfolio/orchestrator"]
+CMD ["npm", "run", "start", "-w", "@livingcv/orchestrator"]
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
   CMD ["node", "-e", "fetch('http://127.0.0.1:8100/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]

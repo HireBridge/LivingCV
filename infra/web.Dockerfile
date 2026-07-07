@@ -20,10 +20,10 @@ COPY packages/crypto ./packages/crypto
 COPY packages/db ./packages/db
 COPY apps/web ./apps/web
 COPY tsconfig.base.json ./
-RUN npm run -w @portfolio/shared build \
- && npm run -w @portfolio/crypto build \
- && npm run -w @portfolio/db build \
- && npm run -w @portfolio/web build
+RUN npm run -w @livingcv/shared build \
+ && npm run -w @livingcv/crypto build \
+ && npm run -w @livingcv/db build \
+ && npm run -w @livingcv/web build
 
 # Runtime image.
 FROM node:20-bookworm-slim AS run
@@ -40,6 +40,6 @@ COPY --chown=nodejs:nodejs --from=build /app/packages ./packages
 COPY --chown=nodejs:nodejs --from=build /app/scripts ./scripts
 COPY --chown=nodejs:nodejs --from=build /app/tsconfig.base.json ./
 USER nodejs
-CMD ["npm", "run", "start", "-w", "@portfolio/web"]
+CMD ["npm", "run", "start", "-w", "@livingcv/web"]
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
   CMD ["node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
