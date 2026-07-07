@@ -3,9 +3,9 @@
 // process with its own DB handle and can't import from the web. The shape and
 // semantics match — keep them in sync.
 
-import type { Db } from '@portfolio/db';
-import { decrypt, encrypt, maskSecret, generateEncryptionKey } from '@portfolio/crypto';
-import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@portfolio/shared';
+import type { Db } from '@mohith-das/portfolio-db';
+import { decrypt, encrypt, maskSecret, generateEncryptionKey } from '@mohith-das/portfolio-crypto';
+import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@mohith-das/portfolio-shared';
 
 const BOOTSTRAP_KEY = 'bootstrap.encryption_key';
 

@@ -1,6 +1,6 @@
 import { getSetting } from '../settings.js';
-import { LlmProvider, LLM_PROVIDERS } from '@portfolio/shared';
-import type { Db } from '@portfolio/db';
+import { LlmProvider, LLM_PROVIDERS } from '@mohith-das/portfolio-shared';
+import type { Db } from '@mohith-das/portfolio-db';
 import { anthropicAdapter } from './anthropic.js';
 import { openaiAdapter, geminiAdapter } from './openai.js';
 import type { LlmAdapter } from './types.js';

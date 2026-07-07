@@ -1,5 +1,5 @@
 {
-  "name": "@portfolio/db",
+  "name": "@mohith-das/portfolio-db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -16,14 +16,24 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "echo 'private package'"
+    "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@portfolio/shared": "*",
+    "@mohith-das/portfolio-shared": "*",
     "better-sqlite3": "^11.3.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/mohith-das/LivingCV",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohith-das/LivingCV.git",
+    "directory": "packages/db"
+  },
+  "bugs": {
+    "url": "https://github.com/mohith-das/LivingCV/issues"
+  },
+  "author": "Mohith Das <https://github.com/mohith-das>"
 }

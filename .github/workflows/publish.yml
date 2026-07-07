@@ -1,0 +1,160 @@
+name: Publish workspace packages to npm
+
+on:
+  push:
+    tags:
+      # Anything that looks like a release tag, e.g. v0.1.0, shared-v0.2.0.
+      # The job inspects the tag name to decide which package(s) to bump and
+      # publish (see "Determine which packages to publish" below).
+      - 'v*.*.*'
+      - 'shared-v*.*.*'
+      - 'crypto-v*.*.*'
+      - 'db-v*.*.*'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Which package(s) to publish (shared|crypto|db|all)'
+        required: true
+        default: all
+        type: choice
+        options:
+          - shared
+          - crypto
+          - db
+          - all
+      bump:
+        description: 'Version bump (patch|minor|major)'
+        required: false
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+# Cancel in-flight runs on the same ref when a new push lands.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # The publish workflow publishes to npmjs.org and is intentionally NOT
+    # gated by the persona-audit / persona-leak job in ci.yml — those are
+    # already enforced on every PR. This job exists to publish the artifacts
+    # that the tests have already validated.
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      id-token: write  # npm provenance — opt into `npm publish --provenance`
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: npm ci
+
+      - name: Determine which packages to publish
+        id: packages
+        # Tags: v*       → publish all three at the same version.
+        #       shared-v* → publish only shared at the tag's version.
+        #       crypto-v* → publish only crypto.
+        #       db-v*      → publish only db.
+        # workflow_dispatch → use the `package` input.
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="${{ inputs.package }}"
+            BUMP="${{ inputs.bump }}"
+            case "$TARGET" in
+              shared) PKGS="@mohith-das/portfolio-shared" ;;
+              crypto) PKGS="@mohith-das/portfolio-crypto" ;;
+              db)     PKGS="@mohith-das/portfolio-db" ;;
+              all)    PKGS="all" ;;
+            esac
+          else
+            REF="${{ github.ref_name }}"
+            case "$REF" in
+              shared-*) PKGS="@mohith-das/portfolio-shared"; VERSION="${REF#shared-v}" ;;
+              crypto-*) PKGS="@mohith-das/portfolio-crypto"; VERSION="${REF#crypto-v}" ;;
+              db-*)     PKGS="@mohith-das/portfolio-db";     VERSION="${REF#db-v}" ;;
+              v*)       PKGS="all";                            VERSION="${REF#v}" ;;
+              *) echo "unrecognized tag: $REF"; exit 1 ;;
+            esac
+            BUMP=""
+          fi
+          echo "pkgs=$PKGS" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "bump=$BUMP" >> "$GITHUB_OUTPUT"
+
+      - name: Bump versions (when bumping)
+        if: steps.packages.outputs.bump != ''
+        # Use npm version patch|minor|major to bump the named package's
+        # package.json. We only bump the packages we're about to publish.
+        run: |
+          set -euo pipefail
+          PKGS="${{ steps.packages.outputs.pkgs }}"
+          BUMP="${{ steps.packages.outputs.bump }}"
+          case "$PKGS" in
+            all) LIST="@mohith-das/portfolio-shared @mohith-das/portfolio-crypto @mohith-das/portfolio-db" ;;
+            *)   LIST="$PKGS" ;;
+          esac
+          for P in $LIST; do
+            (cd "node_modules/$P" && npm version "$BUMP" --no-git-tag-version)
+          done
+          # Sync the bumped versions back to the working tree (npm version
+          # already updated package.json in the symlinked package; reflect
+          # that in the actual source file).
+          for P in $LIST; do
+            VER=$(node -p "require('./$P/package.json').version")
+            SHORT=$(echo "$P" | sed 's|@mohith-das/portfolio-||')
+            node -e "
+              const fs=require('fs');
+              const p='packages/$SHORT/package.json';
+              const j=JSON.parse(fs.readFileSync(p,'utf8'));
+              j.version='$VER';
+              fs.writeFileSync(p, JSON.stringify(j, null, 2) + '\n');
+            "
+          done
+
+      - name: Install + build + test
+        run: |
+          npm ci
+          npm run build -w @mohith-das/portfolio-shared -w @mohith-das/portfolio-crypto -w @mohith-das/portfolio-db
+          npm test
+
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          PKGS="${{ steps.packages.outputs.pkgs }}"
+          case "$PKGS" in
+            all)
+              for P in @mohith-das/portfolio-shared @mohith-das/portfolio-crypto @mohith-das/portfolio-db; do
+                (cd "node_modules/$P" && npm publish --provenance --access public)
+              done
+              ;;
+            *)
+              (cd "node_modules/$PKGS" && npm publish --provenance --access public)
+              ;;
+          esac
+
+      - name: Commit version bumps
+        if: steps.packages.outputs.bump != ''
+        # Push the version bumps as a commit so the main branch matches
+        # what just got published. Use the built-in GITHUB_TOKEN; the repo's
+        # main branch must allow this bot to push.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/*/package.json
+          git diff --cached --quiet || git commit -m "chore(release): publish ${{ steps.packages.outputs.pkgs }}@${{ steps.packages.outputs.version }}"
+          git push

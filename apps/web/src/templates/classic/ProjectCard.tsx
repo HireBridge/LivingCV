@@ -1,4 +1,4 @@
-import type { ProjectProps } from '@portfolio/shared';
+import type { ProjectProps } from '@mohith-das/portfolio-shared';
 import { RevealOnScroll } from './RevealOnScroll';
 
 export function ProjectCard({ project }: { project: ProjectProps }) {

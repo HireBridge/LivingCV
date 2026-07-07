@@ -4,8 +4,8 @@
 // success flips email_verified=1 and fires the lead webhook.
 
 import { createHash } from 'node:crypto';
-import { isDomainDenied } from '@portfolio/shared';
-import type { Db } from '@portfolio/db';
+import { isDomainDenied } from '@mohith-das/portfolio-shared';
+import type { Db } from '@mohith-das/portfolio-db';
 import type { ToolDef } from './llm/types.js';
 import { setSessionEmailVerified } from './db.js';
 import { fireLeadWebhook } from './webhook.js';

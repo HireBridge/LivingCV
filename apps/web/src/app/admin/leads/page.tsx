@@ -1,5 +1,5 @@
 import { getDb } from '@/lib/db';
-import type { Db } from '@portfolio/db';
+import type { Db } from '@mohith-das/portfolio-db';
 
 export const dynamic = 'force-dynamic';
 

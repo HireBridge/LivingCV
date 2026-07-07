@@ -1,4 +1,4 @@
-import type { MiniProjectProps } from '@portfolio/shared';
+import type { MiniProjectProps } from '@mohith-das/portfolio-shared';
 import { RevealOnScroll } from './RevealOnScroll';
 
 export function MiniGrid({ items }: { items: MiniProjectProps[] }) {

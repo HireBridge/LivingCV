@@ -1,8 +1,8 @@
-import type { Db } from '@portfolio/db';
+import type { Db } from '@mohith-das/portfolio-db';
 import { hash, compare } from 'bcryptjs';
 import { getIronSession, type IronSession, type SessionOptions } from 'iron-session';
 import { cookies } from 'next/headers';
-import { SETTING_KEYS } from '@portfolio/shared';
+import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
 
 // §2 invariant 8: one bcrypt-hashed admin password + iron-session sealed
 // cookie. No user tables, no OAuth, no RBAC, no multi-tenancy.

@@ -1,7 +1,7 @@
 import { getDb } from '@/lib/db';
 import { getAllSettings, getSettingForBrowser } from '@/lib/settings';
-import { SETTING_KEYS } from '@portfolio/shared';
-import type { Db } from '@portfolio/db';
+import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
+import type { Db } from '@mohith-das/portfolio-db';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,10 +1,10 @@
 import type Database from 'better-sqlite3';
-import { FREE_EMAIL_DOMAINS } from '@portfolio/shared';
+import { FREE_EMAIL_DOMAINS } from '@mohith-das/portfolio-shared';
 
 // Seed the built-in disposable-domain denylist into `disposable_domains` once,
 // tracked in `_migrations` under 'seed:disposable_domains' so it is idempotent
 // across processes and across reopens. The list itself lives in
-// @portfolio/shared/free-email-domains so it is auditable in one place (§6).
+// @mohith-das/portfolio-shared/free-email-domains so it is auditable in one place (§6).
 export function seedDisposableDomains(db: Database.Database): void {
   db.exec('BEGIN IMMEDIATE');
   try {

@@ -1,7 +1,7 @@
 // Enforced guards (§7): per-session message cap, daily global budget, kill
 // switch, input length cap. Each guard is enforced in code, not in the prompt.
 
-import type { Db } from '@portfolio/db';
+import type { Db } from '@mohith-das/portfolio-db';
 import { getSetting } from './settings.js';
 import { dailyMessageCount } from './db.js';
 import { isAgentEnabled } from './llm/index.js';

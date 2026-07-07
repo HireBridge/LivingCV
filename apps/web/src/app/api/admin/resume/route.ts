@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { setSetting } from '@/lib/settings';
 import { saveResumeStream } from '@/lib/resume';
-import { SETTING_KEYS } from '@portfolio/shared';
+import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
 import { Readable } from 'node:stream';
 
 // Reads a PDF upload from a multipart/form-data request and streams it to

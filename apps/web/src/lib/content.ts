@@ -1,16 +1,16 @@
-import type { Db } from '@portfolio/db';
+import type { Db } from '@mohith-das/portfolio-db';
 import {
   TemplatePropsSchema,
   ProjectPropsSchema,
   SETTING_KEYS,
-} from '@portfolio/shared';
+} from '@mohith-das/portfolio-shared';
 import type {
   TemplateProps,
   ProjectProps,
   MiniProjectProps,
   ThemeProps,
   LinkItem,
-} from '@portfolio/shared';
+} from '@mohith-das/portfolio-shared';
 import { parseJson } from './parse-json';
 import type {
   ProjectRow,

@@ -1,6 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { openDb, type Db } from '@portfolio/db';
+import { openDb, type Db } from '@mohith-das/portfolio-db';
 
 // Where portfolio.db and uploaded files live. In docker this is the
 // portfolio-data volume mount (default /data). Local dev defaults to ./data.

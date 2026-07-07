@@ -2,7 +2,7 @@
 // {email, companyDomain, channel, timestamp, sessionUrl} to notify.webhook_url.
 // Fire-and-forget (5s timeout) so a slow endpoint never blocks the chat.
 
-import type { Db } from '@portfolio/db';
+import type { Db } from '@mohith-das/portfolio-db';
 import { getSetting } from './settings.js';
 
 export interface LeadWebhookPayload {

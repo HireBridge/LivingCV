@@ -3,7 +3,7 @@
 // — the closed public surface and tool guards are what keep untrusted callers
 // from doing anything dangerous regardless of prompt content.
 
-import type { Db } from '@portfolio/db';
+import type { Db } from '@mohith-das/portfolio-db';
 import { getSetting } from './settings.js';
 
 export function buildSystemPrompt(db: Db, siteTitle: string): string {

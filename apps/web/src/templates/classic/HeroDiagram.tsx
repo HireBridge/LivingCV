@@ -1,4 +1,4 @@
-import type { ProjectProps } from '@portfolio/shared';
+import type { ProjectProps } from '@mohith-das/portfolio-shared';
 
 // Data-driven hero node diagram (faithful port of the docs/index.html hero
 // SVG, but the four surrounding nodes come from the featured projects list and

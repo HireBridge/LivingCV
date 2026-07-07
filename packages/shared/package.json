@@ -1,5 +1,5 @@
 {
-  "name": "@portfolio/shared",
+  "name": "@mohith-das/portfolio-shared",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -20,10 +20,20 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "echo 'private package'"
+    "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
     "zod": "^3.23.8"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/mohith-das/LivingCV",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohith-das/LivingCV.git",
+    "directory": "packages/shared"
+  },
+  "bugs": {
+    "url": "https://github.com/mohith-das/LivingCV/issues"
+  },
+  "author": "Mohith Das <https://github.com/mohith-das>"
 }

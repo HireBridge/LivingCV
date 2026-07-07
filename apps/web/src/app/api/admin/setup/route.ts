@@ -7,7 +7,7 @@ import {
   markSetupComplete,
 } from '@/lib/settings';
 import { setAdminPassword, createSession } from '@/lib/auth';
-import { SETTING_KEYS } from '@portfolio/shared';
+import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
 
 // GET: wizard state (whether setup is done, whether an encryption key exists).
 export async function GET() {

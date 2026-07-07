@@ -8,7 +8,7 @@
 // Re-runnable: it resets the demo rows to the canned content. Real rows added
 // later by the admin are NOT touched (we key on the `alex-*` slug prefix).
 
-import { openDb } from '@portfolio/db';
+import { openDb } from '@mohith-das/portfolio-db';
 import { mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
