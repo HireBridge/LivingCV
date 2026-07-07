@@ -29,8 +29,8 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1>Sign in</h1>
-      <form onSubmit={submit} className="admin-card" style={{ maxWidth: 360 }}>
+      <h1 style={{ textAlign: 'center', marginBottom: 24, fontSize: '1.8rem' }}>Sign in</h1>
+      <form onSubmit={submit} className="admin-card" style={{ maxWidth: '100%', padding: '24px 28px' }}>
         <div className="row">
           <label>Admin email</label>
           <input

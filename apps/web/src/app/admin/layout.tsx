@@ -71,6 +71,17 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     redirect('/admin/setup');
   }
 
+  const isAuthPage = pathname === '/admin/login' || pathname === '/admin/setup';
+
+  if (isAuthPage) {
+    return (
+      <div className="admin-shell admin-shell-auth">
+        <style dangerouslySetInnerHTML={{ __html: ADMIN_CSS + '\n.admin-shell-auth{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--paper-deep,#E7E3D6);flex-direction:column;}\n.admin-shell-auth .admin-main{padding:20px;max-width:440px;width:100%;}' }} />
+        <main className="admin-main">{children}</main>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-shell">
       <style dangerouslySetInnerHTML={{ __html: ADMIN_CSS }} />

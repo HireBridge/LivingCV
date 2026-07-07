@@ -54,9 +54,7 @@ export async function middleware(request: NextRequest) {
     if (isAdminApi) {
       return NextResponse.json({ error: 'SESSION_SECRET not configured' }, { status: 503 });
     }
-    const url = request.nextUrl.clone();
-    url.pathname = '/admin/login';
-    return NextResponse.redirect(url);
+    return new NextResponse("You're not authorized", { status: 401, headers: { 'content-type': 'text/plain' } });
   }
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
@@ -69,9 +67,7 @@ export async function middleware(request: NextRequest) {
     if (isAdminApi) {
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
-    const url = request.nextUrl.clone();
-    url.pathname = '/admin/login';
-    return NextResponse.redirect(url);
+    return new NextResponse("You're not authorized", { status: 401, headers: { 'content-type': 'text/plain' } });
   }
   return response;
 }
