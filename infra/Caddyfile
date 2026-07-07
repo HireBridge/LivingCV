@@ -12,7 +12,7 @@
 # External clients should be configured to use the canonical public URL
 # `{site.domain}/mcp/public` — see docs/PUBLIC_MCP.md.
 
-{$DOMAIN} {
+:80 {
   encode zstd gzip
 
   # Defense-in-depth security headers. Caddy already applies HSTS via its
@@ -26,27 +26,24 @@
     # Defence against MIME-sniffing and click-jacking; set CSP conservatively
     # to "self only" — the classic template loads its own fonts, styles, and
     # images from the same origin.
-    Content-Security-Policy "default-src 'self'; img-src 'self' data:; \
-                              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
-                              font-src 'self' https://fonts.gstatic.com; \
-                              script-src 'self' 'unsafe-inline'; \
-                              connect-src 'self' ws: wss:; \
-                              frame-ancestors 'none'"
-    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss:; frame-ancestors 'none'"
+    # HSTS omitted on local dev (no TLS)
     Server ""   # Strip the Caddy server header (no version disclosure).
   }
-
-  reverse_proxy web:3000
 
   handle /voice-ws* {
     reverse_proxy voice:8200
   }
 
-  handle /api/orchestrator/* {
+  handle_path /api/orchestrator/* {
     reverse_proxy orchestrator:8100
   }
 
   handle /mcp* {
     reverse_proxy jobops:7891
+  }
+
+  handle {
+    reverse_proxy web:3000
   }
 }

@@ -17,6 +17,10 @@ const THEME_VAR: Record<keyof ThemeProps, string> = {
   signalSoft: '--signal-soft',
   rust: '--rust',
   max: '--max',
+  fontBody: '--font-body',
+  fontHeading: '--font-heading',
+  fontMono: '--font-mono',
+  fontSizeBase: '--font-size-base',
 };
 
 export const BASE_CSS = `
@@ -26,10 +30,13 @@ export const BASE_CSS = `
   --ink: #1B2430;
   --ink-soft: #4A5568;
   --rule: #C9C4B6;
-  --signal: #2F6F5E;
   --signal-soft: #E4ECE9;
   --rust: #9C5333;
   --max: 880px;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-size-base: 18px;
 }
 
 *{box-sizing:border-box;}
@@ -43,16 +50,16 @@ body{
   margin:0;
   background:var(--paper);
   color:var(--ink);
-  font-family:'Source Serif 4', Georgia, serif;
-  font-size:18px;
+  font-family:var(--font-body);
+  font-size:var(--font-size-base);
   line-height:1.6;
 }
 
 h1,h2,h3,.eyebrow,.nav-brand,.mono,.tag,button,code,.cmd{
-  font-family:'Space Grotesk', system-ui, sans-serif;
+  font-family:var(--font-heading);
 }
 code, .cmd, .path{
-  font-family:'JetBrains Mono', monospace;
+  font-family:var(--font-mono);
   font-size:0.88em;
 }
 

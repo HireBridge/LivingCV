@@ -3,12 +3,26 @@ import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { getDb } from '@/lib/db';
 import { isSetupComplete } from '@/lib/settings';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata: Metadata = {
+  title: 'Control Panel - LivingCV',
+};
+
 const ADMIN_CSS = `
 *{box-sizing:border-box;}
-.admin-shell{ display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+.admin-shell{ 
+  --paper: #F2F0EA;
+  --paper-deep: #E7E3D6;
+  --ink: #1B2430;
+  --ink-soft: #4A5568;
+  --rule: #C9C4B6;
+  --signal: #2F6F5E;
+  --rust: #9C5333;
+  display:grid; grid-template-columns:220px 1fr; min-height:100vh; 
+}
 .admin-sidebar{ background:var(--paper-deep,#E7E3D6); border-right:1px solid var(--rule); padding:22px 18px; font-family:-apple-system,BlinkMacSystemFont,'Space Grotesk',sans-serif; }
 .admin-sidebar h2{ font-size:0.9rem; margin:0 0 14px; color:var(--ink); letter-spacing:-0.01em; }
 .admin-sidebar nav{ display:flex; flex-direction:column; gap:2px; margin-bottom:20px; }
@@ -20,7 +34,7 @@ const ADMIN_CSS = `
 .admin-card{ background:#fff; border:1px solid var(--rule); border-radius:6px; padding:18px 20px; margin:0 0 18px; }
 .admin-card h3{ font-family:'Space Grotesk',sans-serif; margin:0 0 10px; font-size:1rem; }
 .admin-card p{ margin:0 0 10px; color:var(--ink-soft); font-size:0.92rem; }
-.admin-shell input, .admin-shell textarea, .admin-shell select{
+.admin-shell input:not([type="checkbox"]):not([type="radio"]), .admin-shell textarea, .admin-shell select{
   font:inherit; width:100%; padding:8px 10px; border:1px solid var(--rule); border-radius:5px; background:#fff; color:var(--ink);
 }
 .admin-shell textarea{ min-height:120px; font-family:inherit; }
@@ -61,15 +75,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     <div className="admin-shell">
       <style dangerouslySetInnerHTML={{ __html: ADMIN_CSS }} />
       <aside className="admin-sidebar">
-        <h2>Portfolio Admin</h2>
+        <h2>LivingCV Control Panel</h2>
         <nav>
           <a href="/admin">Dashboard</a>
-          <a href="/admin/content">Content</a>
-          <a href="/admin/projects">Projects</a>
-          <a href="/admin/case-studies">Case studies</a>
-          <a href="/admin/voice">Voice</a>
+          <a href="/admin/content">Portfolio Content</a>
           <a href="/admin/leads">Leads</a>
-          <a href="/admin/packet">Packet</a>
+          <a href="/admin/packet">Career Data</a>
+          <a href="/admin/vcs">VCS</a>
+          <a href="/admin/blogs">Your Blogs</a>
           <a href="/admin/settings">Settings</a>
         </nav>
         <form action="/api/admin/logout" method="post" style={{ marginTop: 8 }}>

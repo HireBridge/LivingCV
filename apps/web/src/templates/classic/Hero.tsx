@@ -14,12 +14,21 @@ function renderRoleLine(text: string) {
   });
 }
 
-export function Hero({ hero, projects }: { hero: HeroProps; projects: ProjectProps[] }) {
+export function Hero({ hero, projects, contactEnabled }: { hero: HeroProps; projects: ProjectProps[]; contactEnabled?: boolean }) {
   const centerLabel = hero.diagramCenterLabel || hero.name.split(' ')[0] || '';
   return (
     <section className="hero no-rule">
       {hero.eyebrow ? <span className="eyebrow">{hero.eyebrow}</span> : null}
-      <h1 className="name">{hero.name}</h1>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', marginBottom: 18 }}>
+        <h1 className="name" style={{ margin: 0 }}>{hero.name}</h1>
+        {contactEnabled && (
+          <a href="#contact" className="pill" style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--signal)', color: 'white', borderColor: 'var(--signal)' }}>
+            <span style={{ fontSize: '1.1rem' }}>💬</span> Contact {hero.name.split(' ')[0]}
+          </a>
+        )}
+      </div>
+
       {hero.roleLine ? <p className="role-line">{renderRoleLine(hero.roleLine)}</p> : null}
       {hero.links.length > 0 ? (
         <div className="hero-links">

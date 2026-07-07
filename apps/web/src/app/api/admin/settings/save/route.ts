@@ -21,12 +21,12 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   },
   connections: {
     keys: [
-      'jobops.base_url',
-      'jobops.auth_token',
       'agent.llm_provider',
       'agent.llm_api_key',
       'agent.llm_model',
       'agent.system_prompt_extra',
+      'agent.search_provider',
+      'agent.search_api_key',
       'notify.webhook_url',
     ],
   },
@@ -40,6 +40,20 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
       'voice.tts_voice_id',
     ],
     checkboxKeys: [SETTING_KEYS.voiceEnabled],
+  },
+  connectivity: {
+    keys: [
+      'telegram.bot_token',
+      'telegram.chat_id',
+      'email.provider',
+      'email.api_key',
+      'google.client_id',
+      'google.client_secret',
+    ],
+  },
+  mcp: {
+    keys: ['mcp.master_key'],
+    checkboxKeys: ['mcp.enabled'],
   },
 };
 
@@ -58,6 +72,8 @@ export async function POST(request: Request) {
     // Skip empty values for non-checkbox settings so blanks don't overwrite
     // stored secrets with "" (this is the "set → encrypted" affordance).
     if (!value && !ENCRYPTED_SETTING_KEYS.has(key)) continue;
+    // Do not overwrite existing secrets with their masked placeholders from the UI.
+    if (value.startsWith('••••') && ENCRYPTED_SETTING_KEYS.has(key)) continue;
     if (key === 'site.active_template' && value) {
       setActiveTemplate(db, value);
       continue;
@@ -67,5 +83,6 @@ export async function POST(request: Request) {
   for (const key of spec.checkboxKeys ?? []) {
     setSetting(db, key, String(form.get(key)) === 'on' ? '1' : '0');
   }
-  return NextResponse.redirect(new URL('/admin/settings?saved=1', request.url), { status: 303 });
+  const redirectUrl = String(form.get('redirect') || '/admin/settings?saved=1');
+  return NextResponse.redirect(new URL(redirectUrl, request.url), { status: 303 });
 }

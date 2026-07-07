@@ -26,6 +26,7 @@ import { hashIp, EMAIL_RX, submitWorkEmailImpl } from './gate.js';
 import { getLimits, checkPreTurnGuards } from './limits.js';
 import { runTurn, type SseEvent } from './turn.js';
 import { attachVoiceBridge } from './voiceBridge.js';
+import { attachMasterMcp } from './masterMcp.js';
 
 const PORT = Number(process.env.ORCHESTRATOR_PORT || 8100);
 
@@ -109,3 +110,6 @@ const server: Server = app.listen(PORT, () => {
 
 // Attach the internal voice bridge after the HTTP server is up.
 attachVoiceBridge(server);
+
+// Attach the Master MCP server endpoints
+attachMasterMcp(app);

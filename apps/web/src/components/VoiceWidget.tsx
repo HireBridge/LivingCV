@@ -75,7 +75,7 @@ export function VoiceWidget(props: { config: VoiceConfig }) {
 
   async function ensureSession(): Promise<string> {
     if (sessionId) return sessionId;
-    const r = await fetch('/api/orchestrator/chat/session', {
+    const r = await fetch('/api/orchestrator/api/chat/session', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ channel: 'voice' }),
@@ -144,7 +144,7 @@ export function VoiceWidget(props: { config: VoiceConfig }) {
     setPartial('');
     setEmail('');
     const sid = await ensureSession();
-    const r = await fetch('/api/orchestrator/chat/submit-email', {
+    const r = await fetch('/api/orchestrator/api/chat/submit-email', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ sessionId: sid, email }),

@@ -20,19 +20,20 @@ services:
         condition: service_healthy
 
   web:
+    user: "0:0"
     build:
       context: .
       dockerfile: infra/web.Dockerfile
     restart: unless-stopped
     environment:
-      DATA_DIR: /data
+      DATA_DIR: /data/db
       PORTFOLIO_ENCRYPTION_KEY: ${PORTFOLIO_ENCRYPTION_KEY}
       SESSION_SECRET: ${SESSION_SECRET}
       JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
       IP_HASH_SALT: ${IP_HASH_SALT}
       ORCHESTRATOR_URL: http://orchestrator:8100
     volumes:
-      - portfolio-data:/data
+      - portfolio-data:/data/db
     depends_on:
       orchestrator:
         condition: service_started
@@ -44,12 +45,13 @@ services:
       start_period: 20s
 
   orchestrator:
+    user: "0:0"
     build:
       context: .
       dockerfile: infra/orchestrator.Dockerfile
     restart: unless-stopped
     environment:
-      DATA_DIR: /data
+      DATA_DIR: /data/db
       PORTFOLIO_ENCRYPTION_KEY: ${PORTFOLIO_ENCRYPTION_KEY}
       SESSION_SECRET: ${SESSION_SECRET}
       JOBOPS_BASE_URL: http://jobops:7891
@@ -58,7 +60,7 @@ services:
       ORCHESTRATOR_PORT: 8100
       ORCHESTRATOR_URL: http://orchestrator:8100
     volumes:
-      - portfolio-data:/data
+      - portfolio-data:/data/db
     depends_on:
       jobops:
         condition: service_healthy

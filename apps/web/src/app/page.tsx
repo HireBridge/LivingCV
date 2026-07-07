@@ -46,12 +46,13 @@ export default async function LandingPage() {
   const host = h.get('x-forwarded-host') ?? h.get('host') ?? 'localhost:3000';
   const proto = h.get('x-forwarded-proto') ?? 'http';
   const wsProto = proto === 'https' ? 'wss' : 'ws';
+  const agentEnabled = (getSetting(db, 'agent.enabled') ?? '1').trim() === '1';
 
   const Component = entry.Component;
   return (
     <>
       <Component {...props} />
-      <ChatWidget />
+      {agentEnabled && <ChatWidget />}
       <VoiceWidget
         config={{
           enabled: voiceEnabled,

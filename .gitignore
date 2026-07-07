@@ -34,3 +34,6 @@ docs/claude_conv_*
 PLAN.md
 REMEDIATION.md
 VOICE.md
+
+# Application data
+data/

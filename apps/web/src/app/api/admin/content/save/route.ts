@@ -74,9 +74,20 @@ export async function POST(request: Request) {
       );
     }
     content = parseJson<Record<string, string>>(JSON.stringify(parsed.value), {});
+  } else if (section === 'order') {
+    const parsed = parseJsonField(String(form.get('order_json') || '[]'));
+    if (!parsed.ok) {
+      return NextResponse.redirect(
+        new URL(`/admin/content?tab=order&err=${encodeURIComponent(parsed.error)}`, request.url),
+        { status: 303 },
+      );
+    }
+    content = parsed.value;
   } else {
     return NextResponse.redirect(new URL('/admin/content', request.url), { status: 303 });
   }
   setSection(db, templateSlug, section, content);
-  return NextResponse.redirect(new URL('/admin/content', request.url), { status: 303 });
+  
+  const tabParam = ['order', 'theme'].includes(section) ? `?tab=${section}` : '';
+  return NextResponse.redirect(new URL(`/admin/content${tabParam}`, request.url), { status: 303 });
 }

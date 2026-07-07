@@ -1,7 +1,12 @@
 import { getDb } from '@/lib/db';
-import { getActiveTemplateSlug } from '@/lib/content';
+import { getActiveTemplateSlug, listProjects, listCaseStudies, getSection } from '@/lib/content';
 import type { HeroContent, BackgroundContent, FooterContent } from '@/lib/types';
+import type { ThemeProps } from '@livingcv/shared';
 import { parseJson } from '@/lib/parse-json';
+import { ProjectsTab } from './ProjectsTab';
+import { CaseStudiesTab } from './CaseStudiesTab';
+import { OrderTab } from './OrderTab';
+import { ThemeTab } from './ThemeTab';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,15 +15,18 @@ export const dynamic = 'force-dynamic';
 function rawSection(db: import('@livingcv/db').Db, slug: string, key: string): string {
   const row = db
     .prepare<[string, string], { content: string }>(
-      'SELECT content FROM site_content WHERE template_slug = ? AND section_key = ?',
+      'SELECT content FROM site_content WHERE template_slug = ? AND section_key = ? ORDER BY id DESC LIMIT 1',
     )
     .get(slug, key);
   return row?.content ?? '';
 }
 
-export default async function ContentEditor() {
+export default async function ContentEditor({ searchParams }: { searchParams: Promise<{ err?: string; tab?: string }> }) {
   const db = getDb();
   const slug = getActiveTemplateSlug(db);
+  const sp = await searchParams;
+  const currentTab = sp.tab || 'general';
+
   // Show what's stored, falling back to empty defaults for first-time edits.
   const hero = parseJson<HeroContent>(rawSection(db, slug, 'hero'), {
     eyebrow: '',
@@ -35,12 +43,26 @@ export default async function ContentEditor() {
     links: [],
     note: '',
   });
+  const theme = rawSection(db, slug, 'theme') || '{}';
+
   return (
     <div>
-      <h1>Content</h1>
-      <p>Edit the text + links shown by the <strong>{slug}</strong> template.</p>
+      <h1>Portfolio Content</h1>
+      <p style={{ marginBottom: 20 }}>Edit the text, layout, and data for your portfolio.</p>
+      
+      <div style={{ display: 'flex', gap: 16, borderBottom: '1px solid var(--rule)', paddingBottom: 10, marginBottom: 24, fontSize: '0.95rem' }}>
+        <a href="?tab=general" style={{ textDecoration: 'none', color: currentTab === 'general' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'general' ? 'bold' : 'normal' }}>General</a>
+        <a href="?tab=theme" style={{ textDecoration: 'none', color: currentTab === 'theme' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'theme' ? 'bold' : 'normal' }}>Theme</a>
+        <a href="?tab=projects" style={{ textDecoration: 'none', color: currentTab === 'projects' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'projects' ? 'bold' : 'normal' }}>Projects</a>
+        <a href="?tab=case-studies" style={{ textDecoration: 'none', color: currentTab === 'case-studies' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'case-studies' ? 'bold' : 'normal' }}>Case Studies</a>
+        <a href="?tab=order" style={{ textDecoration: 'none', color: currentTab === 'order' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'order' ? 'bold' : 'normal' }}>Order</a>
+      </div>
 
-      <section className="admin-card">
+      {sp.err ? <div className="flash error">Error saving: {sp.err}</div> : null}
+
+      {currentTab === 'general' && (
+        <>
+          <section className="admin-card">
         <h3>Hero</h3>
         <form method="post" action="/api/admin/content/save" className="row">
           <input type="hidden" name="template_slug" value={slug} />
@@ -119,6 +141,27 @@ export default async function ContentEditor() {
           </div>
         </form>
       </section>
+        </>
+      )}
+
+      {currentTab === 'theme' && (
+        <ThemeTab slug={slug} initialTheme={theme} />
+      )}
+
+      {currentTab === 'projects' && (
+        <ProjectsTab projects={listProjects(db)} />
+      )}
+
+      {currentTab === 'case-studies' && (
+        <CaseStudiesTab caseStudies={listCaseStudies(db)} projects={listProjects(db)} />
+      )}
+
+      {currentTab === 'order' && (
+        <OrderTab 
+          slug={slug} 
+          initialOrder={getSection<string[]>(db, slug, 'order', [])} 
+        />
+      )}
     </div>
   );
 }

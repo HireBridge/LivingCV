@@ -24,8 +24,12 @@ require_var() {
   if [ -z "$current" ]; then
     local val="${!key:-}"
     if [ -z "$val" ]; then
-      read -rsp "Enter value for $key (or press Enter to auto-generate): " val </dev/tty
-      echo
+      if [ "$key" = "ADMIN_EMAIL" ]; then
+        read -rp "Enter admin email: " val </dev/tty
+      else
+        read -rsp "Enter value for $key (or press Enter to auto-generate): " val </dev/tty
+        echo
+      fi
     fi
     if [ -z "$val" ]; then
       case "$key" in
@@ -39,7 +43,8 @@ require_var() {
   fi
 }
 
-# These five are the mandatory bootstrap vars.
+# These are the mandatory bootstrap vars.
+require_var ADMIN_EMAIL
 require_var DOMAIN
 require_var PORTFOLIO_ENCRYPTION_KEY
 require_var SESSION_SECRET

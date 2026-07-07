@@ -12,6 +12,7 @@ import type {
   LinkItem,
 } from '@livingcv/shared';
 import { parseJson } from './parse-json';
+import { getAllSettings } from './settings';
 import type {
   ProjectRow,
   CaseStudyRow,
@@ -45,7 +46,7 @@ export function getSection<T>(
 ): T {
   const row = db
     .prepare<[string, string], { content: string }>(
-      'SELECT content FROM site_content WHERE template_slug = ? AND section_key = ?',
+      'SELECT content FROM site_content WHERE template_slug = ? AND section_key = ? ORDER BY id DESC LIMIT 1',
     )
     .get(templateSlug, sectionKey);
   return parseJson<T>(row?.content, fallback);
@@ -59,8 +60,9 @@ export function setSection(
 ): void {
   const json = JSON.stringify(content);
   const now = new Date().toISOString();
+  
   db.prepare(
-    'INSERT OR REPLACE INTO site_content (template_slug, section_key, content, position, updated_at) VALUES (?, ?, ?, 0, ?)',
+    'INSERT INTO site_content (template_slug, section_key, content, position, updated_at) VALUES (?, ?, ?, 0, ?)',
   ).run(templateSlug, sectionKey, json, now);
 }
 
@@ -277,6 +279,7 @@ export function buildTemplateProps(db: Db): TemplateProps {
   });
   const footer = getSection<FooterContent>(db, slug, 'footer', { links: [], note: '' });
   const theme = getSection<ThemeProps>(db, slug, 'theme', {});
+  const sectionOrder = getSection<string[]>(db, slug, 'order', ['hero', 'projects', 'alsoShipped', 'background']);
 
   const projects = listProjects(db);
   const featured: ProjectProps[] = [];
@@ -289,6 +292,9 @@ export function buildTemplateProps(db: Db): TemplateProps {
       alsoShipped.push({ slug: p.slug, name: p.title, description: p.tagline ?? '' });
     }
   }
+
+  const allSettings = getAllSettings(db);
+  const contactEnabled = !!(allSettings['telegram.bot_token'] || allSettings['google.client_id']);
 
   return TemplatePropsSchema.parse({
     hero: {
@@ -307,5 +313,7 @@ export function buildTemplateProps(db: Db): TemplateProps {
     },
     footer: { links: footer.links, note: footer.note ?? '' },
     theme,
+    sectionOrder,
+    contactEnabled,
   });
 }

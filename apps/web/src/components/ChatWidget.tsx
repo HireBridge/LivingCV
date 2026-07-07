@@ -38,7 +38,7 @@ export function ChatWidget() {
 
   async function ensureSession(): Promise<string> {
     if (sessionId) return sessionId;
-    const r = await fetch('/api/orchestrator/chat/session', {
+    const r = await fetch('/api/orchestrator/api/chat/session', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ channel: 'text' }),
@@ -62,7 +62,7 @@ export function ChatWidget() {
       toolsRef.current = [];
       setMessages((prev) => [...prev, um, assistantsRef.current]);
 
-      const r = await fetch('/api/orchestrator/chat/message', {
+      const r = await fetch('/api/orchestrator/api/chat/message', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ sessionId: sid, text }),

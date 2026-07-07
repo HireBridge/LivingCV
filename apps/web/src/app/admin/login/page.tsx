@@ -3,7 +3,9 @@
 import { useState } from 'react';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showForgotModal, setShowForgotModal] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -14,7 +16,7 @@ export default function LoginPage() {
     const r = await fetch('/api/admin/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ email, password }),
     });
     setBusy(false);
     if (r.ok) {
@@ -30,20 +32,55 @@ export default function LoginPage() {
       <h1>Sign in</h1>
       <form onSubmit={submit} className="admin-card" style={{ maxWidth: 360 }}>
         <div className="row">
+          <label>Admin email</label>
+          <input
+            type="email"
+            autoComplete="username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoFocus
+            required
+          />
+        </div>
+        <div className="row">
           <label>Admin password</label>
           <input
             type="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoFocus
+            required
           />
         </div>
         {err ? <div className="flash error">{err}</div> : null}
-        <div className="actions">
+        <div className="actions flex justify-between items-center mt-4">
+          <button 
+            type="button" 
+            className="text-sm text-signal hover:underline bg-transparent p-0 border-none cursor-pointer"
+            onClick={() => setShowForgotModal(true)}
+          >
+            Forgot password?
+          </button>
           <button type="submit" disabled={busy}>Sign in</button>
         </div>
       </form>
+
+      {showForgotModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-paper p-6 rounded-lg shadow-xl max-w-sm w-full border border-ink/10">
+            <h3 className="mt-0 text-lg font-semibold">Password reset</h3>
+            <p className="text-ink/80 my-4">Please contact the system administrator to reset your password.</p>
+            <div className="flex justify-end">
+              <button 
+                className="secondary"
+                onClick={() => setShowForgotModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

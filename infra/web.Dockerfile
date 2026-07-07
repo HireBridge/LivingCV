@@ -11,7 +11,7 @@ COPY apps/web/package.json ./apps/web/package.json
 COPY packages/db/package.json ./packages/db/package.json
 COPY packages/crypto/package.json ./packages/crypto/package.json
 COPY packages/shared/package.json ./packages/shared/package.json
-RUN npm ci
+RUN npm install --no-audit --no-fund
 
 # Build each workspace package to dist/.
 FROM deps AS build

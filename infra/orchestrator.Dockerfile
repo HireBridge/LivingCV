@@ -7,7 +7,7 @@ COPY apps/orchestrator/package.json ./apps/orchestrator/package.json
 COPY packages/db/package.json ./packages/db/package.json
 COPY packages/crypto/package.json ./packages/crypto/package.json
 COPY packages/shared/package.json ./packages/shared/package.json
-RUN npm ci
+RUN npm install --no-audit --no-fund
 
 FROM deps AS build
 WORKDIR /app

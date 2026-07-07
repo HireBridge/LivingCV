@@ -84,6 +84,10 @@ export const THEME_KEYS = [
   'signalSoft',
   'rust',
   'max',
+  'fontBody',
+  'fontHeading',
+  'fontMono',
+  'fontSizeBase',
 ] as const;
 export type ThemeKey = (typeof THEME_KEYS)[number];
 
@@ -97,6 +101,10 @@ export const ThemeProps = z.object({
   signalSoft: z.string().optional(),
   rust: z.string().optional(),
   max: z.string().optional(),
+  fontBody: z.string().optional(),
+  fontHeading: z.string().optional(),
+  fontMono: z.string().optional(),
+  fontSizeBase: z.string().optional(),
 });
 export type ThemeProps = z.infer<typeof ThemeProps>;
 
@@ -107,6 +115,8 @@ export const TemplateProps = z.object({
   background: BackgroundProps,
   footer: FooterProps,
   theme: ThemeProps.default({}),
+  sectionOrder: z.array(z.string()).optional(),
+  contactEnabled: z.boolean().optional(),
 });
 export type TemplateProps = z.infer<typeof TemplateProps>;
 
@@ -128,6 +138,8 @@ export const SETTING_KEYS = {
   agentLlmModel: 'agent.llm_model',
   agentSystemPromptExtra: 'agent.system_prompt_extra',
   agentEnabled: 'agent.enabled',
+  agentSearchProvider: 'agent.search_provider',
+  agentSearchApiKey: 'agent.search_api_key', // encrypted
   voiceEnabled: 'voice.enabled',
   voiceMode: 'voice.mode', // cloud|local
   voiceSttProvider: 'voice.stt_provider',
@@ -135,6 +147,13 @@ export const SETTING_KEYS = {
   voiceTtsProvider: 'voice.tts_provider',
   voiceTtsApiKey: 'voice.tts_api_key', // encrypted
   voiceTtsVoiceId: 'voice.tts_voice_id',
+  // Connectivity
+  telegramBotToken: 'telegram.bot_token', // encrypted
+  telegramChatId: 'telegram.chat_id',
+  emailProvider: 'email.provider',
+  emailApiKey: 'email.api_key', // encrypted
+  googleClientId: 'google.client_id',
+  googleClientSecret: 'google.client_secret', // encrypted
   limitsSessionMaxMessages: 'limits.session_max_messages',
   limitsDailyMessageBudget: 'limits.daily_message_budget',
   limitsIpSessionsPerDay: 'limits.ip_sessions_per_day',
@@ -148,9 +167,13 @@ export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
 export const ENCRYPTED_SETTING_KEYS: ReadonlySet<string> = new Set<string>([
   SETTING_KEYS.jobopsAuthToken,
   SETTING_KEYS.agentLlmApiKey,
+  SETTING_KEYS.agentSearchApiKey,
   SETTING_KEYS.voiceSttApiKey,
   SETTING_KEYS.voiceTtsApiKey,
   SETTING_KEYS.notifyWebhookUrl,
+  SETTING_KEYS.telegramBotToken,
+  SETTING_KEYS.emailApiKey,
+  SETTING_KEYS.googleClientSecret,
 ]);
 
 // LLM provider for the orchestrator (§7). Read from app_settings[agent.llm_provider].
