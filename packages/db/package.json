@@ -1,5 +1,5 @@
 {
-  "name": "@mohith-das/portfolio-db",
+  "name": "@livingcv/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@mohith-das/portfolio-shared": "*",
+    "@livingcv/shared": "*",
     "better-sqlite3": "^11.3.0"
   },
   "devDependencies": {

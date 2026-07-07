@@ -74,17 +74,17 @@ jobs:
             TARGET="${{ inputs.package }}"
             BUMP="${{ inputs.bump }}"
             case "$TARGET" in
-              shared) PKGS="@mohith-das/portfolio-shared" ;;
-              crypto) PKGS="@mohith-das/portfolio-crypto" ;;
-              db)     PKGS="@mohith-das/portfolio-db" ;;
+              shared) PKGS="@livingcv/shared" ;;
+              crypto) PKGS="@livingcv/crypto" ;;
+              db)     PKGS="@livingcv/db" ;;
               all)    PKGS="all" ;;
             esac
           else
             REF="${{ github.ref_name }}"
             case "$REF" in
-              shared-*) PKGS="@mohith-das/portfolio-shared"; VERSION="${REF#shared-v}" ;;
-              crypto-*) PKGS="@mohith-das/portfolio-crypto"; VERSION="${REF#crypto-v}" ;;
-              db-*)     PKGS="@mohith-das/portfolio-db";     VERSION="${REF#db-v}" ;;
+              shared-*) PKGS="@livingcv/shared"; VERSION="${REF#shared-v}" ;;
+              crypto-*) PKGS="@livingcv/crypto"; VERSION="${REF#crypto-v}" ;;
+              db-*)     PKGS="@livingcv/db";     VERSION="${REF#db-v}" ;;
               v*)       PKGS="all";                            VERSION="${REF#v}" ;;
               *) echo "unrecognized tag: $REF"; exit 1 ;;
             esac
@@ -103,7 +103,7 @@ jobs:
           PKGS="${{ steps.packages.outputs.pkgs }}"
           BUMP="${{ steps.packages.outputs.bump }}"
           case "$PKGS" in
-            all) LIST="@mohith-das/portfolio-shared @mohith-das/portfolio-crypto @mohith-das/portfolio-db" ;;
+            all) LIST="@livingcv/shared @livingcv/crypto @livingcv/db" ;;
             *)   LIST="$PKGS" ;;
           esac
           for P in $LIST; do
@@ -114,7 +114,7 @@ jobs:
           # that in the actual source file).
           for P in $LIST; do
             VER=$(node -p "require('./$P/package.json').version")
-            SHORT=$(echo "$P" | sed 's|@mohith-das/portfolio-||')
+            SHORT=$(echo "$P" | sed 's|@livingcv/||')
             node -e "
               const fs=require('fs');
               const p='packages/$SHORT/package.json';
@@ -127,7 +127,7 @@ jobs:
       - name: Install + build + test
         run: |
           npm ci
-          npm run build -w @mohith-das/portfolio-shared -w @mohith-das/portfolio-crypto -w @mohith-das/portfolio-db
+          npm run build -w @livingcv/shared -w @livingcv/crypto -w @livingcv/db
           npm test
 
       - name: Publish
@@ -138,7 +138,7 @@ jobs:
           PKGS="${{ steps.packages.outputs.pkgs }}"
           case "$PKGS" in
             all)
-              for P in @mohith-das/portfolio-shared @mohith-das/portfolio-crypto @mohith-das/portfolio-db; do
+              for P in @livingcv/shared @livingcv/crypto @livingcv/db; do
                 (cd "node_modules/$P" && npm publish --provenance --access public)
               done
               ;;

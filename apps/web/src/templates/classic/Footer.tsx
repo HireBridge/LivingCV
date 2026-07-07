@@ -1,4 +1,4 @@
-import type { FooterProps } from '@mohith-das/portfolio-shared';
+import type { FooterProps } from '@livingcv/shared';
 
 export function Footer({ footer }: { footer: FooterProps }) {
   return (

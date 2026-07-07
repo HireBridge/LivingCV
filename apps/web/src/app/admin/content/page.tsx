@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 // Raw rows from site_content for the active template (we read them directly so
 // the editor shows whatever was saved, even if the structure drifted).
-function rawSection(db: import('@mohith-das/portfolio-db').Db, slug: string, key: string): string {
+function rawSection(db: import('@livingcv/db').Db, slug: string, key: string): string {
   const row = db
     .prepare<[string, string], { content: string }>(
       'SELECT content FROM site_content WHERE template_slug = ? AND section_key = ?',

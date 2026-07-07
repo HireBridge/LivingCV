@@ -112,7 +112,7 @@ export type TemplateProps = z.infer<typeof TemplateProps>;
 
 // Catalog of known app_settings keys (namespaced). Kept here so the web and
 // orchestrator agree on the key strings. Secret-bearing keys are marked
-// encrypted and stored through @mohith-das/portfolio-crypto.
+// encrypted and stored through @livingcv/crypto.
 export const SETTING_KEYS = {
   siteTitle: 'site.title',
   siteDomain: 'site.domain',

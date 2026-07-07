@@ -1,4 +1,4 @@
-import type { BackgroundProps } from '@mohith-das/portfolio-shared';
+import type { BackgroundProps } from '@livingcv/shared';
 import { RevealOnScroll } from './RevealOnScroll';
 
 export function Background({ background }: { background: BackgroundProps }) {

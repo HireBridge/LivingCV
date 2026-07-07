@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { setSetting } from '@/lib/settings';
 import { setActiveTemplate } from '@/lib/content';
-import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@mohith-das/portfolio-shared';
+import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@livingcv/shared';
 
 // Generic settings writer. Maps a "group" (site/limits/connections/voice) to a
 // list of known setting keys, reads each from the form, and writes via

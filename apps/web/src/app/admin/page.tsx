@@ -2,7 +2,7 @@ import { getDb } from '@/lib/db';
 import { getAllSettings, getSetting } from '@/lib/settings';
 import { listProjects, listCaseStudies, getActiveTemplateSlug } from '@/lib/content';
 import { getTotalViews, getViewsToday, getViewSeries } from '@/lib/page-views';
-import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
+import { SETTING_KEYS } from '@livingcv/shared';
 
 export const dynamic = 'force-dynamic';
 

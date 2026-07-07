@@ -3,7 +3,7 @@
 //   get_case_study(slug): returns one published case study's frontmatter +
 //     markdown body for the LLM to quote.
 
-import type { Db } from '@mohith-das/portfolio-db';
+import type { Db } from '@livingcv/db';
 import { listFeaturedProjects, getCaseStudyForTool } from './db.js';
 import { parseJson } from './parse-json.js';
 import type { ToolDef } from './llm/types.js';

@@ -1,6 +1,6 @@
 import { getDb } from '@/lib/db';
 import { getAllSettings } from '@/lib/settings';
-import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
+import { SETTING_KEYS } from '@livingcv/shared';
 
 export const dynamic = 'force-dynamic';
 

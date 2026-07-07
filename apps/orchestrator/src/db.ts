@@ -1,11 +1,11 @@
 // Tiny DB layer for the orchestrator (§7). Same connection policy as the web
-// app: single connection per process, WAL + busy_timeout (set by @mohith-das/portfolio-db's
+// app: single connection per process, WAL + busy_timeout (set by @livingcv/db's
 // openDb). Both this process and the web process open the same portfolio.db;
-// multi-process safety comes from @mohith-das/portfolio-db's pragmas + runInWriteLock.
+// multi-process safety comes from @livingcv/db's pragmas + runInWriteLock.
 
 import { mkdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
-import { openDb, type Db } from '@mohith-das/portfolio-db';
+import { openDb, type Db } from '@livingcv/db';
 
 const DATA_DIR = resolve(process.env.DATA_DIR || './data');
 const DB_PATH = join(DATA_DIR, 'portfolio.db');

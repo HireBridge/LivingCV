@@ -1,4 +1,4 @@
-import type { HeroProps, ProjectProps } from '@mohith-das/portfolio-shared';
+import type { HeroProps, ProjectProps } from '@livingcv/shared';
 import { HeroDiagram } from './HeroDiagram';
 import { RevealOnScroll } from './RevealOnScroll';
 

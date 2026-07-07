@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { getDb } from '@/lib/db';
 import { getSetting } from '@/lib/settings';
 import { getResumePath } from '@/lib/resume';
-import { SETTING_KEYS } from '@mohith-das/portfolio-shared';
+import { SETTING_KEYS } from '@livingcv/shared';
 
 export const dynamic = 'force-dynamic';
 

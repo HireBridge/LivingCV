@@ -6,8 +6,8 @@
 // caller via onEvent() for SSE delivery.
 
 import { randomUUID } from 'node:crypto';
-import type { Db } from '@mohith-das/portfolio-db';
-import { LLM_PROVIDERS, SETTING_KEYS } from '@mohith-das/portfolio-shared';
+import type { Db } from '@livingcv/db';
+import { LLM_PROVIDERS, SETTING_KEYS } from '@livingcv/shared';
 import { getSetting } from './settings.js';
 import { MAX_TOOL_ROUNDS, MAX_INPUT_CHARS } from './llm/types.js';
 import type { ChatMessage, ToolCall } from './llm/types.js';

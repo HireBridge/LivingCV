@@ -1,4 +1,4 @@
-import type { TemplateProps } from '@mohith-das/portfolio-shared';
+import type { TemplateProps } from '@livingcv/shared';
 import { BASE_CSS, themeOverrides } from './styles';
 import { Hero } from './Hero';
 import { ProjectCard } from './ProjectCard';

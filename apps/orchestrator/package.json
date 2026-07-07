@@ -1,5 +1,5 @@
 {
-  "name": "@portfolio/orchestrator",
+  "name": "@livingcv/orchestrator",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,9 +13,9 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "@portfolio/crypto": "*",
-    "@portfolio/db": "*",
-    "@portfolio/shared": "*",
+    "@livingcv/crypto": "*",
+    "@livingcv/db": "*",
+    "@livingcv/shared": "*",
     "@types/ws": "^8.18.1",
     "express": "^4.21.0",
     "ws": "^8.21.0",

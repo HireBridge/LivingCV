@@ -5,9 +5,9 @@ const nextConfig = {
   // fs/path APIs we don't want Turbopack to over-trace.
   serverExternalPackages: [
     'better-sqlite3',
-    '@mohith-das/portfolio-db',
-    '@mohith-das/portfolio-crypto',
-    '@mohith-das/portfolio-shared',
+    '@livingcv/db',
+    '@livingcv/crypto',
+    '@livingcv/shared',
   ],
   // Content is runtime-editable from the DB; do not statically generate pages.
   experimental: {

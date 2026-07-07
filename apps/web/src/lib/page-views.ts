@@ -1,4 +1,4 @@
-import type { Db } from '@mohith-das/portfolio-db';
+import type { Db } from '@livingcv/db';
 
 // Cookieless, server-side page-view counter (§12 feature 2). Increments a
 // (path, day) row; no cookies, no external service, no per-visitor tracking.

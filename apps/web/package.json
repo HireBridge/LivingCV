@@ -1,20 +1,20 @@
 {
-  "name": "@portfolio/web",
+  "name": "@livingcv/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run build -w @portfolio/shared -w @portfolio/crypto -w @portfolio/db",
+    "prebuild": "npm run build -w @livingcv/shared -w @livingcv/crypto -w @livingcv/db",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@portfolio/crypto": "*",
-    "@portfolio/db": "*",
-    "@portfolio/shared": "*",
+    "@livingcv/crypto": "*",
+    "@livingcv/db": "*",
+    "@livingcv/shared": "*",
     "bcryptjs": "^3.0.0",
     "iron-session": "^8.0.0",
     "next": "^16.0.0",

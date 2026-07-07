@@ -1,4 +1,4 @@
-import type { ThemeProps } from '@mohith-das/portfolio-shared';
+import type { ThemeProps } from '@livingcv/shared';
 
 // CSS ported from docs/index.html. The palette is exposed as CSS custom
 // properties so the admin can override any token at runtime (§9) via a second

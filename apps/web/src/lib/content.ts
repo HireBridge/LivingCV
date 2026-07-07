@@ -1,16 +1,16 @@
-import type { Db } from '@mohith-das/portfolio-db';
+import type { Db } from '@livingcv/db';
 import {
   TemplatePropsSchema,
   ProjectPropsSchema,
   SETTING_KEYS,
-} from '@mohith-das/portfolio-shared';
+} from '@livingcv/shared';
 import type {
   TemplateProps,
   ProjectProps,
   MiniProjectProps,
   ThemeProps,
   LinkItem,
-} from '@mohith-das/portfolio-shared';
+} from '@livingcv/shared';
 import { parseJson } from './parse-json';
 import type {
   ProjectRow,

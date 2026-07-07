@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import type { TemplateProps } from '@mohith-das/portfolio-shared';
+import type { TemplateProps } from '@livingcv/shared';
 import { ClassicTemplate } from './classic/ClassicTemplate';
 
 export interface TemplateEntry {
@@ -12,7 +12,7 @@ export interface TemplateEntry {
 
 // The set of templates shipped with the portfolio app. §9 says a template is a
 // directory under apps/web/templates/<slug>/ that exports a component matching
-// the TemplateProps contract from @mohith-das/portfolio-shared. Adding a new template is a
+// the TemplateProps contract from @livingcv/shared. Adding a new template is a
 // matter of dropping in another entry here + its component file.
 export const TEMPLATES: TemplateEntry[] = [
   {
