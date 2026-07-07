@@ -37,7 +37,6 @@ COPY --chown=nodejs:nodejs --from=deps /app/node_modules ./node_modules
 COPY --chown=nodejs:nodejs --from=build /app/package.json /app/package-lock.json ./
 COPY --chown=nodejs:nodejs --from=build /app/apps/web ./apps/web
 COPY --chown=nodejs:nodejs --from=build /app/packages ./packages
-COPY --chown=nodejs:nodejs --from=build /app/scripts ./scripts
 COPY --chown=nodejs:nodejs --from=build /app/tsconfig.base.json ./
 USER nodejs
 CMD ["npm", "run", "start", "-w", "@livingcv/web"]
