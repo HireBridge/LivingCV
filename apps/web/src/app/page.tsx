@@ -4,6 +4,7 @@ import { buildTemplateProps, getActiveTemplateSlug } from '@/lib/content';
 import { getTemplate } from '@/templates/registry';
 import { recordPageView } from '@/lib/page-views';
 import { getAllSettings } from '@/lib/settings';
+import { ChatWidget } from '@/components/ChatWidget';
 
 // Landing page — renders the active template from the DB on every request
 // (content is runtime-editable, never build-time). §9.
@@ -28,5 +29,10 @@ export default function LandingPage() {
   if (!entry) throw new Error('classic template is missing from the registry');
   recordPageView(db, '/');
   const Component = entry.Component;
-  return <Component {...props} />;
+  return (
+    <>
+      <Component {...props} />
+      <ChatWidget />
+    </>
+  );
 }

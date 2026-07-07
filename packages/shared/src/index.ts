@@ -11,6 +11,7 @@ export type {
   TemplateProps,
   ThemeKey,
   SettingKey,
+  LlmProvider,
 } from './template.js';
 export {
   LinkItem as LinkItemSchema,
@@ -25,4 +26,5 @@ export {
   THEME_KEYS,
   SETTING_KEYS,
   ENCRYPTED_SETTING_KEYS,
+  LLM_PROVIDERS,
 } from './template.js';

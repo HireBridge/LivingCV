@@ -1,19 +1,19 @@
-# Caddy is the public-facing reverse proxy. Automatic HTTPS for {$DOMAIN}; the
-# /mcp path is wired through to the jobops container's /mcp/public mount once
-# Phase 4 lands (uncommented below as a placeholder for now).
+# Caddy is the public-facing reverse proxy. Automatic HTTPS for {$DOMAIN}.
+# Phase 2 routes: /api/orchestrator/chat/* → orchestrator (Phase 2 SSE chat).
+# Phase 4: /mcp → jobops (mounted at jobops:7891/mcp/public once a public
+#   MCP client connects to the site from Claude.ai/ChatGPT/etc.).
 {$DOMAIN} {
   encode zstd gzip
   reverse_proxy web:3000
 
-  # Public MCP mount (Phase 4). Uncomment once the jobops container is in the
-  # stack. jobops exposes exactly two tools on /mcp/public; see §2 invariant 4.
-  # route /mcp {
-  #   reverse_proxy jobops:7891
-  # }
-  # respond /mcp/* "…"  // not used; the proxy handles it.
+  # Phase 2: orchestrate chat. The web app also has a Next rewrite for the
+  # same path so local dev with a single process works. Either path works.
+  handle /api/orchestrator/* {
+    reverse_proxy orchestrator:8100
+  }
 
-  # Voice WebSocket (Phase 3).
-  # route /voice-ws {
-  #   reverse_proxy voice:8200
+  # Phase 4: route /mcp/* to jobops's /mcp/public (the closed public surface).
+  # handle /mcp/* {
+  #   reverse_proxy jobops:7891
   # }
 }
