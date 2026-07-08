@@ -13,6 +13,9 @@ export type {
   ThemeKey,
   SettingKey,
   LlmProvider,
+  EvidenceSignal,
+  AssertedSignal,
+  SignalsProps,
 } from './template.js';
 export {
   LinkItem as LinkItemSchema,
@@ -30,3 +33,16 @@ export {
   ENCRYPTED_SETTING_KEYS,
   LLM_PROVIDERS,
 } from './template.js';
+export {
+  CareerPacketSchema,
+} from './career-packet.js';
+export type {
+  CareerPacket,
+  CareerIdentity,
+  CareerTagline,
+  CareerBullet,
+  CareerExperience,
+  CareerProjectSignal,
+  CareerSkill,
+  CareerEducation,
+} from './career-packet.js';

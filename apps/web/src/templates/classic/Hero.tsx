@@ -21,7 +21,7 @@ export function Hero({ hero, projects, contactEnabled }: { hero: HeroProps; proj
       {hero.eyebrow ? <span className="eyebrow">{hero.eyebrow}</span> : null}
       
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', marginBottom: 18 }}>
-        <h1 className="name" style={{ margin: 0 }}>{hero.name}</h1>
+        <h1 className="name p-name" style={{ margin: 0 }}>{hero.name}</h1>
         {contactEnabled && (
           <a href="#contact" className="pill" style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--signal)', color: 'white', borderColor: 'var(--signal)' }}>
             <span style={{ fontSize: '1.1rem' }}>💬</span> Contact {hero.name.split(' ')[0]}
@@ -29,11 +29,11 @@ export function Hero({ hero, projects, contactEnabled }: { hero: HeroProps; proj
         )}
       </div>
 
-      {hero.roleLine ? <p className="role-line">{renderRoleLine(hero.roleLine)}</p> : null}
+      {hero.roleLine ? <p className="role-line p-summary">{renderRoleLine(hero.roleLine)}</p> : null}
       {hero.links.length > 0 ? (
         <div className="hero-links">
           {hero.links.map((l) => (
-            <a key={l.href} className="pill" href={l.href} target="_blank" rel="noopener noreferrer">
+            <a key={l.href} className="pill u-url" href={l.href} target="_blank" rel="noopener noreferrer">
               {l.label}
             </a>
           ))}

@@ -29,6 +29,12 @@ const ALLOW = new Set([
   '/api/admin/login',
 ]);
 
+// Public HireBridge paths that must stay reachable without an admin session:
+//   callback — reached via magic-link email
+const PUBLIC_HIREBRIDGE = new Set([
+  '/api/hirebridge/callback',
+]);
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -37,6 +43,25 @@ export async function middleware(request: NextRequest) {
   // the SQLite database).
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-pathname', pathname);
+
+  const isHirebridgeApi = pathname.startsWith('/api/hirebridge');
+
+  if (isHirebridgeApi) {
+    if (PUBLIC_HIREBRIDGE.has(pathname)) {
+      return NextResponse.next({ request: { headers: requestHeaders } });
+    }
+    // connect and disconnect require an admin session.
+    const opts = sessionOptions();
+    if (!opts) {
+      return NextResponse.json({ error: 'SESSION_SECRET not configured' }, { status: 503 });
+    }
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    const session: IronSession<SessionData> = await getIronSession<SessionData>(request, response, opts);
+    if (session.admin !== true) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+    return response;
+  }
 
   const isAdminPage = pathname.startsWith('/admin');
   const isAdminApi = pathname.startsWith('/api/admin');
@@ -73,5 +98,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/admin/:path*'],
+  matcher: ['/admin/:path*', '/api/admin/:path*', '/api/hirebridge/:path*'],
 };

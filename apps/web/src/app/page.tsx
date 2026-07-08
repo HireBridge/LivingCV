@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getDb } from '@/lib/db';
-import { buildTemplateProps, getActiveTemplateSlug } from '@/lib/content';
+import { buildTemplateProps, getActiveTemplateSlug, getSection } from '@/lib/content';
 import { getTemplate } from '@/templates/registry';
 import { recordPageView } from '@/lib/page-views';
 import { getAllSettings, getSetting } from '@/lib/settings';
@@ -61,7 +61,17 @@ export default async function LandingPage() {
   const title = s['site.title'] || 'Portfolio';
   const domain = s['site.domain'] || '';
   const url = domain ? `https://${domain}` : '/';
-  
+
+  // Build sameAs from hero links + social settings.
+  const sameAs = [
+    ...props.hero.links.map(l => l.href),
+    s['social.github'], s['social.linkedin'], s['social.twitter'],
+  ].filter((x): x is string => !!x);
+
+  // Collect asserted signals (Phase 5) for knowsAbout.
+  const assertedSignals = getSection<Array<{ label: string }>>(db, slug, 'signals', []);
+  const knowsAbout = assertedSignals.map(s => s.label).filter(Boolean);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -71,11 +81,13 @@ export default async function LandingPage() {
         url,
       },
       {
-        '@type': 'Person',
+        '@type': ['Person', 'ProfilePage'],
         name: title,
         url,
         description: s['site.meta_description'] || '',
-        sameAs: [s['social.github'], s['social.linkedin'], s['social.twitter']].filter(Boolean),
+        sameAs: sameAs.length > 0 ? sameAs : undefined,
+        ...(props.hero.roleLine ? { hasOccupation: { '@type': 'Occupation', name: props.hero.roleLine.replace(/\*\*/g, '') } } : {}),
+        ...(knowsAbout.length > 0 ? { knowsAbout } : {}),
       }
     ]
   };

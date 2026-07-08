@@ -5,7 +5,8 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type express from 'express';
 import crypto from 'node:crypto';
-import { getDb } from './db.js';
+import { CareerPacketSchema } from '@livingcv/shared';
+import { getDb, upsertSyncedState } from './db.js';
 import { getSetting } from './settings.js';
 
 // Shared state for connections
@@ -69,7 +70,8 @@ export function attachMasterMcp(app: express.Express) {
       });
 
       server.setRequestHandler(ListToolsRequestSchema, async () => {
-        const localTools = [
+        const syncEnabled = getSetting(getDb(), 'mcp.jobops_sync_enabled') === '1';
+        const localTools: Tool[] = [
           {
             name: 'portfolio_execute_sql',
             description: SQL_TOOL_DESCRIPTION,
@@ -84,6 +86,19 @@ export function attachMasterMcp(app: express.Express) {
             }
           }
         ];
+        if (syncEnabled) {
+          localTools.push({
+            name: 'sync_career_packet',
+            description: `Accept a career-packet snapshot from JobOps and store it locally so the portfolio's public /career-packet.json route serves it without contacting JobOps. The packet is validated against the CareerPacketSchema before storage. Only whitelisted fields are accepted; unknown fields are silently dropped. This tool writes ONLY to synced_state — it cannot touch app_settings, site_content, projects, or any other config table.`,
+            inputSchema: {
+              type: 'object',
+              properties: {
+                packet: { type: 'object', description: 'Career packet JSON conforming to CareerPacketSchema (identity, taglines, experience, projects, skills, education, summary, version)' }
+              },
+              required: ['packet']
+            }
+          });
+        }
 
         let jobopsTools: Tool[] = [];
         try {
@@ -99,6 +114,43 @@ export function attachMasterMcp(app: express.Express) {
       });
 
       server.setRequestHandler(CallToolRequestSchema, async (request) => {
+        if (request.params.name === 'sync_career_packet') {
+          const db = getDb();
+          const syncEnabled = getSetting(db, 'mcp.jobops_sync_enabled') === '1';
+          if (!syncEnabled) {
+            return {
+              content: [{ type: 'text', text: 'JobOps sync is disabled. Enable "mcp.jobops_sync_enabled" in admin settings.' }],
+              isError: true,
+            } as CallToolResult;
+          }
+          const raw = (request.params.arguments as { packet?: unknown })?.packet;
+          if (!raw) {
+            return {
+              content: [{ type: 'text', text: 'Missing required argument: packet' }],
+              isError: true,
+            } as CallToolResult;
+          }
+          const parsed = CareerPacketSchema.safeParse(raw);
+          if (!parsed.success) {
+            return {
+              content: [{ type: 'text', text: `Career packet validation failed: ${parsed.error.message}` }],
+              isError: true,
+            } as CallToolResult;
+          }
+          try {
+            const json = JSON.stringify(parsed.data);
+            upsertSyncedState(db, 'career_packet', json, 'jobops');
+            return {
+              content: [{ type: 'text', text: `Career packet synced successfully (${json.length} bytes). Identity: ${parsed.data.identity.fullName}` }],
+            } as CallToolResult;
+          } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : String(e);
+            return {
+              content: [{ type: 'text', text: `Failed to store career packet: ${msg}` }],
+              isError: true,
+            } as CallToolResult;
+          }
+        }
         if (request.params.name === 'portfolio_execute_sql') {
           const { query, params = [], method } = request.params.arguments as { query: string; params?: unknown[]; method: string };
           console.log(`[masterMcp] executing SQL (method=${method}): ${query}`);

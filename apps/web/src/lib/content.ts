@@ -10,6 +10,8 @@ import type {
   MiniProjectProps,
   ThemeProps,
   LinkItem,
+  EvidenceSignal,
+  AssertedSignal,
 } from '@livingcv/shared';
 import { parseJson } from './parse-json';
 import { normalizeProjectBody } from './project-body';
@@ -234,6 +236,29 @@ export function upsertCaseStudy(
 
 // ── Build TemplateProps from the DB ─────────────────────────────────────────
 
+// Derive demonstrated (provenance-backed) signals from project data.
+// Deduplicates by label so a user with N similar projects doesn't render
+// the same signal N times (the first occurrence keeps its evidence link).
+export function deriveDemonstratedSignals(
+  projects: ProjectRow[],
+  hasCaseStudy: (projectId: number) => boolean,
+): EvidenceSignal[] {
+  const demonstrated: EvidenceSignal[] = [];
+  const seenLabels = new Set<string>();
+  for (const p of projects) {
+    const maybeAdd = (s: EvidenceSignal) => {
+      if (!seenLabels.has(s.label)) { seenLabels.add(s.label); demonstrated.push(s); }
+    };
+    if (p.repo_url) maybeAdd({ label: 'Open-source contributor', evidenceUrl: p.repo_url, evidenceType: 'repo', sourceSlug: p.slug });
+    if (p.demo_url) maybeAdd({ label: 'Shipped live product', evidenceUrl: p.demo_url, evidenceType: 'demo', sourceSlug: p.slug });
+    if (p.package_url) maybeAdd({ label: 'Published package', evidenceUrl: p.package_url, evidenceType: 'package', sourceSlug: p.slug });
+    if (hasCaseStudy(p.id)) maybeAdd({ label: 'Wrote case study', evidenceUrl: `/projects/${p.slug}`, evidenceType: 'case-study', sourceSlug: p.slug });
+    if (p.kind === 'oss') maybeAdd({ label: 'Open-source maintainer', evidenceUrl: p.repo_url || `/projects/${p.slug}`, evidenceType: 'kind', sourceSlug: p.slug });
+    if (p.kind === 'commercial') maybeAdd({ label: 'Commercial product', evidenceUrl: p.demo_url || `/projects/${p.slug}`, evidenceType: 'kind', sourceSlug: p.slug });
+  }
+  return demonstrated;
+}
+
 function projectRowToProps(p: ProjectRow, hasCaseStudy: boolean): ProjectProps {
   const { columns, diagramCaption } = normalizeProjectBody(parseJson<unknown>(p.body, {}));
   const links: LinkItem[] = [];
@@ -293,6 +318,11 @@ export function buildTemplateProps(db: Db): TemplateProps {
   // enables it in Settings → MCP → Public MCP.
   const talentMcpEnabled = (allSettings['publicmcp.enabled'] ?? '0') === '1';
 
+  // Derive demonstrated signals from project data.
+  const demonstrated = deriveDemonstratedSignals(projects, (id) => hasPublishedCaseStudy(db, id));
+  // Load asserted signals (admin-authored, from site_content section 'signals').
+  const asserted = getSection<AssertedSignal[]>(db, slug, 'signals', []);
+
   return TemplatePropsSchema.parse({
     hero: {
       eyebrow: hero.eyebrow,
@@ -315,5 +345,6 @@ export function buildTemplateProps(db: Db): TemplateProps {
     customSections,
     contactEnabled,
     talentMcpEnabled,
+    signals: { demonstrated, asserted },
   });
 }

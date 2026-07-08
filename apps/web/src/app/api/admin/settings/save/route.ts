@@ -40,6 +40,7 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
       'google.client_id',
       'google.client_secret',
     ],
+    checkboxKeys: [SETTING_KEYS.syncToJobOps],
   },
   mcp: {
     keys: ['mcp.master_key'],
@@ -50,6 +51,16 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   publicmcp: {
     keys: [],
     checkboxKeys: [SETTING_KEYS.publicMcpEnabled],
+  },
+  // JobOps sync toggle (career packet pushing via master relay MCP).
+  mcpsync: {
+    keys: [],
+    checkboxKeys: [SETTING_KEYS.jobopsSyncEnabled],
+  },
+  // HireBridge federation settings (API URL + client ID).
+  hirebridge: {
+    keys: ['hirebridge.api_url', 'hirebridge.client_id'],
+    checkboxKeys: [],
   },
   updates: {
     keys: [SETTING_KEYS.updatesRepo, SETTING_KEYS.updatesBranch],

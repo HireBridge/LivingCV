@@ -3,13 +3,13 @@ import { RevealOnScroll } from './RevealOnScroll';
 
 export function Background({ background }: { background: BackgroundProps }) {
   return (
-    <section id="background">
+    <section id="background" className="p-experience">
       <p className="section-kicker">03 — Before this</p>
-      <h2 className="section-title">{background.title}</h2>
+      <h2 className="section-title p-org">{background.title}</h2>
       <div className="bg-text">
         <RevealOnScroll>
           {background.paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
+            <p key={i} className="p-description">{p}</p>
           ))}
         </RevealOnScroll>
       </div>

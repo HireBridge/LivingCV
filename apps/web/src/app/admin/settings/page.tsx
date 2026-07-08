@@ -7,6 +7,7 @@ import { McpConfigForm } from './McpConfigForm';
 import { ConnectivityForm } from './ConnectivityForm';
 import { SystemLogsViewer } from './SystemLogsViewer';
 import { UpdatesPanel } from './UpdatesPanel';
+import { HireBridgeConnect } from '@/components/HireBridgeConnect';
 
 export const dynamic = 'force-dynamic';
 
@@ -223,6 +224,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             'email.api_key': getSettingForBrowser(db, SETTING_KEYS.emailApiKey),
             'google.client_id': all['google.client_id'] || '',
             'google.client_secret': getSettingForBrowser(db, SETTING_KEYS.googleClientSecret),
+            'notify.sync_to_jobops': all['notify.sync_to_jobops'] || '0',
           }} />
         </section>
       )}
@@ -280,22 +282,44 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
       {currentTab === 'mcp' && (
         <section className="admin-card" style={{ marginTop: 20 }}>
+          <h3>JobOps Sync</h3>
+          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
+            Allow your local JobOps instance to push a career-packet snapshot
+            into this site via the Master Relay MCP (writes only to <code>synced_state</code>).
+          </p>
+          <form method="post" action="/api/admin/settings/save" className="row">
+            <input type="hidden" name="group" value="mcpsync" />
+            <input type="hidden" name="redirect" value="/admin/settings?tab=mcp" />
+            <div className="row">
+              <label>
+                <input
+                  type="checkbox"
+                  name="mcp.jobops_sync_enabled"
+                  defaultChecked={(all[SETTING_KEYS.jobopsSyncEnabled] ?? '0') === '1'}
+                  style={{ marginRight: 8 }}
+                />
+                Enable JobOps career-packet sync
+              </label>
+            </div>
+            <div className="actions">
+              <button type="submit">Save</button>
+            </div>
+          </form>
+        </section>
+      )}
+
+      {currentTab === 'mcp' && (
+        <section className="admin-card" style={{ marginTop: 20 }}>
           <h3 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             Connect to HireBridge
-            <span style={{
-              fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
-              color: 'var(--rust)', border: '1px solid var(--rust)', borderRadius: 4, padding: '2px 8px',
-            }}>Work in Progress</span>
           </h3>
-          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
-            Link this portfolio to HireBridge to sync your profile and reach a wider
-            network of recruiters. This integration is coming soon.
-          </p>
-          <div className="actions">
-            <button type="button" disabled title="Coming soon" style={{ opacity: 0.5, cursor: 'not-allowed' }}>
-              Connect
-            </button>
-          </div>
+          <HireBridgeConnect
+            adminEmail={all['admin.email'] ?? ''}
+            connected={(all['hirebridge.connected'] ?? '0') === '1'}
+            profileUrl={all['hirebridge.profile_url'] ?? null}
+            apiUrl={all['hirebridge.api_url'] ?? ''}
+            clientId={all['hirebridge.client_id'] ?? ''}
+          />
         </section>
       )}
 

@@ -5,9 +5,10 @@ import { ProjectCard } from './ProjectCard';
 import { MiniGrid } from './MiniGrid';
 import { Background } from './Background';
 import { Footer } from './Footer';
+import { Signals } from './Signals';
 
 export function ClassicTemplate(props: TemplateProps) {
-  const { hero, projects, alsoShipped, background, footer, theme, sectionOrder = ['hero', 'projects', 'alsoShipped', 'background'] } = props;
+  const { hero, projects, alsoShipped, background, footer, theme, sectionOrder = ['hero', 'projects', 'alsoShipped', 'signals', 'background'] } = props;
   const override = themeOverrides(theme);
   const brand = hero.name;
 
@@ -45,6 +46,9 @@ export function ClassicTemplate(props: TemplateProps) {
             <MiniGrid items={alsoShipped} />
           </section>
         );
+      case 'signals':
+        if (props.signals?.demonstrated.length === 0 && props.signals?.asserted.length === 0) return null;
+        return <Signals key="signals" demonstrated={props.signals?.demonstrated ?? []} asserted={props.signals?.asserted ?? []} />;
       case 'background':
         return <Background key="background" background={background} />;
       default:
@@ -70,7 +74,7 @@ export function ClassicTemplate(props: TemplateProps) {
         </div>
       </header>
 
-      <main className="wrap" id="top">
+      <main className="wrap h-resume" id="top">
         {sectionOrder.map(renderSection)}
       </main>
 

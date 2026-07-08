@@ -104,6 +104,23 @@ export function ConnectivityForm({ initialData }: { initialData: Record<string, 
         </div>
       </div>
 
+      <div className="admin-card" style={{ marginBottom: 20 }}>
+        <h3>JobOps Lead Sync</h3>
+        <p style={{ color: 'var(--ink-soft)', fontSize: '0.9rem', marginBottom: 15 }}>
+          When enabled, newly verified recruiter leads from the AI Concierge are 
+          automatically pushed to the local JobOps instance via its <code>add_contacts</code> MCP tool.
+        </p>
+        <label>
+          <input
+            type="checkbox"
+            name="notify.sync_to_jobops"
+            defaultChecked={initialData['notify.sync_to_jobops'] === '1'}
+            style={{ marginRight: 8 }}
+          />
+          Sync leads to JobOps
+        </label>
+      </div>
+
       <div className="actions">
         <button type="submit">Save</button>
       </div>

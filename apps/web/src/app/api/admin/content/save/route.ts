@@ -89,6 +89,14 @@ export async function POST(request: Request) {
     }
     content = parsed.value;
     setSection(db, templateSlug, 'hidden', parsedHidden.value);
+  } else if (section === 'signals') {
+    const rawLines = String(form.get('signals_lines') || '');
+    const lines = rawLines.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    content = lines.map((l: string) => {
+      const catMatch = l.match(/^(.+?)\s*\((.+?)\)\s*$/);
+      if (catMatch) return { label: catMatch[1]!.trim(), category: catMatch[2]!.trim() };
+      return { label: l };
+    });
   } else if (section === 'custom_sections') {
     const parsed = parseJsonField(String(form.get('custom_sections_json') || '[]'));
     if (!parsed.ok) {

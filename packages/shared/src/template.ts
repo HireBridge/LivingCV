@@ -116,6 +116,28 @@ export const ThemeProps = z.object({
 });
 export type ThemeProps = z.infer<typeof ThemeProps>;
 
+// Evidence-linked signals (§11). Auto-derived demonstrated signals from project
+// data plus admin-authored asserted signals for self-reported skills.
+export const EvidenceSignal = z.object({
+  label: z.string(),
+  evidenceUrl: z.string(),
+  evidenceType: z.enum(['repo', 'demo', 'package', 'case-study', 'kind']),
+  sourceSlug: z.string(),
+});
+export type EvidenceSignal = z.infer<typeof EvidenceSignal>;
+
+export const AssertedSignal = z.object({
+  label: z.string(),
+  category: z.string().optional(),
+});
+export type AssertedSignal = z.infer<typeof AssertedSignal>;
+
+export const SignalsProps = z.object({
+  demonstrated: z.array(EvidenceSignal).default([]),
+  asserted: z.array(AssertedSignal).default([]),
+});
+export type SignalsProps = z.infer<typeof SignalsProps>;
+
 export const CustomSectionProps = z.object({
   id: z.string(),
   title: z.string(),
@@ -137,6 +159,7 @@ export const TemplateProps = z.object({
   // When true, the template shows a "TalentMCP" nav button linking to the
   // public-MCP connection instructions. Driven by publicmcp.enabled.
   talentMcpEnabled: z.boolean().optional(),
+  signals: SignalsProps.default({ demonstrated: [], asserted: [] }),
 });
 export type TemplateProps = z.infer<typeof TemplateProps>;
 
@@ -183,6 +206,14 @@ export const SETTING_KEYS = {
   resumeFilename: 'resume.filename',
   mcpMasterKey: 'mcp.master_key',
   publicMcpEnabled: 'publicmcp.enabled',
+  jobopsSyncEnabled: 'mcp.jobops_sync_enabled',
+  syncToJobOps: 'notify.sync_to_jobops',
+  hirebridgeApiUrl: 'hirebridge.api_url',
+  hirebridgeClientId: 'hirebridge.client_id',
+  hirebridgeToken: 'hirebridge.token', // encrypted
+  hirebridgeConnected: 'hirebridge.connected',
+  hirebridgeProfileUrl: 'hirebridge.profile_url',
+  hirebridgeRequestId: 'hirebridge.request_id', // encrypted
   updatesRepo: 'updates.repo',
   updatesBranch: 'updates.branch',
   siteTwitterHandle: 'site.twitter_handle',
@@ -205,6 +236,8 @@ export const ENCRYPTED_SETTING_KEYS: ReadonlySet<string> = new Set<string>([
   SETTING_KEYS.emailApiKey,
   SETTING_KEYS.googleClientSecret,
   SETTING_KEYS.mcpMasterKey,
+  SETTING_KEYS.hirebridgeToken,
+  SETTING_KEYS.hirebridgeRequestId,
 ]);
 
 // LLM provider for the orchestrator (§7). Read from app_settings[agent.llm_provider].

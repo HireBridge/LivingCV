@@ -58,6 +58,7 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
         <a href="?tab=case-studies" style={{ textDecoration: 'none', color: currentTab === 'case-studies' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'case-studies' ? 'bold' : 'normal' }}>Case Studies</a>
         <a href="?tab=order" style={{ textDecoration: 'none', color: currentTab === 'order' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'order' ? 'bold' : 'normal' }}>Order</a>
         <a href="?tab=custom" style={{ textDecoration: 'none', color: currentTab === 'custom' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'custom' ? 'bold' : 'normal' }}>Custom Sections</a>
+        <a href="?tab=signals" style={{ textDecoration: 'none', color: currentTab === 'signals' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'signals' ? 'bold' : 'normal' }}>Signals</a>
       </div>
 
       {sp.err ? <div className="flash error">Error saving: {sp.err}</div> : null}
@@ -172,6 +173,39 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
           slug={slug} 
           initialSections={getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', [])} 
         />
+      )}
+
+      {currentTab === 'signals' && (
+        <section className="admin-card">
+          <h3>Asserted Signals</h3>
+          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
+            Self-reported skills and attributes. Add one skill per line with an optional
+            category in parentheses, e.g. <code>Python (language)</code>.
+            <br />
+            <strong>Demonstrated signals</strong> (repo, demo, case-study links) are
+            auto-derived from your projects — no need to add them here.
+          </p>
+          <form method="post" action="/api/admin/content/save" className="row">
+            <input type="hidden" name="template_slug" value={slug} />
+            <input type="hidden" name="section" value="signals" />
+            <div className="row">
+              <label>Asserted skills (one per line)</label>
+              <textarea
+                name="signals_lines"
+                defaultValue={
+                  (getSection<Array<{ label: string; category?: string }>>(db, slug, 'signals', []))
+                    .map(s => s.category ? `${s.label} (${s.category})` : s.label)
+                    .join('\n')
+                }
+                rows={10}
+                placeholder={'Distributed systems (architecture)\nPython (language)\nTeam leadership (leadership)'}
+              />
+            </div>
+            <div className="actions">
+              <button type="submit">Save asserted signals</button>
+            </div>
+          </form>
+        </section>
       )}
     </div>
   );

@@ -157,6 +157,31 @@ export function countIpSessionsToday(db: Db, ipHash: string): number {
   return row.n;
 }
 
+// ── synced state (career packet, etc.) ──────────────────────────────────────
+//
+// The synced_state table holds externally-pushed data (e.g., a career packet
+// snapshot from JobOps). Values are JSON strings; callers parse them after read.
+
+export function upsertSyncedState(db: Db, key: string, value: string, source: string): void {
+  const now = new Date().toISOString();
+  db.prepare(
+    `INSERT INTO synced_state (key, value, source, synced_at)
+     VALUES (@key, @value, @source, @now)
+     ON CONFLICT(key) DO UPDATE SET value = @value, source = @source, synced_at = @now`,
+  ).run({ key, value, source, now });
+}
+
+export function getSyncedState(db: Db, key: string): { value: string; source: string | null; synced_at: string } | null {
+  const row = db.prepare<[string], { value: string; source: string | null; synced_at: string }>(
+    'SELECT value, source, synced_at FROM synced_state WHERE key = ?',
+  ).get(key);
+  return row ?? null;
+}
+
+export function deleteSyncedState(db: Db, key: string): void {
+  db.prepare('DELETE FROM synced_state WHERE key = ?').run(key);
+}
+
 export function recordChatMessage(db: Db, params: {
   sessionId: string;
   role: 'user' | 'assistant' | 'tool';

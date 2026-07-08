@@ -214,6 +214,32 @@ footer{ padding:52px 0 70px; }
 /* reveal on scroll */
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity 0.6s ease, transform 0.6s ease; }
 .reveal.is-visible{ opacity:1; transform:translateY(0); }
+
+/* signals section */
+.signals-section{  }
+.signal-group{ margin-bottom:24px; }
+.signal-group:last-child{ margin-bottom:0; }
+.signal-group-label{ font-size:0.85rem; font-weight:600; color:var(--ink-soft); margin:0 0 12px; }
+.signal-badge--note{ font-weight:400; font-size:0.78rem; color:var(--ink-soft); }
+.signal-badges{ display:flex; flex-wrap:wrap; gap:10px; }
+.signal-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.86rem; font-weight:500; padding:6px 14px; border-radius:20px;
+  text-decoration:none;
+}
+.signal-badge--demonstrated{
+  color:var(--signal); background:var(--signal-soft);
+  border:1px solid var(--signal);
+}
+.signal-badge--demonstrated:hover{
+  color:var(--paper); background:var(--signal);
+}
+.signal-link-icon{ display:inline-flex; align-items:center; }
+.signal-badge--asserted{
+  color:var(--ink-soft); background:var(--paper-deep);
+  border:1px solid var(--rule);
+}
+.signal-badge--cat{ margin-left:3px; font-size:0.78rem; color:var(--ink-soft); }
 `;
 
 // Build a runtime <style> override from admin-provided theme tokens. Only

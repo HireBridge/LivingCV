@@ -3,6 +3,8 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import { getSetting } from '@/lib/settings';
 import { SETTING_KEYS } from '@livingcv/shared';
 import type { Db } from '@livingcv/db';
+import type { CareerPacket } from '@livingcv/shared';
+import { getSyncedCareerPacket } from '@/lib/synced-state';
 
 export async function getMcpClient(db: Db) {
   const baseUrl = getSetting(db, SETTING_KEYS.jobopsBaseUrl) || process.env.JOBOPS_BASE_URL;
@@ -27,15 +29,20 @@ export async function getMcpClient(db: Db) {
   };
 }
 
-export async function getCareerPacket(db: Db) {
+export async function getCareerPacket(db: Db): Promise<CareerPacket | string | null> {
+  // Check synced state first (local copy pushed by JobOps via master relay).
+  const local = getSyncedCareerPacket(db);
+  if (local) return local;
+
+  // Fall back to jobops MCP get_career_packet.
   const mcp = await getMcpClient(db);
   try {
     const res = await mcp.client.callTool({ name: 'get_career_packet', arguments: {} });
-    if (res.structuredContent) return res.structuredContent;
+    if (res.structuredContent) return res.structuredContent as unknown as CareerPacket;
     const blocks = (res.content ?? []) as Array<{ type: string; text?: string }>;
     for (const b of blocks) {
       if (b.type === 'text' && typeof b.text === 'string') {
-        try { return JSON.parse(b.text); } catch { return b.text; }
+        try { return JSON.parse(b.text) as CareerPacket; } catch { return b.text; }
       }
     }
     return null;

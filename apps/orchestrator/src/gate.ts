@@ -9,6 +9,8 @@ import type { Db } from '@livingcv/db';
 import type { ToolDef } from './llm/types.js';
 import { setSessionEmailVerified } from './db.js';
 import { fireLeadWebhook } from './webhook.js';
+import { getSetting } from './settings.js';
+import { syncLeadToJobOps } from './lead-sync.js';
 
 export const EMAIL_RX = /^[^\s@]+@([^\s@]+\.[^\s@]+)$/;
 
@@ -65,6 +67,10 @@ export function submitWorkEmailImpl(
   setSessionEmailVerified(db, sessionId, email, domain, domain);
   // Fire the lead webhook (best-effort, never blocks the response).
   void fireLeadWebhook(db, { email, domain, channel: 'text', sessionId });
+  // Sync lead to JobOps if enabled (best-effort, fire-and-forget).
+  if (getSetting(db, 'notify.sync_to_jobops') === '1') {
+    void syncLeadToJobOps(db, { email, domain, channel: 'text', sessionId });
+  }
   return { ok: true, message: `Thanks — continuing with ${domain}.` };
 }
 
