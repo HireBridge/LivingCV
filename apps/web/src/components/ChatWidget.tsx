@@ -31,9 +31,20 @@ export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) 
   const messagesRef = useRef<MessageEntry[]>([]);
   const assistantsRef = useRef<MessageEntry>({ role: 'assistant', text: '', tools: [] });
   const toolsRef = useRef<ChatToolEvent[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [typingDots, setTypingDots] = useState('');
+
+  useEffect(() => {
+    if (!busy) return;
+    const interval = setInterval(() => setTypingDots(d => d.length >= 3 ? '' : d + '.'), 400);
+    return () => clearInterval(interval);
+  }, [busy]);
 
   useEffect(() => {
     messagesRef.current = messages;
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   async function ensureSession(forceNew = false): Promise<string> {
@@ -278,10 +289,11 @@ export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) 
             {messages.map((m, i) => {
               // Hide the initial context message from the UI
               if (m.text.startsWith('[System Context:')) return null;
+              const isTyping = busy && i === messages.length - 1 && m.role === 'assistant' && !m.text && (!m.tools || m.tools.length === 0);
               return (
                 <div key={i} style={messageRowStyle(m.role)}>
                   <div style={messageBubbleStyle(m.role)}>
-                    {m.text}
+                    {isTyping ? <span style={{ opacity: 0.6, fontStyle: 'italic' }}>typing{typingDots}</span> : m.text}
                     {m.tools && m.tools.length > 0 ? (
                       <ul style={toolsStyle}>
                         {m.tools.map((t) => (
@@ -294,6 +306,7 @@ export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) 
               );
             })}
             {error ? <div style={errorStyle}>{error}</div> : null}
+            <div ref={scrollRef} />
           </div>
           <form
             style={inputRowStyle}

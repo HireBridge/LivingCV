@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Space_Grotesk, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
 import { getDb } from '@/lib/db';
 import { getAllSettings } from '@/lib/settings';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--next-font-heading', display: 'swap' });
 const sourceSerif = Source_Serif_4({ subsets: ['latin'], variable: '--next-font-body', display: 'swap' });
@@ -53,7 +54,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <style>{'.reveal{opacity:1 !important; transform:none !important;}'}</style>
         </noscript>
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {s['seo.google_analytics_id'] && <GoogleAnalytics gaId={s['seo.google_analytics_id']} />}
+      </body>
     </html>
   );
 }

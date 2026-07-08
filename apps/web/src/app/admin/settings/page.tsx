@@ -191,6 +191,11 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               </div>
             </div>
 
+            <div className="row" style={{ marginTop: 14 }}>
+              <label>Google Analytics ID (e.g. G-XXXXXXXXXX)</label>
+              <input name="seo.google_analytics_id" defaultValue={all['seo.google_analytics_id'] ?? ''} placeholder="G-..." />
+            </div>
+
             <div className="actions">
               <button type="submit">Save</button>
             </div>

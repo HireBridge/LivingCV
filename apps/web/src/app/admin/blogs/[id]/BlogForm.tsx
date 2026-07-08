@@ -11,6 +11,13 @@ function generateRandomSlug() {
   return 'post-' + Math.random().toString(36).substring(2, 10);
 }
 
+const editorOptions = {
+  spellChecker: false,
+  minHeight: '400px',
+  placeholder: "Write your post here in Markdown...",
+  status: ['lines', 'words', 'cursor'],
+};
+
 type BlogData = {
   id?: number | string;
   title?: string;
@@ -98,12 +105,7 @@ export default function BlogForm({ blog }: { blog: BlogData }) {
           <SimpleMdeReact 
             value={markdown} 
             onChange={setMarkdown} 
-            options={{
-              spellChecker: false,
-              minHeight: '400px',
-              placeholder: "Write your post here in Markdown...",
-              status: ['lines', 'words', 'cursor'],
-            }}
+            options={editorOptions}
           />
         </div>
       </div>

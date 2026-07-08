@@ -85,7 +85,18 @@ header.nav{
 .nav-links{ display:flex; gap:24px; list-style:none; margin:0; padding:0; }
 .nav-links a{ color:var(--ink-soft); font-size:0.92rem; font-weight:500; text-decoration:none; }
 .nav-links a:hover{ color:var(--signal); }
-@media (max-width:600px){ .nav-links{ gap:14px; } .nav-links a{ font-size:0.82rem; } }
+.nav-blog-btn {
+  background: var(--ink);
+  color: var(--paper) !important;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+  font-weight: 600;
+}
+.nav-blog-btn:hover {
+  opacity: 0.85;
+}
+@media (max-width:600px){ .nav-links{ gap:14px; } .nav-links a{ font-size:0.82rem; } .nav-blog-btn{ padding:4px 10px; } }
 
 /* HERO */
 .hero{ padding:76px 0 56px; }

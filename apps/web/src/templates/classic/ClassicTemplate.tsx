@@ -61,10 +61,10 @@ export function ClassicTemplate(props: TemplateProps) {
         <div className="nav-inner">
           <a className="nav-brand" href="#top">{brand}</a>
           <ul className="nav-links">
-            <li><a href="/blog">Blog</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#background">Background</a></li>
-            <li><a href="#contact">Contact</a></li>
+            {!props.hiddenSections?.includes('projects') && projects.length > 0 && <li><a href="#projects">Projects</a></li>}
+            {!props.hiddenSections?.includes('background') && <li><a href="#background">Background</a></li>}
+            {!props.hiddenSections?.includes('footer') && <li><a href="#contact">Contact</a></li>}
+            <li><a href="/blog" className="nav-blog-btn">Blog</a></li>
           </ul>
         </div>
       </header>

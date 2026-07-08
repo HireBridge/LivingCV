@@ -174,8 +174,8 @@ export function recordChatMessage(db: Db, params: {
     role: params.role,
     content: params.content,
     tool_name: params.toolName,
-    tool_args: params.toolArgs === undefined ? null : JSON.stringify(params.toolArgs),
-    tool_result: params.toolResult === undefined ? null : JSON.stringify(params.toolResult),
+    tool_args: params.toolArgs == null ? null : JSON.stringify(params.toolArgs),
+    tool_result: params.toolResult == null ? null : JSON.stringify(params.toolResult),
     now,
   });
 }

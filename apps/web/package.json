@@ -16,6 +16,7 @@
     "@livingcv/db": "*",
     "@livingcv/shared": "*",
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@next/third-parties": "^16.2.10",
     "bcryptjs": "^3.0.0",
     "easymde": "^2.21.0",
     "iron-session": "^8.0.0",

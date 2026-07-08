@@ -84,13 +84,13 @@ export default async function TranscriptDetailPage({ params }: { params: Promise
                 
                 {m.content && <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>}
                 
-                {m.tool_args && (
+                {m.tool_args && m.tool_args !== 'null' && (
                   <pre style={{ marginTop: 8, padding: 8, background: 'rgba(0,0,0,0.05)', borderRadius: 4, overflowX: 'auto' }}>
                     {m.tool_args}
                   </pre>
                 )}
                 
-                {m.tool_result && m.role === 'tool' && (
+                {m.tool_result && m.tool_result !== 'null' && m.role === 'tool' && (
                   <pre style={{ marginTop: 8, padding: 8, background: 'rgba(0,0,0,0.05)', borderRadius: 4, overflowX: 'auto' }}>
                     Result: {m.tool_result.length > 500 ? m.tool_result.slice(0, 500) + '...' : m.tool_result}
                   </pre>
