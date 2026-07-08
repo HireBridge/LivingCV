@@ -18,7 +18,7 @@ interface MessageEntry {
 
 const STORAGE_KEY = 'portfolio.chat.sessionId';
 
-export function ChatWidget() {
+export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
@@ -36,8 +36,8 @@ export function ChatWidget() {
     messagesRef.current = messages;
   }, [messages]);
 
-  async function ensureSession(): Promise<string> {
-    if (sessionId) return sessionId;
+  async function ensureSession(forceNew = false): Promise<string> {
+    if (!forceNew && sessionId) return sessionId;
     const r = await fetch('/api/orchestrator/api/chat/session', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -51,11 +51,11 @@ export function ChatWidget() {
     return j.sessionId;
   }
 
-  async function send(text: string) {
+  async function send(text: string, forceNew = false) {
     setBusy(true);
     setError(null);
     try {
-      const sid = await ensureSession();
+      const sid = await ensureSession(forceNew);
       // Optimistic user message.
       const um: MessageEntry = { role: 'user', text };
       assistantsRef.current = { role: 'assistant', text: '', tools: [] };
@@ -68,7 +68,18 @@ export function ChatWidget() {
         body: JSON.stringify({ sessionId: sid, text }),
       });
       if (!r.ok || !r.body) {
-        setError(`message: ${r.status}`);
+        if (r.status === 404) {
+          if (typeof window !== 'undefined') window.localStorage.removeItem(STORAGE_KEY);
+          setSessionId(null);
+          if (!forceNew) {
+            // Remove optimistic messages and retry
+            setMessages((prev) => prev.slice(0, prev.length - 2));
+            return send(text, true);
+          }
+          setError('Session expired. Please try sending your message again to start a new chat.');
+        } else {
+          setError(`message: ${r.status}`);
+        }
         setBusy(false);
         return;
       }
@@ -140,15 +151,70 @@ export function ChatWidget() {
     }
   }
 
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [visitorName, setVisitorName] = useState('');
+  const [visitorEmail, setVisitorEmail] = useState('');
+  const [visitorInfo, setVisitorInfo] = useState('');
+
+  // When form is submitted, send an initial silent or visible message with their info
+  async function submitForm(e: React.FormEvent | React.MouseEvent, shouldStartChat: boolean, forceNew = false) {
+    e.preventDefault();
+    if (!visitorName.trim() || !visitorEmail.trim()) return;
+    
+    try {
+      const sid = await ensureSession(forceNew);
+      // Inform the backend of the email so it appears in the Leads tab
+      const emailRes = await fetch('/api/orchestrator/api/chat/submit-email', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ sessionId: sid, email: visitorEmail }),
+      });
+      if (emailRes.status === 404 && !forceNew) {
+         if (typeof window !== 'undefined') window.localStorage.removeItem(STORAGE_KEY);
+         setSessionId(null);
+         return submitForm(e, shouldStartChat, true);
+      }
+
+      if (!shouldStartChat || !agentEnabled) {
+        // Send lead info as a silent message to record it, ignoring any LLM errors
+        const msgRes = await fetch('/api/orchestrator/api/chat/message', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ sessionId: sid, text: `[Lead Submission] Name: ${visitorName}, Email: ${visitorEmail}, Info: ${visitorInfo || 'None'}` }),
+        }).catch(() => null);
+        if (msgRes && msgRes.status === 404 && !forceNew) {
+           if (typeof window !== 'undefined') window.localStorage.removeItem(STORAGE_KEY);
+           setSessionId(null);
+           return submitForm(e, shouldStartChat, true);
+        }
+        
+        setOpen(false);
+        setVisitorName('');
+        setVisitorEmail('');
+        setVisitorInfo('');
+        alert('Thank you! Your information has been submitted. We will be in touch shortly.');
+        return;
+      }
+    } catch {
+      // ignore
+    }
+
+    setFormSubmitted(true);
+    
+    // Send an initial system-context-like message from the user
+    const contextText = `[System Context: The user's name is ${visitorName}. Their email is ${visitorEmail}. Additional info provided: ${visitorInfo || 'None'}. Please welcome them by name.]`;
+    await send(contextText);
+  }
+
   if (!open) {
     return (
       <button
         type="button"
-        aria-label="Open chat"
+        aria-label={agentEnabled ? "Open chat" : "Get in touch"}
         onClick={() => setOpen(true)}
         style={launcherStyle}
       >
-        Chat
+        {agentEnabled ? "Chat" : "Get in touch"}
       </button>
     );
   }
@@ -156,45 +222,100 @@ export function ChatWidget() {
   return (
     <div style={panelStyle}>
       <header style={headerStyle}>
-        <strong>Recruiter concierge</strong>
+        <strong>{agentEnabled ? 'Concierge' : 'Get in touch'}</strong>
         <button type="button" onClick={() => setOpen(false)} aria-label="Close">×</button>
       </header>
-      <div style={messagesStyle} aria-live="polite">
-        {messages.map((m, i) => (
-          <div key={i} style={messageRowStyle(m.role)}>
-            <div style={messageBubbleStyle(m.role)}>
-              {m.text}
-              {m.tools && m.tools.length > 0 ? (
-                <ul style={toolsStyle}>
-                  {m.tools.map((t) => (
-                    <li key={t.id}>{t.ok === undefined ? '⟳' : t.ok ? '✓' : '✗'} {t.name}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
+      
+      {!formSubmitted ? (
+        <form onSubmit={(e) => submitForm(e, agentEnabled)} style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+          <p style={{ margin: '0 0 10px 0', color: 'var(--ink)' }}>{agentEnabled ? 'Please introduce yourself before starting the chat.' : 'Leave us a message and we will get back to you.'}</p>
+          <div>
+            <label style={{ display: 'block', marginBottom: 4, fontSize: '0.9rem' }}>Name <span style={{color: 'red'}}>*</span></label>
+            <input required type="text" value={visitorName} onChange={e => setVisitorName(e.target.value)} style={formInputStyle} placeholder="Your name" />
           </div>
-        ))}
-        {error ? <div style={errorStyle}>{error}</div> : null}
-      </div>
-      <form
-        style={inputRowStyle}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const text = input.trim();
-          if (!text || busy) return;
-          setInput('');
-          void send(text);
-        }}
-      >
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about projects, skills, work history…"
-          disabled={busy}
-          style={inputStyle}
-        />
-        <button type="submit" disabled={busy || !input.trim()} style={sendStyle}>Send</button>
-      </form>
+          <div>
+            <label style={{ display: 'block', marginBottom: 4, fontSize: '0.9rem' }}>Email <span style={{color: 'red'}}>*</span></label>
+            <input required type="email" value={visitorEmail} onChange={e => setVisitorEmail(e.target.value)} style={formInputStyle} placeholder="you@company.com" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: 4, fontSize: '0.9rem' }}>Additional Info</label>
+            <textarea value={visitorInfo} onChange={e => setVisitorInfo(e.target.value)} style={{...formInputStyle, height: 80, resize: 'none'}} placeholder="Any context or questions..." />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 'auto' }}>
+            {agentEnabled ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <button 
+                  type="button" 
+                  onClick={(e) => submitForm(e, false)} 
+                  disabled={!visitorName.trim() || !visitorEmail.trim()} 
+                  style={{...sendStyle, padding: '12px 16px', borderRadius: 6, background: 'var(--rule)', color: 'var(--ink)'}}
+                >
+                  Submit
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={!visitorName.trim() || !visitorEmail.trim()} 
+                  style={{...sendStyle, padding: '12px 16px', borderRadius: 6}}
+                >
+                  Submit and start chat with concierge
+                </button>
+              </div>
+            ) : (
+              <button 
+                type="button" 
+                onClick={(e) => submitForm(e, false)} 
+                disabled={!visitorName.trim() || !visitorEmail.trim()} 
+                style={{...sendStyle, padding: '12px 16px', borderRadius: 6, background: 'var(--rule)', color: 'var(--ink)'}}
+              >
+                Submit
+              </button>
+            )}
+          </div>
+        </form>
+      ) : (
+        <>
+          <div style={messagesStyle} aria-live="polite">
+            {messages.map((m, i) => {
+              // Hide the initial context message from the UI
+              if (m.text.startsWith('[System Context:')) return null;
+              return (
+                <div key={i} style={messageRowStyle(m.role)}>
+                  <div style={messageBubbleStyle(m.role)}>
+                    {m.text}
+                    {m.tools && m.tools.length > 0 ? (
+                      <ul style={toolsStyle}>
+                        {m.tools.map((t) => (
+                          <li key={t.id}>{t.ok === undefined ? '⟳' : t.ok ? '✓' : '✗'} {t.name}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
+            {error ? <div style={errorStyle}>{error}</div> : null}
+          </div>
+          <form
+            style={inputRowStyle}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const text = input.trim();
+              if (!text || busy) return;
+              setInput('');
+              void send(text);
+            }}
+          >
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about projects, skills, work history…"
+              disabled={busy}
+              style={inputStyle}
+            />
+            <button type="submit" disabled={busy || !input.trim()} style={sendStyle}>Send</button>
+          </form>
+        </>
+      )}
     </div>
   );
 }
@@ -224,7 +345,7 @@ const launcherStyle: React.CSSProperties = {
 };
 const panelStyle: React.CSSProperties = {
   position: 'fixed', right: 20, bottom: 20, zIndex: 30,
-  width: 360, height: 520, background: 'var(--paper)', color: 'var(--ink)',
+  width: 360, height: 580, background: 'var(--paper)', color: 'var(--ink)',
   border: '1px solid var(--rule)', borderRadius: 10, display: 'flex', flexDirection: 'column',
   fontFamily: "'Source Serif 4', Georgia, serif", boxShadow: '0 6px 24px rgba(0,0,0,0.22)',
 };
@@ -260,3 +381,13 @@ function messageBubbleStyle(role: 'user' | 'assistant'): React.CSSProperties {
 }
 const toolsStyle: React.CSSProperties = { marginTop: 6, marginBottom: 0, paddingLeft: 18, fontSize: '0.85em', opacity: 0.8 };
 const errorStyle: React.CSSProperties = { color: 'var(--rust)', fontSize: '0.85em', padding: 8 };
+const formInputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '8px 12px',
+  borderRadius: 6,
+  border: '1px solid var(--rule)',
+  background: 'transparent',
+  color: 'var(--ink)',
+  fontFamily: 'inherit',
+  boxSizing: 'border-box',
+};

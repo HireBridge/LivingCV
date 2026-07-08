@@ -8,6 +8,7 @@
 
 import { randomUUID } from 'node:crypto';
 import type { Db } from '@livingcv/db';
+import { systemLog } from '@livingcv/db';
 import { LLM_PROVIDERS, SETTING_KEYS } from '@livingcv/shared';
 import { getSetting } from './settings.js';
 import { MAX_TOOL_ROUNDS, MAX_INPUT_CHARS } from './llm/types.js';
@@ -68,7 +69,6 @@ export type SseEvent =
   | { type: 'done' }
   | { type: 'error'; message: string };
 
-const DEFAULT_JOBOPS_BASE = process.env.JOBOPS_BASE_URL || 'http://jobops:7891';
 
 export async function runTurn(
   db: Db,
@@ -94,6 +94,11 @@ export async function runTurn(
     return;
   }
 
+  recordChatMessage(db, {
+    sessionId, role: 'user', content: userText.slice(0, MAX_INPUT_CHARS),
+    toolName: null, toolArgs: null, toolResult: null,
+  });
+
   const llm = getLlmConfig(db);
   if (!llm) {
     onEvent({ type: 'error', message: 'agent not configured (admin: set agent.llm_provider/api_key/model)' });
@@ -116,13 +121,14 @@ export async function runTurn(
   let mcp: McpSession | null = null;
   if (session.email_verified === 1) {
     try {
-      mcp = await connectMcpPublic(DEFAULT_JOBOPS_BASE);
+      // Connect to jobops /mcp/public iff we're post-gate.
+      const jobopsBase = process.env.JOBOPS_BASE_URL || 'http://localhost:7891';
+      mcp = await connectMcpPublic(jobopsBase);
       for (const t of mcp.tools) {
         tools.push({ name: t.name, description: t.description, inputSchema: t.inputSchema });
       }
     } catch (e) {
-      onEvent({ type: 'error', message: `mcp connect failed: ${(e as Error).message}` });
-      return;
+      systemLog(db, 'warn', `MCP connect failed, continuing without MCP tools: ${(e as Error).message}`);
     }
   }
 
@@ -135,10 +141,7 @@ export async function runTurn(
   // `toolResults` on the next ChatRequest — each adapter constructs
   // its own native tool-role messages from them.
   const messages: ChatMessage[] = [{ role: 'user', content: userText.slice(0, MAX_INPUT_CHARS) }];
-  recordChatMessage(db, {
-    sessionId, role: 'user', content: userText.slice(0, MAX_INPUT_CHARS),
-    toolName: null, toolArgs: null, toolResult: null,
-  });
+
 
   let finalText = '';
   let pendingToolResults: ToolResult[] = [];

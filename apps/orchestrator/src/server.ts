@@ -22,6 +22,7 @@ import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { getDb } from './db.js';
 import { createRecruiterSession, getSession, countIpSessionsToday, bumpSessionActivity } from './db.js';
+import { systemLog } from '@livingcv/db';
 import { hashIp, EMAIL_RX, submitWorkEmailImpl } from './gate.js';
 import { getLimits, checkPreTurnGuards } from './limits.js';
 import { runTurn, type SseEvent } from './turn.js';
@@ -105,7 +106,8 @@ app.post('/api/chat/submit-email', (req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[orchestrator] listening on :${PORT}`);
+  const db = getDb();
+  systemLog(db, 'info', `[orchestrator] listening on :${PORT}`);
 });
 
 

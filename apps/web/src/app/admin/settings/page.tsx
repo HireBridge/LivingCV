@@ -5,6 +5,7 @@ import type { Db } from '@livingcv/db';
 import { LlmConnectionsForm } from './LlmConnectionsForm';
 import { McpConfigForm } from './McpConfigForm';
 import { ConnectivityForm } from './ConnectivityForm';
+import { SystemLogsViewer } from './SystemLogsViewer';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     [SETTING_KEYS.limitsIpSessionsPerDay]: '20',
   };
   const get = (k: string) => all[k] ?? baseDefaults[k as keyof typeof baseDefaults] ?? '';
+  const hasLlmKey = !!getSettingForBrowser(db, SETTING_KEYS.agentLlmApiKey);
   
   const currentTab = sp.tab || 'general';
   
@@ -71,6 +73,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <a href="?tab=voice" style={{ textDecoration: 'none', color: currentTab === 'voice' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'voice' ? 'bold' : 'normal' }}>Voice</a>
       <a href="?tab=mcp" style={{ textDecoration: 'none', color: currentTab === 'mcp' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'mcp' ? 'bold' : 'normal' }}>MCP</a>
       <a href="?tab=gate" style={{ textDecoration: 'none', color: currentTab === 'gate' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'gate' ? 'bold' : 'normal' }}>Email Gate</a>
+      <a href="?tab=logs" style={{ textDecoration: 'none', color: currentTab === 'logs' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'logs' ? 'bold' : 'normal' }}>System Logs</a>
     </div>
   );
 
@@ -130,7 +133,15 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
-                <label><input type="checkbox" name="agent.enabled" defaultChecked={(all['agent.enabled'] ?? '1') === '1'} /> Agent enabled</label>
+                <label style={{ opacity: !hasLlmKey ? 0.5 : 1 }}>
+                  <input 
+                    type="checkbox" 
+                    name="agent.enabled" 
+                    defaultChecked={hasLlmKey && (all['agent.enabled'] ?? '1') === '1'} 
+                    disabled={!hasLlmKey}
+                  /> 
+                  Agent enabled {!hasLlmKey && '(Requires LLM API Key in AI & LLM tab)'}
+                </label>
                 <label><input type="checkbox" name="gate.enabled" defaultChecked={(all['gate.enabled'] ?? '1') === '1'} /> Email gate enabled</label>
               </div>
               <div className="actions">
@@ -361,6 +372,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               <button type="submit">Add Domain</button>
             </div>
           </form>
+        </section>
+      )}
+
+      {currentTab === 'logs' && (
+        <section className="admin-card">
+          <h3>System Logs</h3>
+          <p>Application logs for debugging. Powered by Winston and SQLite.</p>
+          <SystemLogsViewer />
         </section>
       )}
 

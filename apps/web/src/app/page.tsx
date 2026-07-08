@@ -55,7 +55,8 @@ export default async function LandingPage() {
   // Voice widget config (Phase 3). voice.enabled is the master gate; the
   // widget renders nothing when off.
   const voiceEnabled = (getSetting(db, 'voice.enabled') ?? '0').trim() === '1';
-  const agentEnabled = (getSetting(db, 'agent.enabled') ?? '1').trim() === '1';
+  const hasLlmKey = !!getSetting(db, 'agent.llm_api_key');
+  const agentEnabled = hasLlmKey && (getSetting(db, 'agent.enabled') ?? '1').trim() === '1';
 
   const Component = entry.Component;
 
@@ -89,7 +90,7 @@ export default async function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Component {...props} />
-      {agentEnabled && <ChatWidget />}
+      <ChatWidget agentEnabled={agentEnabled} />
       <VoiceWidget config={{ enabled: voiceEnabled }} />
     </>
   );

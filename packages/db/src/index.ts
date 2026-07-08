@@ -4,6 +4,7 @@ import { seedDisposableDomains } from './seed.js';
 
 export { applyPendingMigrations } from './migrate.js';
 export { seedDisposableDomains } from './seed.js';
+export { systemLog, baseLogger } from './logger.js';
 
 // Instance type alias so callers don't have to import better-sqlite3's namespace
 // shape directly.

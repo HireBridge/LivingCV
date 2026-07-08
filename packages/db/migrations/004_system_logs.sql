@@ -1,0 +1,7 @@
+CREATE TABLE system_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    level TEXT NOT NULL,
+    message TEXT NOT NULL,
+    meta TEXT
+);
