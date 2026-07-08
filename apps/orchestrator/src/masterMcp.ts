@@ -121,7 +121,12 @@ export function attachMasterMcp(app: express.Express) {
         }
       });
 
-      const transport = new SSEServerTransport('/api/mcp/messages', res);
+      // The path the client is told to POST messages back to. Behind the Caddy
+      // `/mcp-admin/*` route this must be the EXTERNAL path (/mcp-admin/messages),
+      // which Caddy rewrites back to /api/mcp/messages here. Defaults to the raw
+      // path for direct (non-proxied) use. Set MCP_MESSAGES_PATH in compose.
+      const messagesPath = process.env.MCP_MESSAGES_PATH || '/api/mcp/messages';
+      const transport = new SSEServerTransport(messagesPath, res);
       transports.set(transport.sessionId, transport);
       
       res.on('close', () => {

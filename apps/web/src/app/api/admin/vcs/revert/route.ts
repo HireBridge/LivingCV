@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: Request) {
@@ -8,7 +9,7 @@ export async function POST(request: Request) {
   const id = parseInt(idStr, 10);
 
   if (!id || isNaN(id)) {
-    return NextResponse.redirect(new URL('/admin/vcs', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/vcs', externalBase(request)), { status: 303 });
   }
 
   // Fetch the target row
@@ -24,5 +25,5 @@ export async function POST(request: Request) {
     ).run(row.template_slug, row.section_key, row.content, now);
   }
 
-  return NextResponse.redirect(new URL('/admin/vcs?success=1', request.url), { status: 303 });
+  return NextResponse.redirect(new URL('/admin/vcs?success=1', externalBase(request)), { status: 303 });
 }

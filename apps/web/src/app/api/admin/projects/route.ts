@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { createProject, deleteProject } from '@/lib/content';
 
@@ -51,19 +52,19 @@ export async function POST(request: Request) {
   if (action === 'delete') {
     const id = Number(form.get('id'));
     if (Number.isFinite(id)) deleteProject(db, id);
-    return NextResponse.redirect(new URL('/admin/projects', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/projects', externalBase(request)), { status: 303 });
   }
   if (action === 'create') {
     const slug = String(form.get('slug') || '').trim();
     const fields = readFormFields(form);
     if (!slug) {
       return NextResponse.redirect(
-        new URL('/admin/projects?err=slug-required', request.url),
+        new URL('/admin/projects?err=slug-required', externalBase(request)),
         { status: 303 },
       );
     }
     const id = createProject(db, { slug, ...fields });
-    return NextResponse.redirect(new URL(`/admin/projects/${id}`, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/admin/projects/${id}`, externalBase(request)), { status: 303 });
   }
-  return NextResponse.redirect(new URL('/admin/projects', request.url), { status: 303 });
+  return NextResponse.redirect(new URL('/admin/projects', externalBase(request)), { status: 303 });
 }

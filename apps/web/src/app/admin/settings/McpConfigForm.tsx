@@ -13,7 +13,7 @@ export function McpConfigForm({
   const [keyVisible, setKeyVisible] = useState(false);
   const [masterKey, setMasterKey] = useState(initialData['mcp.master_key'] || '');
   
-  const connectionString = `https://${domain}/api/orchestrator/mcp/sse`;
+  const connectionString = `https://${domain}/mcp-admin/sse`;
 
   const handleRotate = () => {
     // Generate a random 32-character hex string for the new key
@@ -99,12 +99,11 @@ export function McpConfigForm({
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/sse-client",
-        "${connectionString}"
-      ],
-      "env": {
-        "AUTHORIZATION": "Bearer ${keyVisible ? masterKey : '••••••••••••••••••••••••••••••••'}"
-      }
+        "mcp-remote",
+        "${connectionString}",
+        "--header",
+        "Authorization: Bearer ${keyVisible ? masterKey : '••••••••••••••••••••••••••••••••'}"
+      ]
     }
   }
 }`}

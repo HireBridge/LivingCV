@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { deleteBlog } from '@/lib/blogs';
 
@@ -17,5 +18,5 @@ export async function POST(request: Request) {
     }
   }
   
-  return NextResponse.redirect(new URL('/admin/blogs', request.url), { status: 303 });
+  return NextResponse.redirect(new URL('/admin/blogs', externalBase(request)), { status: 303 });
 }

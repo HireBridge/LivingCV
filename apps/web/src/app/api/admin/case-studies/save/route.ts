@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { upsertCaseStudy } from '@/lib/content';
 import type { CaseStudyFrontmatter } from '@/lib/types';
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     const projectIdRaw = String(form.get('project_id') || '');
     const projectId = projectIdRaw ? Number(projectIdRaw) : null;
     if (!slug) {
-      return NextResponse.redirect(new URL('/admin/case-studies?err=slug', request.url), {
+      return NextResponse.redirect(new URL('/admin/case-studies?err=slug', externalBase(request)), {
         status: 303,
       });
     }
@@ -46,13 +47,13 @@ export async function POST(request: Request) {
       body_markdown: null,
       published: 0,
     });
-    return NextResponse.redirect(new URL(`/admin/case-studies/${id}`, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/admin/case-studies/${id}`, externalBase(request)), { status: 303 });
   }
 
   if (action === 'update') {
     const id = Number(form.get('id'));
     if (!Number.isFinite(id)) {
-      return NextResponse.redirect(new URL('/admin/case-studies', request.url), { status: 303 });
+      return NextResponse.redirect(new URL('/admin/case-studies', externalBase(request)), { status: 303 });
     }
     const slug = String(form.get('slug') || '').trim();
     const projectIdRaw = String(form.get('project_id') || '');
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
       body_markdown: body,
       published,
     });
-    return NextResponse.redirect(new URL(`/admin/case-studies/${id}`, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/admin/case-studies/${id}`, externalBase(request)), { status: 303 });
   }
 
   if (action === 'delete') {
@@ -76,8 +77,8 @@ export async function POST(request: Request) {
     if (Number.isFinite(id)) {
       db.prepare('DELETE FROM case_studies WHERE id = ?').run(id);
     }
-    return NextResponse.redirect(new URL('/admin/case-studies', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/case-studies', externalBase(request)), { status: 303 });
   }
 
-  return NextResponse.redirect(new URL('/admin/case-studies', request.url), { status: 303 });
+  return NextResponse.redirect(new URL('/admin/case-studies', externalBase(request)), { status: 303 });
 }

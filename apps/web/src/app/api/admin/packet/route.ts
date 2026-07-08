@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -16,10 +17,10 @@ export async function POST(request: Request) {
     fs.writeFileSync(path.join(dataDir, 'cv.md'), cvMd);
     fs.writeFileSync(path.join(dataDir, 'profile.yaml'), profileYaml);
 
-    return NextResponse.redirect(new URL('/admin/packet?saved=1', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/packet?saved=1', externalBase(request)), { status: 303 });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('Failed to update career data:', err);
-    return NextResponse.redirect(new URL('/admin/packet?error=' + encodeURIComponent(msg), request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/packet?error=' + encodeURIComponent(msg), externalBase(request)), { status: 303 });
   }
 }

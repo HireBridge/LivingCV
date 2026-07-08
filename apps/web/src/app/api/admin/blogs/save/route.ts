@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { upsertBlog } from '@/lib/blogs';
 
@@ -16,16 +17,16 @@ export async function POST(request: Request) {
   const published = form.get('published') === '1' ? 1 : 0;
 
   if (!slug || !title) {
-    return NextResponse.redirect(new URL('/admin/blogs', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/blogs', externalBase(request)), { status: 303 });
   }
 
   try {
     upsertBlog(db, { id, slug, title, summary, body_markdown, published });
-    return NextResponse.redirect(new URL('/admin/blogs', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/blogs', externalBase(request)), { status: 303 });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('Failed to save blog:', err);
     // If unique constraint fails or something
-    return NextResponse.redirect(new URL(`/admin/blogs/${id || 'new'}?error=${encodeURIComponent(msg)}`, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/admin/blogs/${id || 'new'}?error=${encodeURIComponent(msg)}`, externalBase(request)), { status: 303 });
   }
 }

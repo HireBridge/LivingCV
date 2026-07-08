@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { setSetting } from '@/lib/settings';
 import { setActiveTemplate } from '@/lib/content';
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
   const group = String(form.get('group') || '');
   const spec = GROUPS[group];
   if (!spec) {
-    return NextResponse.redirect(new URL('/admin/settings', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/settings', externalBase(request)), { status: 303 });
   }
   for (const key of spec.keys) {
     const raw = form.get(key);
@@ -82,5 +83,5 @@ export async function POST(request: Request) {
     setSetting(db, key, String(form.get(key)) === 'on' ? '1' : '0');
   }
   const redirectUrl = String(form.get('redirect') || '/admin/settings?saved=1');
-  return NextResponse.redirect(new URL(redirectUrl, request.url), { status: 303 });
+  return NextResponse.redirect(new URL(redirectUrl, externalBase(request)), { status: 303 });
 }

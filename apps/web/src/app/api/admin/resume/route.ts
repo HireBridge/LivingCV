@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { setSetting } from '@/lib/settings';
 import { saveResumeStream } from '@/lib/resume';
@@ -16,18 +17,18 @@ export async function POST(request: Request) {
   
   const file = form.get('resume');
   if (!(file instanceof File)) {
-    return NextResponse.redirect(new URL(errUrl + 'file', request.url), { status: 303 });
+    return NextResponse.redirect(new URL(errUrl + 'file', externalBase(request)), { status: 303 });
   }
   if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-    return NextResponse.redirect(new URL(errUrl + 'pdf-only', request.url), { status: 303 });
+    return NextResponse.redirect(new URL(errUrl + 'pdf-only', externalBase(request)), { status: 303 });
   }
   const filename = file.name.replace(/[^A-Za-z0-9._-]/g, '_');
   if (!filename) {
-    return NextResponse.redirect(new URL(errUrl + 'name', request.url), { status: 303 });
+    return NextResponse.redirect(new URL(errUrl + 'name', externalBase(request)), { status: 303 });
   }
   const webStream = file.stream();
   const nodeReadable = Readable.fromWeb(webStream as unknown as import('node:stream/web').ReadableStream<Uint8Array>);
   await saveResumeStream(filename, nodeReadable);
   setSetting(db, SETTING_KEYS.resumeFilename, filename);
-  return NextResponse.redirect(new URL(redirectUrl, request.url), { status: 303 });
+  return NextResponse.redirect(new URL(redirectUrl, externalBase(request)), { status: 303 });
 }

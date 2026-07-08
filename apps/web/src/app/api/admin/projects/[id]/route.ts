@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { updateProject } from '@/lib/content';
 
@@ -10,7 +11,7 @@ export async function POST(
   const { id: rawId } = await params;
   const id = Number(rawId);
   if (!Number.isFinite(id)) {
-    return NextResponse.redirect(new URL('/admin/projects', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/projects', externalBase(request)), { status: 303 });
   }
   const db = getDb();
   const form = await request.formData();
@@ -45,5 +46,5 @@ export async function POST(
     body: bodyJson,
     install_cmd: pick('install_cmd') || undefined,
   });
-  return NextResponse.redirect(new URL(`/admin/projects/${id}`, request.url), { status: 303 });
+  return NextResponse.redirect(new URL(`/admin/projects/${id}`, externalBase(request)), { status: 303 });
 }

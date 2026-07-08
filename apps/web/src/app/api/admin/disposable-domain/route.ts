@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: Request) {
@@ -10,13 +11,13 @@ export async function POST(request: Request) {
   if (action === 'add') {
     const domain = String(form.get('domain') || '').trim().toLowerCase();
     if (!domain || !/^[a-z0-9.*-]+$/.test(domain)) {
-      return NextResponse.redirect(new URL('/admin/settings?err=domain-format', request.url), { status: 303 });
+      return NextResponse.redirect(new URL('/admin/settings?err=domain-format', externalBase(request)), { status: 303 });
     }
     const now = new Date().toISOString();
     db.prepare(
       'INSERT OR IGNORE INTO disposable_domains (domain, source, added_at) VALUES (?, ?, ?)',
     ).run(domain, 'admin_added', now);
-    return NextResponse.redirect(new URL(redirectUrl, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(redirectUrl, externalBase(request)), { status: 303 });
   }
   if (action === 'remove') {
     const domain = String(form.get('domain') || '').trim().toLowerCase();
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     if (row && row.source !== 'builtin') {
       db.prepare('DELETE FROM disposable_domains WHERE domain = ?').run(domain);
     }
-    return NextResponse.redirect(new URL(redirectUrl, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(redirectUrl, externalBase(request)), { status: 303 });
   }
-  return NextResponse.redirect(new URL('/admin/settings', request.url), { status: 303 });
+  return NextResponse.redirect(new URL('/admin/settings', externalBase(request)), { status: 303 });
 }

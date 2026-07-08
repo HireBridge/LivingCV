@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 import { setSection } from '@/lib/content';
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
   const templateSlug = String(form.get('template_slug') || '');
   const section = String(form.get('section') || '');
   if (!templateSlug || !section) {
-    return NextResponse.redirect(new URL('/admin/content', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/content', externalBase(request)), { status: 303 });
   }
   let content: unknown;
   if (section === 'hero') {
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
     const parsed = parseJsonField(String(form.get('theme_json') || '{}'));
     if (!parsed.ok) {
       return NextResponse.redirect(
-        new URL(`/admin/content?err=${encodeURIComponent(parsed.error)}`, request.url),
+        new URL(`/admin/content?err=${encodeURIComponent(parsed.error)}`, externalBase(request)),
         { status: 303 },
       );
     }
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
     if (!parsed.ok || !parsedHidden.ok) {
       const errStr = !parsed.ok ? parsed.error : (parsedHidden as { ok: false; error: string }).error;
       return NextResponse.redirect(
-        new URL(`/admin/content?tab=order&err=${encodeURIComponent(errStr)}`, request.url),
+        new URL(`/admin/content?tab=order&err=${encodeURIComponent(errStr)}`, externalBase(request)),
         { status: 303 },
       );
     }
@@ -92,13 +93,13 @@ export async function POST(request: Request) {
     const parsed = parseJsonField(String(form.get('custom_sections_json') || '[]'));
     if (!parsed.ok) {
       return NextResponse.redirect(
-        new URL(`/admin/content?tab=custom&err=${encodeURIComponent(parsed.error)}`, request.url),
+        new URL(`/admin/content?tab=custom&err=${encodeURIComponent(parsed.error)}`, externalBase(request)),
         { status: 303 },
       );
     }
     content = parsed.value;
   } else {
-    return NextResponse.redirect(new URL('/admin/content', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/content', externalBase(request)), { status: 303 });
   }
   setSection(db, templateSlug, section, content);
   
@@ -106,5 +107,5 @@ export async function POST(request: Request) {
   revalidatePath('/admin/content');
   
   const tabParam = ['order', 'theme', 'custom_sections'].includes(section) ? `?tab=${section === 'custom_sections' ? 'custom' : section}` : '';
-  return NextResponse.redirect(new URL(`/admin/content${tabParam}`, request.url), { status: 303 });
+  return NextResponse.redirect(new URL(`/admin/content${tabParam}`, externalBase(request)), { status: 303 });
 }

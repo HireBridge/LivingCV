@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { externalBase } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { getSetting } from '@/lib/settings';
 
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
 
   if (!apiKey) {
     if (isJson) return NextResponse.json({ success: false, error: 'API key is missing' }, { status: 400 });
-    return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_error=API key is missing', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_error=API key is missing', externalBase(request)), { status: 303 });
   }
 
   try {
@@ -47,21 +48,21 @@ export async function POST(request: Request) {
       res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
     } else {
       if (isJson) return NextResponse.json({ success: false, error: 'Unknown provider' }, { status: 400 });
-      return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_error=Unknown provider', request.url), { status: 303 });
+      return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_error=Unknown provider', externalBase(request)), { status: 303 });
     }
 
     if (!res.ok) {
       const text = await res.text();
       const errStr = `Test failed (${res.status}): ${text.substring(0, 100)}`;
       if (isJson) return NextResponse.json({ success: false, error: errStr }, { status: 400 });
-      return NextResponse.redirect(new URL(`/admin/settings?tab=connections&test_error=${encodeURIComponent(errStr)}`, request.url), { status: 303 });
+      return NextResponse.redirect(new URL(`/admin/settings?tab=connections&test_error=${encodeURIComponent(errStr)}`, externalBase(request)), { status: 303 });
     }
 
     if (isJson) return NextResponse.json({ success: true });
-    return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_success=1', request.url), { status: 303 });
+    return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_success=1', externalBase(request)), { status: 303 });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     if (isJson) return NextResponse.json({ success: false, error: `Network error: ${msg}` }, { status: 400 });
-    return NextResponse.redirect(new URL(`/admin/settings?tab=connections&test_error=Network error: ${encodeURIComponent(msg)}`, request.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/admin/settings?tab=connections&test_error=Network error: ${encodeURIComponent(msg)}`, externalBase(request)), { status: 303 });
   }
 }
