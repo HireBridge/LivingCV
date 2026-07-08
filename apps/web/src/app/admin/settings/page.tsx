@@ -276,6 +276,27 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </section>
       )}
 
+      {currentTab === 'mcp' && (
+        <section className="admin-card" style={{ marginTop: 20 }}>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            Connect to HireBridge
+            <span style={{
+              fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
+              color: 'var(--rust)', border: '1px solid var(--rust)', borderRadius: 4, padding: '2px 8px',
+            }}>Work in Progress</span>
+          </h3>
+          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
+            Link this portfolio to HireBridge to sync your profile and reach a wider
+            network of recruiters. This integration is coming soon.
+          </p>
+          <div className="actions">
+            <button type="button" disabled title="Coming soon" style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+              Connect
+            </button>
+          </div>
+        </section>
+      )}
+
       {currentTab === 'gate' && (
         <section className="admin-card">
           <h3>Disposable email domains ({totalDisposable})</h3>
