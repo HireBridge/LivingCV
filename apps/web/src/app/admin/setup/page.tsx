@@ -178,7 +178,7 @@ export default function SetupWizard() {
           )}
           <p>
             Losing the key makes every saved secret (jobops token, LLM keys,
-            webhooks, voice keys) unrecoverable. Treat it like a root password.
+            webhooks) unrecoverable. Treat it like a root password.
           </p>
           <div className="row">
             <label>

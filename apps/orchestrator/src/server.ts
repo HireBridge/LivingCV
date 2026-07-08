@@ -1,20 +1,15 @@
-// Orchestrator HTTP + WS server (§7 + §8). Long-lived Express process.
+// Orchestrator HTTP server (§7). Long-lived Express process.
 //
-// Routes (proxied by Caddy from the public web app and by the voice
-// container directly):
+// Routes (proxied by Caddy from the public web app):
 //
 //   POST /api/chat/session   -> { sessionId }        (rate-limited)
 //   POST /api/chat/message   -> SSE stream of an LLM turn
 //   POST /api/chat/submit-email -> { ok, message }    (text fallback for the
-//                                                   email gate; voice widget
-//                                                   uses the same endpoint)
+//                                                   email gate)
 //   GET  /healthz
 //
-// Internal-only (docker-network, NOT exposed via Caddy):
-//
-//   GET  /internal/voice?session_id=...   WS upgrade → voice bridge
-//
-// Voice bridge protocol is defined in apps/voice/src/voice_service/protocol.py.
+// The master relay MCP endpoints (/api/mcp/*) are attached separately and
+// gated by an operator key (see masterMcp.ts).
 
 import express from 'express';
 
@@ -92,8 +87,8 @@ app.post('/api/chat/message', async (req: Request, res: Response) => {
 });
 
 // Direct endpoint for the chat widget to *test* the email-gate without going
-// through the LLM (so the UI can show "verifying..."). Useful when LLM key is
-// missing OR for the voice widget's typed email-input fallback.
+// through the LLM (so the UI can show "verifying..."). Useful when the LLM key
+// is missing, or for a typed email-input fallback in the UI.
 app.post('/api/chat/submit-email', (req: Request, res: Response) => {
   const db = getDb();
   const sessionId = String(req.body?.sessionId ?? '');

@@ -25,7 +25,7 @@ export default function LeadsPage() {
   return (
     <div>
       <h1>Leads</h1>
-      <p>Recruiter / hiring manager sessions collected through the public MCP and the AI concierge chat/voice widgets. Phase 2 wires the chat agent — until then this list is empty.</p>
+      <p>Recruiter / hiring manager sessions collected through the public MCP and the AI concierge chat widget.</p>
 
       <section className="admin-card">
         <h3>All leads ({leads.length})</h3>

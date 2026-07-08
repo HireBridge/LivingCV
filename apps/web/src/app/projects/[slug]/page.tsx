@@ -11,6 +11,7 @@ import { recordPageView } from '@/lib/page-views';
 import { parseJson } from '@/lib/parse-json';
 import type { CaseStudyFrontmatter } from '@/lib/types';
 import { BASE_CSS } from '@/templates/classic/styles';
+import { jsonLdSafe } from '@/lib/jsonld';
 
 export const dynamic = 'force-dynamic';
 
@@ -165,7 +166,7 @@ export default async function CaseStudyPage({
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSafe(jsonLd) }} />
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
       <style dangerouslySetInnerHTML={{ __html: ARTICLE_CSS }} />
       <main className="article-wrap">

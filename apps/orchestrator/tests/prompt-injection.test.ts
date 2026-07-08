@@ -53,6 +53,24 @@ describe('structural impossibility of prompt injection reaching mutating tools',
     expect(window).not.toContain('mcp.tools');
   });
 
+  it('layer 2b: web search is a POST-gate tool only — never exposed pre-gate', async () => {
+    const src = await readFile(join(srcDir, 'turn.ts'), 'utf8');
+    const preStart = src.indexOf('session.email_verified === 0');
+    const postStart = src.indexOf('session.email_verified === 1');
+    expect(preStart).toBeGreaterThan(0);
+    expect(postStart).toBeGreaterThan(preStart);
+    // The pre-gate window (the toolset ternary) must NOT wire the paid search
+    // tool. Otherwise an unverified, anonymous visitor could burn the operator's
+    // search budget / use the agent as a free search proxy before the gate.
+    const preWindow = src.slice(preStart, postStart);
+    expect(preWindow).not.toContain('searchWebToolDef');
+    expect(preWindow).not.toContain('search_web');
+    // The search tool IS wired, and its registration sits behind a post-gate
+    // (email_verified === 1) guard.
+    const pushIdx = src.indexOf('tools.push(searchWebToolDef())');
+    expect(pushIdx).toBeGreaterThan(postStart);
+  });
+
   it('layer 3: the orchestrator validates tool calls against the active set', async () => {
     const src = await readFile(join(srcDir, 'turn.ts'), 'utf8');
     expect(src).toContain("return { ok: false, valueText: 'unknown tool' }");

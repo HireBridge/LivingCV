@@ -5,7 +5,7 @@ import { getTemplate } from '@/templates/registry';
 import { recordPageView } from '@/lib/page-views';
 import { getAllSettings, getSetting } from '@/lib/settings';
 import { ChatWidget } from '@/components/ChatWidget';
-import { VoiceWidget } from '@/components/VoiceWidget';
+import { jsonLdSafe } from '@/lib/jsonld';
 
 // Landing page — renders the active template from the DB on every request
 // (content is runtime-editable, never build-time). §9.
@@ -52,9 +52,6 @@ export default async function LandingPage() {
   if (!entry) throw new Error('classic template is missing from the registry');
   recordPageView(db, '/');
 
-  // Voice widget config (Phase 3). voice.enabled is the master gate; the
-  // widget renders nothing when off.
-  const voiceEnabled = (getSetting(db, 'voice.enabled') ?? '0').trim() === '1';
   const hasLlmKey = !!getSetting(db, 'agent.llm_api_key');
   const agentEnabled = hasLlmKey && (getSetting(db, 'agent.enabled') ?? '1').trim() === '1';
 
@@ -87,11 +84,10 @@ export default async function LandingPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(jsonLd) }}
       />
       <Component {...props} />
       <ChatWidget agentEnabled={agentEnabled} />
-      <VoiceWidget config={{ enabled: voiceEnabled }} />
     </>
   );
 }

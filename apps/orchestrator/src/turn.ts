@@ -110,9 +110,15 @@ export async function runTurn(
     ? [submitWorkEmailToolDef()]
     : [submitWorkEmailToolDef(), ...listProjectsToolDefs(), ...getCaseStudyToolDefs()];
 
-  const searchProvider = getSetting(db, SETTING_KEYS.agentSearchProvider);
-  if (searchProvider && searchProvider !== 'none') {
-    tools.push(searchWebToolDef());
+  // Web search is a post-gate tool only. Pre-gate (email_verified === 0) the LLM
+  // gets exactly one tool (submit_work_email) so an unverified, anonymous visitor
+  // can't burn the operator's paid search budget or use the agent as a free search
+  // proxy before providing a work email (§7 gate design).
+  if (session.email_verified === 1) {
+    const searchProvider = getSetting(db, SETTING_KEYS.agentSearchProvider);
+    if (searchProvider && searchProvider !== 'none') {
+      tools.push(searchWebToolDef());
+    }
   }
 
   // Connect to jobops /mcp/public iff we're post-gate. Pre-gate we hand the LLM

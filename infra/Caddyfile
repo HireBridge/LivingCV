@@ -1,8 +1,9 @@
 # Caddy is the public-facing reverse proxy. Automatic HTTPS for {$DOMAIN}.
 #
-# Phase 2 routes: /api/orchestrator/chat/* → orchestrator.
-# Phase 3 routes: /voice-ws → voice service (websocket upgrade).
-# Phase 4 routes: /mcp/* → jobops. Two mounts are exposed there:
+# Routes: /api/orchestrator/api/chat/* → orchestrator (the only orchestrator
+#         surface exposed publicly; /internal/* and /api/mcp/* are not).
+#         /mcp-admin/* → orchestrator master relay MCP (operator key required).
+#         /mcp/* → jobops. Two mounts are exposed there:
 #                  - /mcp/public  -> open, lists exactly 2 public tools
 #                                     (the only thing the portfolio advertises)
 #                  - /mcp         -> bearer-gated, all 51 tools (operator-only)

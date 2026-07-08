@@ -48,13 +48,6 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const hasLlmKey = !!getSettingForBrowser(db, SETTING_KEYS.agentLlmApiKey);
   
   const currentTab = sp.tab || 'general';
-  
-  // Voice defaults
-  const voiceEnabled = (all[SETTING_KEYS.voiceEnabled] ?? '0') === '1';
-  const voiceMode = (all['voice.mode'] ?? 'cloud').trim().toLowerCase() === 'local' ? 'local' : 'cloud';
-  const sttProvider = all['voice.stt_provider'] ?? 'deepgram';
-  const ttsProvider = all['voice.tts_provider'] ?? 'cartesia';
-  const ttsVoiceId = all['voice.tts_voice_id'] ?? '';
 
   // Pagination for email gate
   const page = Math.max(1, parseInt(sp.page || '1', 10) || 1);
@@ -70,7 +63,6 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <a href="?tab=seo" style={{ textDecoration: 'none', color: currentTab === 'seo' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'seo' ? 'bold' : 'normal' }}>SEO</a>
       <a href="?tab=connections" style={{ textDecoration: 'none', color: currentTab === 'connections' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'connections' ? 'bold' : 'normal' }}>AI & LLM</a>
       <a href="?tab=connectivity" style={{ textDecoration: 'none', color: currentTab === 'connectivity' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'connectivity' ? 'bold' : 'normal' }}>Connectivity</a>
-      <a href="?tab=voice" style={{ textDecoration: 'none', color: currentTab === 'voice' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'voice' ? 'bold' : 'normal' }}>Voice</a>
       <a href="?tab=mcp" style={{ textDecoration: 'none', color: currentTab === 'mcp' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'mcp' ? 'bold' : 'normal' }}>MCP</a>
       <a href="?tab=gate" style={{ textDecoration: 'none', color: currentTab === 'gate' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'gate' ? 'bold' : 'normal' }}>Email Gate</a>
       <a href="?tab=logs" style={{ textDecoration: 'none', color: currentTab === 'logs' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'logs' ? 'bold' : 'normal' }}>System Logs</a>
@@ -230,73 +222,6 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             'google.client_id': all['google.client_id'] || '',
             'google.client_secret': getSettingForBrowser(db, SETTING_KEYS.googleClientSecret),
           }} />
-        </section>
-      )}
-
-      {currentTab === 'voice' && (
-        <section className="admin-card">
-          <h3>Voice Settings</h3>
-          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
-            When enabled, the voice widget appears on the public landing page. Conversations appear in <b>Leads</b> with <code>channel='voice'</code>.
-          </p>
-          <form method="post" action="/api/admin/settings/save" className="row">
-            <input type="hidden" name="group" value="voice" />
-            <input type="hidden" name="redirect" value="/admin/settings?tab=voice" />
-
-            <div className="row">
-              <label>
-                <input type="checkbox" name="voice.enabled" defaultChecked={voiceEnabled} /> Enable voice widget
-              </label>
-            </div>
-
-            <div className="row">
-              <label>Mode</label>
-              <select name="voice.mode" defaultValue={voiceMode}>
-                <option value="cloud">cloud (Deepgram + Cartesia/ElevenLabs)</option>
-                <option value="local">local (whisper.cpp + Piper)</option>
-              </select>
-            </div>
-
-            <div className="row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <div>
-                <label>STT provider</label>
-                <select name="voice.stt_provider" defaultValue={sttProvider}>
-                  <option value="mock">mock</option>
-                  <option value="deepgram">deepgram (cloud)</option>
-                  <option value="whisper">whisper.cpp (local)</option>
-                </select>
-              </div>
-              <div>
-                <label>TTS provider</label>
-                <select name="voice.tts_provider" defaultValue={ttsProvider}>
-                  <option value="mock">mock</option>
-                  <option value="cartesia">cartesia (cloud)</option>
-                  <option value="elevenlabs">elevenlabs (cloud)</option>
-                  <option value="piper">piper (local)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <div>
-                <label>STT API key (encrypted)</label>
-                <input type="password" name="voice.stt_api_key" placeholder="paste to set" autoComplete="off" />
-              </div>
-              <div>
-                <label>TTS API key (encrypted)</label>
-                <input type="password" name="voice.tts_api_key" placeholder="paste to set" autoComplete="off" />
-              </div>
-            </div>
-
-            <div className="row">
-              <label>TTS voice id (provider-specific)</label>
-              <input name="voice.tts_voice_id" defaultValue={ttsVoiceId} placeholder="e.g. 79a125e8-cowie or piper model path" />
-            </div>
-
-            <div className="actions">
-              <button type="submit">Save</button>
-            </div>
-          </form>
         </section>
       )}
 

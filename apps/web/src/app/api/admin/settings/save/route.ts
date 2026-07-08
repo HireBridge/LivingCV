@@ -4,7 +4,7 @@ import { setSetting } from '@/lib/settings';
 import { setActiveTemplate } from '@/lib/content';
 import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@livingcv/shared';
 
-// Generic settings writer. Maps a "group" (site/limits/connections/voice) to a
+// Generic settings writer. Maps a "group" (site/limits/connections/etc.) to a
 // list of known setting keys, reads each from the form, and writes via
 // setSetting (which auto-encrypts keys in ENCRYPTED_SETTING_KEYS).
 const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
@@ -29,17 +29,6 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
       'agent.search_api_key',
       'notify.webhook_url',
     ],
-  },
-  voice: {
-    keys: [
-      'voice.mode',
-      'voice.stt_provider',
-      'voice.stt_api_key',
-      'voice.tts_provider',
-      'voice.tts_api_key',
-      'voice.tts_voice_id',
-    ],
-    checkboxKeys: [SETTING_KEYS.voiceEnabled],
   },
   connectivity: {
     keys: [

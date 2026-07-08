@@ -16,7 +16,6 @@ export default function DashboardPage() {
   const today = getViewsToday(db);
   const series = getViewSeries(db, 30);
   const agentEnabled = (settings[SETTING_KEYS.agentEnabled] || '1') === '1';
-  const voiceEnabled = (settings[SETTING_KEYS.voiceEnabled] || '0') === '1';
   const gateEnabled = (settings[SETTING_KEYS.gateEnabled] || '1') === '1';
   const resume = getSetting(db, SETTING_KEYS.resumeFilename);
   const max = Number(settings[SETTING_KEYS.limitsDailyMessageBudget] ?? '500');
@@ -47,7 +46,6 @@ export default function DashboardPage() {
         <h3>Kill switches</h3>
         <p>
           <strong>Agent:</strong> {agentEnabled ? 'on' : 'off'} ·{' '}
-          <strong>Voice:</strong> {voiceEnabled ? 'on' : 'off'} ·{' '}
           <strong>Email gate:</strong> {gateEnabled ? 'on' : 'off'}
         </p>
         <p>Toggle these in <a href="/admin/settings">Settings</a>.</p>
