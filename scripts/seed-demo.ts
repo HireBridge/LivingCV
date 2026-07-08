@@ -43,7 +43,7 @@ function upsertProject(p: {
   status: string;
   sort_order: number;
   featured: 0 | 1;
-  body: { designDecision: string; whatsReal: string; honestConstraint: string };
+  body: { columns: { heading: string; body: string }[] };
   install_cmd?: string;
 }): number {
   const existing = db.prepare<[string], { id: number }>('SELECT id FROM projects WHERE slug = ?').get(p.slug);
@@ -196,13 +196,27 @@ const tscrateId = upsertProject({
   status: 'Live',
   sort_order: 1,
   featured: 1,
+  // NOTE: four columns on purpose — this demonstrates the wrap behaviour (3 per
+  // row, the 4th drops cleanly onto the next row with its own heading).
   body: {
-    designDecision:
-      'Generators over templates. Instead of cloning a starter repo, the CLI runs a small typed pipeline so every flag maps to one structural change and the output is deterministic.',
-    whatsReal:
-      '10+ runtime presets, an in-memory template cache, a public SDK for embedding the scaffolder, and 140 unit tests covering the merge step.',
-    honestConstraint:
-      'Customising beyond the supported presets still requires editing the generated files by hand. The scaffolder does not yet emit an interactive prompt-driven mode.',
+    columns: [
+      {
+        heading: 'Design decision',
+        body: 'Generators over templates. Instead of cloning a starter repo, the CLI runs a small typed pipeline so every flag maps to one structural change and the output is deterministic.',
+      },
+      {
+        heading: 'What’s real',
+        body: '10+ runtime presets, an in-memory template cache, a public SDK for embedding the scaffolder, and 140 unit tests covering the merge step.',
+      },
+      {
+        heading: 'Honest constraint',
+        body: 'Customising beyond the supported presets still requires editing the generated files by hand. The scaffolder does not yet emit an interactive prompt-driven mode.',
+      },
+      {
+        heading: 'What’s next',
+        body: 'An interactive prompt-driven mode and a plugin API so third parties can register their own presets without forking the generator.',
+      },
+    ],
   },
   install_cmd: 'npm i -g alex-tscrate && alex-tscrate init my-pkg',
 });
@@ -219,12 +233,20 @@ upsertProject({
   sort_order: 2,
   featured: 1,
   body: {
-    designDecision:
-      'Pushed the schema and the typed query layer behind a single Zod-derived contract so swapping the underlying vector store is a one-file change.',
-    whatsReal:
-      'SQLite-vec backend shipped, plus an OpenAI-embeddings client, batched ingest at 5k vectors/minute on a single node, and per-tenant namespace filtering enforced in the SQL.',
-    honestConstraint:
-      'No hybrid lexical+vector retrieval yet; the SQLite backend uses brute-force cosine which is fine to ~100k vectors per tenant but won\u2019t scale beyond that without a real ANN index.',
+    columns: [
+      {
+        heading: 'Design decision',
+        body: 'Pushed the schema and the typed query layer behind a single Zod-derived contract so swapping the underlying vector store is a one-file change.',
+      },
+      {
+        heading: 'What\u2019s real',
+        body: 'SQLite-vec backend shipped, plus an OpenAI-embeddings client, batched ingest at 5k vectors/minute on a single node, and per-tenant namespace filtering enforced in the SQL.',
+      },
+      {
+        heading: 'Honest constraint',
+        body: 'No hybrid lexical+vector retrieval yet; the SQLite backend uses brute-force cosine which is fine to ~100k vectors per tenant but won\u2019t scale beyond that without a real ANN index.',
+      },
+    ],
   },
   install_cmd: 'npm i alex-mosaiq',
 });
@@ -241,12 +263,20 @@ upsertProject({
   sort_order: 3,
   featured: 1,
   body: {
-    designDecision:
-      'Adopted a gossip-based heartbeat over a central coordinator so the control plane survives link flapping, which is the dominant failure mode at the edge.',
-    whatsReal:
-      '20+ device fleet benchmarked end-to-end with a 2-second p95 plan latency and a 0.5% spurious-failure rate over a 48-hour soak test.',
-    honestConstraint:
-      'No migration tooling yet for swapping out the on-device state store, so upgrading the agent in place is a manual operation.',
+    columns: [
+      {
+        heading: 'Design decision',
+        body: 'Adopted a gossip-based heartbeat over a central coordinator so the control plane survives link flapping, which is the dominant failure mode at the edge.',
+      },
+      {
+        heading: 'What’s real',
+        body: '20+ device fleet benchmarked end-to-end with a 2-second p95 plan latency and a 0.5% spurious-failure rate over a 48-hour soak test.',
+      },
+      {
+        heading: 'Honest constraint',
+        body: 'No migration tooling yet for swapping out the on-device state store, so upgrading the agent in place is a manual operation.',
+      },
+    ],
   },
   install_cmd: 'go install example.com/alex/edgeplan@latest',
 });
@@ -263,11 +293,7 @@ upsertProject({
   status: 'Archived',
   sort_order: 4,
   featured: 0,
-  body: {
-    designDecision: '',
-    whatsReal: '',
-    honestConstraint: '',
-  },
+  body: { columns: [] },
 });
 
 // ── 5. One case study (for tscrate) ─────────────────────────────────────────

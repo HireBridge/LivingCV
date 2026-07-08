@@ -60,6 +60,25 @@ const ADMIN_CSS = `
 .admin-shell .steps span.active{ color:var(--ink); font-weight:600; }
 .admin-shell .steps span.done{ color:var(--signal); }
 .admin-shell input.mono{ font-family:'JetBrains Mono', monospace; font-size:0.88em; }
+.admin-shell .field-help{ margin-top:6px; }
+.admin-shell .field-help > summary{
+  list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  font-size:0.76rem; color:var(--signal); user-select:none; width:max-content;
+}
+.admin-shell .field-help > summary::-webkit-details-marker{ display:none; }
+.admin-shell .field-help > summary::before{
+  content:"i"; display:inline-flex; align-items:center; justify-content:center;
+  width:15px; height:15px; border-radius:50%; border:1px solid currentColor;
+  font-size:0.66rem; font-weight:700; font-family:Georgia,'Times New Roman',serif; line-height:1;
+}
+.admin-shell .field-help[open] > summary{ margin-bottom:7px; }
+.admin-shell .field-help-body{
+  padding:10px 13px; background:var(--paper); border:1px solid var(--rule);
+  border-radius:5px; font-size:0.82rem; color:var(--ink-soft); line-height:1.55; max-width:680px;
+}
+.admin-shell .field-help-body p{ margin:0 0 7px; font-size:0.82rem; color:var(--ink-soft); }
+.admin-shell .field-help-body p:last-child{ margin-bottom:0; }
+.admin-shell .field-help-body code{ background:var(--paper-deep); padding:1px 5px; border-radius:3px; font-size:0.9em; }
 `;
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {

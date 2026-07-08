@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/db';
 import { listProjects } from '@/lib/content';
+import { FieldHelp } from '../FieldHelp';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +24,10 @@ export default function ProjectsPage() {
               <input name="title" required placeholder="My Project" />
             </div>
           </div>
+          <FieldHelp>
+            <p><strong>Slug</strong>: the URL-safe id used in the case-study link (<code>/projects/&lt;slug&gt;</code>) and to bind a case study to this project. Use lowercase words with hyphens, e.g. <code>my-project</code>. It can&rsquo;t be changed as easily later, so pick it deliberately.</p>
+            <p>After creating, you&rsquo;ll land on the full editor where you add the tagline, links, diagram, body columns and install command.</p>
+          </FieldHelp>
           <div className="actions">
             <button type="submit">Create</button>
           </div>

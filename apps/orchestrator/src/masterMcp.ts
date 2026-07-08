@@ -11,6 +11,25 @@ import { getSetting } from './settings.js';
 // Shared state for connections
 const transports = new Map<string, SSEServerTransport>();
 
+// Description handed to any LLM that connects. It documents the JSON-encoded
+// columns precisely so a client writing raw SQL cannot guess field names wrong
+// (the failure that left project cards blank when body was written with
+// design_decision/whats_real instead of the columns shape).
+const SQL_TOOL_DESCRIPTION = `Execute raw SQL against the portfolio SQLite database (better-sqlite3). method 'get'/'all' to read, 'run' to mutate. Every table is reachable — this is the operator's private data.
+
+CRITICAL — these columns hold JSON and are parsed by the site renderer. Write EXACTLY these shapes:
+• projects.body → {"columns":[{"heading":"Design decision","body":"..."},{"heading":"What's real","body":"..."}]}
+  Each column renders with its own heading; up to 3 sit per row and any beyond wrap to the next line. Headings are free text — you choose them (they are NOT fixed).
+  DO NOT write the keys design_decision / whats_real / honest_constraint, nor camelCase designDecision / whatsReal / honestConstraint. Those legacy shapes are only tolerated when READING old rows; always WRITE the {"columns":[...]} shape or the card renders blank.
+• projects.stack → JSON array of strings, e.g. ["TypeScript","SQLite"].
+• projects.diagram_svg → raw inline <svg>…</svg> markup (NOT JSON). Use stroke="currentColor" so it matches the site theme.
+• site_content.content → JSON whose shape depends on section_key (hero, background, footer, theme, order, hidden, custom_sections).
+• case_studies.frontmatter → JSON: { title, summary, stack:[], status, links:{}, highlights:[] }.
+
+WORKFLOW for JSON columns: SELECT the current value first, merge your change into the existing JSON, then write the whole object back — never blind-overwrite.
+
+DO NOT UPDATE app_settings rows whose keys are secrets (jobops.auth_token, agent.llm_api_key, any *_api_key, notify.webhook_url, mcp.master_key, telegram.bot_token, google.client_secret). They are AES-encrypted by the app; a raw SQL write stores unusable plaintext. Change secrets through the admin UI instead.`;
+
 export function attachMasterMcp(app: express.Express) {
   app.get('/api/mcp/sse', async (req, res) => {
     try {
@@ -53,7 +72,7 @@ export function attachMasterMcp(app: express.Express) {
         const localTools = [
           {
             name: 'portfolio_execute_sql',
-            description: 'Execute raw SQL on the portfolio SQLite database. This exposes every field within the system.',
+            description: SQL_TOOL_DESCRIPTION,
             inputSchema: {
               type: 'object',
               properties: {

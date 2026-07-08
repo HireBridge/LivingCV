@@ -36,11 +36,22 @@ export function ProjectBodyEditor({
   return (
     <div className="row">
       <label>Body columns</label>
-      <p style={{ color: 'var(--ink-soft)', fontSize: '0.85rem', margin: '0 0 12px' }}>
-        Each column has its own heading. Add as many as you like — up to three sit
-        on a row and any beyond that wrap to the next line. Leave the list empty to
-        hide this section on the card.
-      </p>
+      <details className="field-help" style={{ marginBottom: 12 }}>
+        <summary>How to use this</summary>
+        <div className="field-help-body">
+          <p>
+            This is the multi-column block in the middle of the project card (the
+            old fixed &ldquo;Design decision / What&rsquo;s real / Honest
+            constraint&rdquo; row). Each column now has its <strong>own heading</strong>
+            {' '}that you type — use any labels you like.
+          </p>
+          <p>
+            Up to <strong>three columns sit on one row</strong>; a fourth or more
+            wraps onto the next row, each keeping its heading with its text. Leave
+            the list empty to hide this block on the card entirely.
+          </p>
+        </div>
+      </details>
       <input type="hidden" name="body" value={serialized} />
 
       {columns.map((col, i) => (
