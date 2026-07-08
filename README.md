@@ -1,52 +1,64 @@
-# Portfolio App
+# LivingCV
 
-A self-hosted, monorepo-template portfolio platform with:
+A self-hosted, open-source portfolio platform that doubles as an **AI recruiter concierge**. It renders a polished portfolio site from a database (runtime-editable, never build-time), lets recruiters chat with an AI agent that knows your real career data, and exposes a **public MCP endpoint** so third-party recruiter-side AI agents can query a curated, read-only view of you. It is **persona-neutral** — anyone can self-host it with their own content.
 
-- **A public website** that renders from a database (runtime-editable, never build-time).
-- **A classic template** (paper/ink/signal/rust) bundled; third parties can add templates without touching core code (see [`TEMPLATES.md`](./TEMPLATES.md)).
-- **LivingCV Control Panel** (the Admin Console) with a first-boot setup wizard, iron-session auth, AES-256-GCM-encrypted secrets, and full CRUD for content + projects + case studies + the resume PDF.
-- **Drag-and-Drop Structural Ordering**: Easily reorder the sections of your portfolio via the admin UI.
-- **Advanced Theme Customization**: Real-time control panel for colors, typography, and a fallback JSON editor for fine-grained CSS override.
-- **Connectivity Suite**: Native integration for Telegram (bot relays) and Google OAuth (Admin Login/Calendar).
-- **Dynamic Contact Integrations**: The Hero section smartly enables a contact button only when connectivity tools are configured, routing to your interactive agent or email.
-- **A recruiter concierge** — chat and voice widgets powered by a self-hosted [jobops](https://www.npmjs.com/package/@mohith_das/jobops) instance + a portfolio-side orchestrator (text/voice LLM with tool use, email-gate, limits, transcripts, lead webhook).
-- **A public MCP endpoint** at `{site.domain}/mcp/public` that exposes exactly two read-only tools (`get_career_packet`, `get_story_bank_public`) to external recruiter-side AI agents (Claude.ai, ChatGPT, anything MCP). See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
-- **A machine-readable summary** at `/llms.txt` (per [llmstxt.org](https://llmstxt.org)) — the portfolio is legible to AI agents from day one.
-- **Cookieless analytics** — server-side path × day counter; no cookies, no external service.
-- **An admin CSV export of leads** and a backup/restore pair.
-- **A demo seed** so a fresh clone renders a complete fictional persona before any real content is entered.
+## What you get
 
-> Persona invariant (§2 inv 6): nothing in `apps/` or `packages/` mentions the operator's real name or domain. All persona content lives in the database, the setup wizard, or `scripts/seed-demo.ts` (a clearly-fictional "Alex Rivera"). A stranger can deploy this for themselves purely via the setup wizard.
+- **A public website** rendered from the database — content, projects, case studies, custom sections, and theme are all editable at runtime, never baked in at build time.
+- **A classic bundled template** (paper/ink/signal/rust); third parties can add templates against a typed props contract without touching core code (see [`TEMPLATES.md`](./TEMPLATES.md)).
+- **Admin console** — first-boot setup wizard, `iron-session` auth, AES-256-GCM-encrypted secrets, and full CRUD for content, projects, case studies, blog posts, custom sections, and the resume PDF.
+- **A writing/blog section** with an admin editor, published/draft states, tags, and per-post SEO.
+- **Drag-and-drop section ordering** and a **live theme editor** (colors, typography, plus a JSON fallback for fine-grained CSS overrides).
+- **A recruiter chat concierge** — a text agent powered by a self-hosted [jobops](https://www.npmjs.com/package/@mohith_das/jobops) instance plus a portfolio-side orchestrator. Multi-provider LLM (**Anthropic, OpenAI, Gemini, DeepSeek** — bring your own key), tool use over MCP, a work-email gate, per-IP/per-session/daily limits, transcripts, and an optional lead webhook.
+- **Optional web search** — when a search provider (Tavily) is configured, the agent can search the web to answer with fresh context. Gated to verified recruiters only.
+- **A public MCP endpoint** at `{site.domain}/mcp/public` exposing exactly two read-only tools (`get_career_packet`, `get_story_bank_public`) to external MCP clients (Claude.ai, ChatGPT, anything MCP). See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
+- **A full SEO layer** — dynamic per-domain metadata, OpenGraph/Twitter cards, generated OG images, JSON-LD (Person/WebSite/Article/BreadcrumbList), canonical URLs, `sitemap.xml`, `robots.txt`, a blog RSS feed, a web manifest, Google Analytics + search-engine verification hooks, and a machine-readable [`/llms.txt`](https://llmstxt.org).
+- **Optional integrations** — Telegram and Google/email settings, plus an operator-only **master relay MCP** (`/mcp-admin`) for privileged access to your own data.
+- **Cookieless analytics** (server-side path × day counter), **admin system logs**, a **leads CSV export**, and a **backup/restore** pair.
+- **A demo seed** so a fresh clone renders a complete, clearly-fictional persona ("Alex Rivera") before you enter any real content.
+
+> **Persona invariant:** nothing in `apps/` or `packages/` mentions the operator's real name or domain. All persona content lives in the database, the setup wizard, or `scripts/seed-demo.ts`. A stranger can deploy this for themselves purely via the setup wizard.
+
+## Architecture
 
 ```
-┌──────────────┐  https://{site}
-│    Caddy     │  reverse_proxy
-│  (TLS, ACME) │  ────────────────► web:3000      (Next.js + classic template)
-│  /api/*      │  /api/orchestrator/*   ──────► orchestrator:8100  (recruiter concierge)
-│  /voice-ws   │  /voice-ws               ──────► voice:8200       (Pipecat-shaped harness)
-│  /mcp*       │  /mcp/*                  ──────► jobops:7891       (MCP, public mount + admin)
-└──────────────┘
-                /data  (shared SQLite volume; WAL + busy_timeout; both web + orchestrator open it)
+                          https://{site.domain}
+┌─────────────────────────────────────────────────────────────┐
+│ Caddy  (automatic HTTPS, security headers)                    │
+│                                                               │
+│   /                          ─────►  web:3000        (Next.js)│
+│   /api/orchestrator/api/chat/*  ──►  orchestrator:8100 (chat) │
+│   /mcp-admin/*               ─────►  orchestrator:8100 (ops)  │
+│   /mcp*                      ─────►  jobops:7891  (MCP server)│
+└─────────────────────────────────────────────────────────────┘
+        │ web + orchestrator share one SQLite file (WAL)
+        ▼
+   portfolio.db   ◄── packages/db (better-sqlite3+WAL) · crypto (AES-256-GCM) · shared (types)
+
+   orchestrator ──tools/list, tools/call──► jobops /mcp/public   (recruiter tier, no auth, 2 tools)
+   master relay ──bearer──────────────────► jobops /mcp          (operator tier, full toolset)
 ```
+
+- **web** (Next.js App Router) owns `portfolio.db` and serves the public site, admin console, and REST API.
+- **orchestrator** (Express + MCP SDK) runs the single chat "brain" (`runTurn`): email gate → LLM tool loop → jobops `/mcp/public` + local read tools. Pre-gate, the agent has exactly one tool (`submit_work_email`); the recruiter tier can never reach a mutating jobops tool because those tools aren't registered on the public mount.
+- **jobops** (npm package, run as its own container) owns its own database and serves both the open `/mcp/public` mount and the bearer-gated `/mcp`. This repo contains **no** jobops source — it's consumed as a dependency.
 
 ## Repo layout
 
 ```
-portfolio_app/
+LivingCV/
 ├─ apps/
-│  ├─ web/         Next.js 16 (landing, admin, REST API, resume, sitemap, llms.txt)
-│  ├─ orchestrator/  Express + @modelcontextprotocol/sdk client (text/voice LLM turn engine)
-│  └─ voice/       Python 3.11+ FastAPI + WS (Pipecat-shaped harness; MockSTT/MockTTS in Phase 3)
+│  ├─ web/            Next.js 16 (landing, admin, REST API, resume, sitemap, og, feed, llms.txt)
+│  └─ orchestrator/   Express + @modelcontextprotocol/sdk (chat turn engine, email gate, search)
 ├─ packages/
-│  ├─ db/          better-sqlite3 + WAL + migration runner (shared by web + orchestrator)
-│  ├─ crypto/      AES-256-GCM with env-key + bootstrap-key fallback
-│  └─ shared/      template props, setting keys, free-email-domains (no DB)
-├─ scripts/         seed-demo, smoke-phase2/4, build-jobops-tarball
-├─ docs/            PUBLIC_MCP.md, case-study spec
-├─ infra/           Caddyfile, jobops/web/orchestrator/voice Dockerfiles
-├─ apps/web/templates/classic/   the bundled template (data-driven port of docs/index.html)
-├─ PLAN.md          the plan this repo was built from
-└─ TEMPLATES.md     contract for adding new templates
+│  ├─ db/             better-sqlite3 + WAL + migration runner (shared by web + orchestrator)
+│  ├─ crypto/         AES-256-GCM with env-key + bootstrap-key fallback
+│  └─ shared/         template props, setting keys, free-email-domains (no DB)
+├─ scripts/           seed-demo, set-password, smoke-phase2/4, build-jobops-tarball, start-dev
+├─ docs/              PUBLIC_MCP.md, case-study template
+├─ infra/             Caddyfile, jobops/web/orchestrator Dockerfiles, backup/restore scripts
+├─ apps/web/templates/classic/   the bundled template (data-driven)
+└─ TEMPLATES.md       contract for adding new templates
 ```
 
 ## Quickstart (≈15 minutes on a fresh box)
@@ -55,158 +67,102 @@ portfolio_app/
 
 - Docker 24+ and docker compose v2.
 - A domain whose DNS A/AAAA points at the box's public IP.
-- Ports 80/443 open on the host (Caddy will mint a Let's Encrypt cert on first boot).
-- ~4 GB of free disk and 2 GB of free RAM (more is friendlier; voice models + jobops's bundled tools add up).
+- Ports 80/443 open on the host (Caddy mints a Let's Encrypt cert on first boot).
+- ~2 GB free RAM and ~4 GB free disk (jobops's bundled tooling adds up). Runs comfortably on an Oracle Ampere A1 free instance (arm64).
 
 ### Deploy
 
 ```bash
 # 1. Clone
-git clone https://github.com/<you>/portfolio_app
-cd portfolio_app
+git clone https://github.com/mohith-das/LivingCV
+cd LivingCV
 
 # 2. Fill in the bootstrap env. The encryption key is the load-bearing
 #    secret — lose it and every encrypted app_settings value is unrecoverable.
 cp .env.example .env
 $EDITOR .env
-#    Generate a 32-byte key:  openssl rand -base64 32
-#    SESSION_SECRET:       openssl rand -base64 32
-#    JOBOPS_AUTH_TOKEN:    openssl rand -hex 32
-#    DOMAIN, IP_HASH_SALT: anything
+#    PORTFOLIO_ENCRYPTION_KEY:  openssl rand -base64 32
+#    SESSION_SECRET:            openssl rand -base64 32
+#    JOBOPS_AUTH_TOKEN:         openssl rand -hex 32
+#    DOMAIN, IP_HASH_SALT:      set as appropriate
 
 # 3. Bring the stack up.
 docker compose up -d
 
-# 4. Visit https://${DOMAIN}/admin/setup and walk the wizard.
-#    The wizard: admin password → encryption-key ack → site title/domain
-#    → jobops URL + token (tested live) → agent LLM (tested live) → done.
+# 4. Visit https://${DOMAIN}/admin/setup and walk the wizard:
+#    admin password → encryption-key ack → site title/domain
+#    → jobops URL + token (tested live) → agent LLM provider + key (tested live) → done.
 
 # 5. (Optional) Seed the demo persona so a fresh deployment isn't empty.
 docker compose exec -T web npx tsx scripts/seed-demo.ts
-
-# 6. (Optional) Publish the patched jobops build for the orchestrator.
-./scripts/build-jobops-tarball.sh
-docker compose build jobops web orchestrator
-docker compose up -d
 ```
 
-That's the whole onboarding. After step 6, `/`, `/admin`, `/mcp/public`, and `/api/orchestrator/chat/*` are all live.
+After the wizard, `/`, `/admin`, `/mcp/public`, and `/api/orchestrator/api/chat/*` are all live.
 
 ## Local dev (no Docker)
 
+The fastest path is the helper script:
+
 ```bash
-# Node services
 npm ci
-# build the workspace packages that apps depend on
-npm run build -w @portfolio/shared -w @portfolio/crypto -w @portfolio/db
+./scripts/start-dev.sh      # builds workspace packages and starts web + orchestrator
+```
 
-# Voice (Python)
-cd apps/voice
-uv sync
-# (a second terminal) jobops source tree → dist
-cd ../../open_source/jobops && npm run build
+Or manually:
 
-# (a third terminal) jobops HTTP
-JOBOPS_PORT=7891 JOBOPS_AUTH_TOKEN=dev \
-  node open_source/jobops/dist/cli.js start
+```bash
+npm ci
+npm run build -w @livingcv/shared -w @livingcv/crypto -w @livingcv/db
 
-# (a fourth terminal) voice
-cd apps/voice && PORT=8200 ORCHESTRATOR_URL=http://127.0.0.1:8100 \
-  uv run uvicorn voice_service.main:app --port 8200
+# jobops HTTP (from the jobops source tree, built to dist/)
+JOBOPS_PORT=7891 JOBOPS_AUTH_TOKEN=dev node <jobops>/dist/cli.js start
 
-# (a fifth terminal) orchestrator
+# orchestrator
 cd apps/orchestrator
 DATA_DIR=$PWD/../data ORCHESTRATOR_PORT=8100 \
   SESSION_SECRET=any PORTFOLIO_ENCRYPTION_KEY=$(openssl rand -base64 32) \
-  JOBOPS_BASE_URL=http://127.0.0.1:7891 \
-  JOBOPS_AUTH_TOKEN=dev \
+  JOBOPS_BASE_URL=http://127.0.0.1:7891 JOBOPS_AUTH_TOKEN=dev \
   npx tsx src/server.ts
 
-# (a sixth terminal) web
+# web (separate terminal)
 cd apps/web
-DATA_DIR=$PWD/../../data SESSION_SECRET=any \
-  PORTFOLIO_ENCRYPTION_KEY=any \
+DATA_DIR=$PWD/../../data SESSION_SECRET=any PORTFOLIO_ENCRYPTION_KEY=any \
   npx next dev -p 3000
-
-# Smoke tests
-cd ../../
-npx tsx scripts/smoke-phase2.ts
-npx tsx scripts/smoke-phase4.ts
 ```
 
-## Architecture
+## Public MCP surface
 
-```
-┌────────────┐  https://{site}  ┌────────────┐
-│   Caddy    │ ───────────────► │    web     │  Next.js (App Router)
-│  (TLS)     │  reverse_proxy   │  apps/web  │  classic template + admin + REST
-└────────────┘                  └─────┬──────┘
-       ▲                              │ reads
-       │ /api/orchestrator/*           │ portfolio.db
-       │                              │ (WAL)
-       │                              ▼
-       │                        ┌────────────┐
-       │                        │  shared    │   packages/db (better-sqlite3 + WAL)
-       │                        │ portfolio  │   packages/crypto (AES-256-GCM)
-       │                        │    .db     │   packages/shared (template + settings)
-       │                        └────────────┘
-       │
-       │ /voice-ws                  ▲ reads + writes
-       │                              │
-       │   ┌──────────────────┐       │ runTurn
-       │   │  orchestrator    │ ──────┘ (LLM tool loop)
-       │   │ apps/orchestrator│ ◄──── WS (Docker internal only) ────┐
-       │   │ Express + MCP   │ ─── tools/list over HTTP/MCP         │
-       │   │  client to jobops │                                    │
-       │   └────┬─────────────┘                                     │
-       │        │                                                    │
-       │        │  /internal/voice (WS)  ────────►  ┌──────────┐     │
-       │        │                                  │  voice   │ ◄───┘
-       │        │                                  │ apps/voice│  (Pipecat-shaped)
-       │        ▼                                  │  (Python) │
-       │   browser ◄───── /voice-ws ──────►   │           │
-       │   widget                            └──────────┘
-       │
-       │ /mcp*
-       │
-       │   ┌──────────┐
-       └──►│  jobops  │   /mcp/public  (open, 2 public tools)
-           │ (npm pkg)│   /mcp         (bearer-gated, full toolset)
-           └──────────┘
-```
-
-### Public MCP surface
-
-`{site.domain}/mcp/public` is the canonical recruiter-side AI endpoint.
-Two read-only tools:
+`{site.domain}/mcp/public` is the canonical recruiter-side AI endpoint — open, unauthenticated, POST-only. Exactly two read-only tools:
 
 | Tool | Purpose |
 | --- | --- |
-| `get_career_packet` | Returns the operator's `career_packet` row (markdown + version + cv-hash). |
-| `get_story_bank_public` | Returns STAR+R stories from `story_bank` — only `story_text`, `reflection`, `competency_tags`. No joins to `jobs`/`companies`, no application context, no timestamps. |
+| `get_career_packet` | Returns the operator's `career_packet` (markdown + version + cv-hash). |
+| `get_story_bank_public` | STAR+R stories from `story_bank` — only `story_text`, `reflection`, `competency_tags`. No joins, no application context, no timestamps. |
 
-Everything else (`update_*`, `delete_*`, `import_*`, `purge_*`, `enrich_company`, `negotiation_brief`, `find_warm_intros`, etc.) lives behind the bearer-gated `/mcp` and is reachable only from the orchestrator and the admin dashboard. See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md) for the full trust model and curl transcripts.
+Everything else (`update_*`, `delete_*`, `import_*`, `enrich_company`, `negotiation_brief`, `find_warm_intros`, …) lives behind the bearer-gated `/mcp` and is reachable only from the orchestrator and the operator's own tooling. The guarantee is **server-side tool registration**, not prompting: a hostile prompt that tricks the LLM into emitting a private tool name still fails, because that tool doesn't exist on the public mount. See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
+
+## SEO
+
+Every SEO artifact is generated at request time from your settings, so each self-hoster gets correct SEO for their own domain with zero code edits: `metadataBase` + per-page OpenGraph/Twitter tags, a generated OG image route, JSON-LD structured data, self-referential canonicals, `sitemap.xml` (home + projects + blog + resume, with `lastmod`), `robots.txt` (admin/API disallowed), a blog RSS feed at `/blog/feed.xml`, a web manifest, and optional Google Analytics + Google/Bing site-verification tags from the admin **SEO** settings.
 
 ## Operations
 
 ### Backups
 
 ```bash
-# Snapshot the DB (uses SQLite online-backup API; safe on a live DB).
-DATA_DIR=/data sudo ./infra/scripts/backup.sh
-#  -> /backups/portfolio-<ts>.tar.gz
-
+# Snapshot the DB (SQLite online-backup API; safe on a live DB).
+DATA_DIR=/data sudo ./infra/scripts/backup.sh        # -> /backups/portfolio-<ts>.tar.gz
 # Restore (stops web + orchestrator, swaps the DB, restarts them).
 DATA_DIR=/data sudo ./infra/scripts/restore.sh /backups/portfolio-<ts>.tar.gz
 ```
 
 ### Security headers
 
-`infra/Caddyfile` sets `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer-when-downgrade`, `X-Frame-Options: DENY` at the edge, plus HSTS via Caddy's automatic HTTPS. The web app sets the same headers server-side as a defense-in-depth.
+`infra/Caddyfile` sets `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and `X-Frame-Options: DENY` at the edge, plus HSTS via Caddy's automatic HTTPS. Encrypted secrets never leave the server unmasked; the admin UI shows secrets as `••••last4`.
 
 ### Logs
 
-Caddy logs the request line; the web app logs to stdout via `app.listen`'s `console.log` (visible via `docker compose logs web`). The orchestrator logs the same way. Voice uses `uvicorn` with default stdout logging.
+Caddy logs the request line; web and orchestrator log to stdout (`docker compose logs web` / `orchestrator`). The admin console also has a **System Logs** viewer backed by a `system_logs` table.
 
 ### Updating
 
@@ -214,21 +170,17 @@ Caddy logs the request line; the web app logs to stdout via `app.listen`'s `cons
 git pull
 docker compose build --pull
 docker compose up -d
-# (Optional) re-run the demo seed to update the canned persona.
-docker compose exec -T web npx tsx scripts/seed-demo.ts
 ```
 
-`/admin/setup` is idempotent — re-running it updates the operator password and encryption-key acknowledgement. The encrypted settings persist because the encryption key is in `.env` and the database row format is stable.
+`/admin/setup` is idempotent — re-running it updates the operator password and encryption-key acknowledgement. Encrypted settings persist because the key lives in `.env` and the row format is stable.
 
 ## Testing
 
 ```bash
-# Typecheck + lint + tests
-npm run ci
-# 33 vitest tests across 6 files
-# 20 voice pytest tests in apps/voice
+npm run ci           # eslint + tsc (5 workspaces) + vitest
+# 34 vitest tests across 6 files
 
-# Operational end-to-end smokes (require jobops source + a port)
+# Operational end-to-end smokes (require the jobops source tree + a free port)
 ./scripts/build-jobops-tarball.sh
 npx tsx scripts/smoke-phase2.ts
 npx tsx scripts/smoke-phase4.ts
@@ -236,11 +188,11 @@ npx tsx scripts/smoke-phase4.ts
 
 ## Architecture decision records
 
-- **Why a monorepo** — every process that opens the same SQLite file (web, orchestrator) needs to share migrations, types, and crypto. npm workspaces + compiled `dist/` per package keeps the build incremental without a separate codegen step.
-- **Why local SQLite, not Postgres** — the entire portfolio + chat + lead store fits in <1 MB even after years. A single `portfolio.db` file with WAL handles 4 OCPU on Ampere A1 comfortably. Postgres would be operationally more expensive than the whole problem deserves.
-- **Why no `any`** — `tsconfig.base.json` sets `strict: true`, `noUncheckedIndexedAccess: true`, `noImplicitOverride: true`, plus an ESLint config with `@typescript-eslint/no-explicit-any: error`. The MCP SDK is the only place `any` is used (typed-cast), and it's documented in code.
-- **Why server-registered tool allow-list, not client-side filtering** — every public surface in this repo is enforced at the server's tool list, not the client's prompt. A hostile prompt that successfully tricked the LLM into emitting `{"name":"update_career_packet",...}` would still fail because the public mount doesn't know that tool exists. See `open_source/jobops/tests/public-mcp-surface.test.mjs` for the live proof.
-- **Why MockSTT/MockTTS in Phase 3** — Pipecat + Whisper + Cartesia + Piper are recorded as Phase 5 polish per `PLAN.md §14 risk #2`. The harness uses pydantic interfaces so swapping in real adapters is mechanical. The orchestrator and the public-MCP surface are already wired; only the voice media path is left for the operator to enable when they're ready to bring CPU/disk for whisper.cpp or pay Deepgram.
+- **Why a monorepo** — web and orchestrator open the same SQLite file, so they must share migrations, types, and crypto. npm workspaces with a compiled `dist/` per package keeps builds incremental.
+- **Why local SQLite, not Postgres** — the whole portfolio + chat + lead store stays under a few MB. A single `portfolio.db` with WAL handles an Ampere A1 box comfortably; Postgres would cost more to operate than the problem deserves.
+- **Why jobops as a dependency, never vendored** — jobops is installed from npm and run as its own container; this repo holds no jobops source. That keeps the public/private tool boundary owned by jobops's own tests and lets any self-hoster point at their own instance.
+- **Why a server-registered tool allow-list, not client-side filtering** — the recruiter tier can only see tools that are *registered* on the public mount. Enforcing this at the server means no prompt-injection attack can reach a mutating tool, regardless of what it convinces the LLM to emit. A test asserts search is only wired post-gate, and that the pre-gate agent has exactly one tool.
+- **Why text-only concierge** — the recruiter concierge is text/chat. A live voice pipeline needs real STT/TTS infrastructure (keys or local models) plus a browser+mic to verify end-to-end, so it is intentionally out of scope for the self-hostable core rather than shipped half-working.
 
 ## License
 
