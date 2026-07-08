@@ -147,6 +147,9 @@ export function attachMasterMcp(app: express.Express) {
     if (!transport) {
       return res.status(404).send('Session not found');
     }
-    await transport.handlePostMessage(req, res);
+    // The global express.json() middleware has already consumed and parsed the
+    // request stream, so pass the parsed body — otherwise handlePostMessage tries
+    // to re-read the stream and fails with "stream is not readable".
+    await transport.handlePostMessage(req, res, req.body);
   });
 }
