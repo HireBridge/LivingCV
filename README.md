@@ -54,61 +54,56 @@ LivingCV/
 │  ├─ db/             better-sqlite3 + WAL + migration runner (shared by web + orchestrator)
 │  ├─ crypto/         AES-256-GCM with env-key + bootstrap-key fallback
 │  └─ shared/         template props, setting keys, free-email-domains (no DB)
-├─ scripts/           seed-demo, set-password, smoke-phase2/4, build-jobops-tarball, start-dev
+├─ scripts/           start (one-command launcher), seed-demo, set-password, smoke-phase2/4, build-jobops-tarball
 ├─ docs/              PUBLIC_MCP.md, case-study template
 ├─ infra/             Caddyfile, jobops/web/orchestrator Dockerfiles, backup/restore scripts
 ├─ apps/web/templates/classic/   the bundled template (data-driven)
 └─ TEMPLATES.md       contract for adding new templates
 ```
 
-## Quickstart (≈15 minutes on a fresh box)
+## Quickstart — one command
 
-### Prerequisites
-
-- Docker 24+ and docker compose v2.
-- A domain whose DNS A/AAAA points at the box's public IP.
-- Ports 80/443 open on the host (Caddy mints a Let's Encrypt cert on first boot).
-- ~2 GB free RAM and ~4 GB free disk (jobops's bundled tooling adds up). Runs comfortably on an Oracle Ampere A1 free instance (arm64).
-
-### Deploy
+You need **Docker** (with compose v2) and `openssl`. Then:
 
 ```bash
-# 1. Clone
 git clone https://github.com/mohith-das/LivingCV
 cd LivingCV
-
-# 2. Fill in the bootstrap env. The encryption key is the load-bearing
-#    secret — lose it and every encrypted app_settings value is unrecoverable.
-cp .env.example .env
-$EDITOR .env
-#    PORTFOLIO_ENCRYPTION_KEY:  openssl rand -base64 32
-#    SESSION_SECRET:            openssl rand -base64 32
-#    JOBOPS_AUTH_TOKEN:         openssl rand -hex 32
-#    DOMAIN, IP_HASH_SALT:      set as appropriate
-
-# 3. Bring the stack up.
-docker compose up -d
-
-# 4. Visit https://${DOMAIN}/admin/setup and walk the wizard:
-#    admin password → encryption-key ack → site title/domain
-#    → jobops URL + token (tested live) → agent LLM provider + key (tested live) → done.
-
-# 5. (Optional) Seed the demo persona so a fresh deployment isn't empty.
-docker compose exec -T web npx tsx scripts/seed-demo.ts
+./scripts/start.sh
 ```
 
-After the wizard, `/`, `/admin`, `/mcp/public`, and `/api/orchestrator/api/chat/*` are all live.
+That's it. The script asks once for a domain (leave blank to run locally on
+`http://localhost`), auto-generates every secret, writes `.env`, builds and
+starts the whole stack, and seeds a demo persona. When it finishes it prints
+your URL.
+
+The only thing left is the browser setup wizard it points you to
+(`/admin/setup`): pick an admin password, acknowledge the encryption-key
+backup, and paste your LLM API key (Anthropic / OpenAI / Gemini / DeepSeek).
+Nothing else needs configuring on the box.
+
+- **Local:** leave the domain blank → served over `http://localhost`.
+- **Public deploy:** enter your domain (or run `DOMAIN=example.com ./scripts/start.sh`).
+  With ports 80/443 open and DNS pointed at the box, Caddy fetches a Let's
+  Encrypt cert automatically and serves HTTPS. Runs comfortably on an Oracle
+  Ampere A1 free instance (arm64).
+
+> The encryption key the script generates is the load-bearing secret — lose it
+> and every encrypted value in `app_settings` is unrecoverable. Back up `.env`.
+
+Re-running `./scripts/start.sh` is safe (idempotent): it keeps existing secrets,
+rebuilds, and restarts.
+
+### Manual setup (if you'd rather not use the script)
+
+```bash
+cp .env.example .env && $EDITOR .env   # set DOMAIN + SITE_ADDRESS, generate the 4 secrets
+docker compose up -d
+docker compose exec -T web npx tsx scripts/seed-demo.ts   # optional demo persona
+```
 
 ## Local dev (no Docker)
 
-The fastest path is the helper script:
-
-```bash
-npm ci
-./scripts/start-dev.sh      # builds workspace packages and starts web + orchestrator
-```
-
-Or manually:
+Run the Node services directly against a local jobops:
 
 ```bash
 npm ci

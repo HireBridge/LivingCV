@@ -12,8 +12,13 @@
 #                                     a bearer from inside the docker network.
 # External clients should be configured to use the canonical public URL
 # `{site.domain}/mcp/public` — see docs/PUBLIC_MCP.md.
+#
+# Site address comes from $SITE_ADDRESS (set by scripts/start.sh from DOMAIN):
+#   - a bare domain (e.g. example.com) → Caddy gets an automatic Let's Encrypt
+#     cert and serves HTTPS (needs ports 80/443 open + DNS pointed at the box).
+#   - the default ":80" → plain HTTP, for local testing with no domain.
 
-:80 {
+{$SITE_ADDRESS::80} {
   encode zstd gzip
 
   # Defense-in-depth security headers. Caddy already applies HSTS via its
