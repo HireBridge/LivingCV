@@ -20,6 +20,7 @@ COPY packages/crypto ./packages/crypto
 COPY packages/db ./packages/db
 COPY apps/web ./apps/web
 COPY tsconfig.base.json ./
+COPY scripts ./scripts
 RUN npm run -w @livingcv/shared build \
  && npm run -w @livingcv/crypto build \
  && npm run -w @livingcv/db build \
@@ -38,6 +39,9 @@ COPY --chown=nodejs:nodejs --from=build /app/package.json /app/package-lock.json
 COPY --chown=nodejs:nodejs --from=build /app/apps/web ./apps/web
 COPY --chown=nodejs:nodejs --from=build /app/packages ./packages
 COPY --chown=nodejs:nodejs --from=build /app/tsconfig.base.json ./
+# seed-demo.ts is run via `docker compose exec web npx tsx scripts/seed-demo.ts`
+# (by scripts/start.sh and the README) — it must exist in the runtime image.
+COPY --chown=nodejs:nodejs --from=build /app/scripts ./scripts
 USER nodejs
 CMD ["npm", "run", "start", "-w", "@livingcv/web"]
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
