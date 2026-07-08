@@ -25,6 +25,8 @@ services:
     build:
       context: .
       dockerfile: infra/web.Dockerfile
+      args:
+        GIT_SHA: ${GIT_SHA:-dev}
     restart: unless-stopped
     environment:
       DATA_DIR: /data/db

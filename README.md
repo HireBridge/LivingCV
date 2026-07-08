@@ -54,7 +54,7 @@ LivingCV/
 │  ├─ db/             better-sqlite3 + WAL + migration runner (shared by web + orchestrator)
 │  ├─ crypto/         AES-256-GCM with env-key + bootstrap-key fallback
 │  └─ shared/         template props, setting keys, free-email-domains (no DB)
-├─ scripts/           start (one-command launcher), seed-demo, set-password, smoke-phase2/4, build-jobops-tarball
+├─ scripts/           start (launcher), update (in-place updater), seed-demo, set-password, smoke-phase2/4
 ├─ docs/              PUBLIC_MCP.md, case-study template
 ├─ infra/             Caddyfile, jobops/web/orchestrator Dockerfiles, backup/restore scripts
 ├─ apps/web/templates/classic/   the bundled template (data-driven)
@@ -205,11 +205,27 @@ Caddy logs the request line; web and orchestrator log to stdout (`docker compose
 
 ### Updating
 
+One command, on the server, pulls the latest and rebuilds **without touching your data**:
+
 ```bash
-git pull
-docker compose build --pull
-docker compose up -d
+cd /path/to/LivingCV
+./scripts/update.sh            # checks for updates, then applies after a prompt
+./scripts/update.sh --check    # only report whether updates are available
+./scripts/update.sh --yes      # apply without prompting (for cron/automation)
 ```
+
+It git-pulls the branch you deployed, rebuilds changed images, and restarts —
+your SQLite databases (Docker named volumes), `.env` secrets, and all content
+are preserved. New database migrations apply automatically on restart (they're
+additive). It refuses to run if you have uncommitted local edits, and takes a
+best-effort DB backup first.
+
+The admin console also has **Settings → Updates**, which checks your running
+version against the upstream repo on GitHub and tells you if you're behind (and
+by how many commits). It intentionally does **not** apply updates from the
+browser — the web app runs in a container and can't safely rebuild the host
+stack — so it points you to `./scripts/update.sh` on the server. You can retarget
+the upstream repo/branch there too (useful if you run your own fork).
 
 `/admin/setup` is idempotent — re-running it updates the operator password and encryption-key acknowledgement. Encrypted settings persist because the key lives in `.env` and the row format is stable.
 

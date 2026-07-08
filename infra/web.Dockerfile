@@ -28,6 +28,10 @@ RUN npm run -w @livingcv/shared build \
 
 # Runtime image.
 FROM node:20-bookworm-slim AS run
+# Build-time commit stamp so the admin "Updates" check can compare the running
+# instance against upstream. Passed by scripts/start.sh and scripts/update.sh.
+ARG GIT_SHA=dev
+ENV LIVINGCV_COMMIT=${GIT_SHA}
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000

@@ -50,6 +50,9 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
     keys: [],
     checkboxKeys: [SETTING_KEYS.publicMcpEnabled],
   },
+  updates: {
+    keys: [SETTING_KEYS.updatesRepo, SETTING_KEYS.updatesBranch],
+  },
 };
 
 export async function POST(request: Request) {

@@ -91,6 +91,8 @@ echo "=== .env ready ==="
 echo
 
 # ── 2. Start ─────────────────────────────────────────────────────────────────
+# Stamp the web image with the current commit so the admin Updates check works.
+export GIT_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo dev)"
 echo "=== Building + starting the stack (first run pulls/builds images) ==="
 docker compose up -d --build --wait
 

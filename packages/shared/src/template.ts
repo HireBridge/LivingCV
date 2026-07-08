@@ -175,6 +175,8 @@ export const SETTING_KEYS = {
   resumeFilename: 'resume.filename',
   mcpMasterKey: 'mcp.master_key',
   publicMcpEnabled: 'publicmcp.enabled',
+  updatesRepo: 'updates.repo',
+  updatesBranch: 'updates.branch',
   siteTwitterHandle: 'site.twitter_handle',
   siteLang: 'site.lang',
   siteKeywords: 'site.keywords',

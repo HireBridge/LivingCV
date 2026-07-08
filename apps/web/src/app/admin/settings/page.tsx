@@ -6,6 +6,7 @@ import { LlmConnectionsForm } from './LlmConnectionsForm';
 import { McpConfigForm } from './McpConfigForm';
 import { ConnectivityForm } from './ConnectivityForm';
 import { SystemLogsViewer } from './SystemLogsViewer';
+import { UpdatesPanel } from './UpdatesPanel';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <a href="?tab=mcp" style={{ textDecoration: 'none', color: currentTab === 'mcp' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'mcp' ? 'bold' : 'normal' }}>MCP</a>
       <a href="?tab=gate" style={{ textDecoration: 'none', color: currentTab === 'gate' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'gate' ? 'bold' : 'normal' }}>Email Gate</a>
       <a href="?tab=logs" style={{ textDecoration: 'none', color: currentTab === 'logs' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'logs' ? 'bold' : 'normal' }}>System Logs</a>
+      <a href="?tab=updates" style={{ textDecoration: 'none', color: currentTab === 'updates' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'updates' ? 'bold' : 'normal' }}>Updates</a>
     </div>
   );
 
@@ -366,6 +368,22 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <h3>System Logs</h3>
           <p>Application logs for debugging. Powered by Winston and SQLite.</p>
           <SystemLogsViewer />
+        </section>
+      )}
+
+      {currentTab === 'updates' && (
+        <section className="admin-card">
+          <h3>Software updates</h3>
+          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
+            Check whether a newer version of LivingCV is available upstream and how to
+            pull it into this instance. Updates never touch your content, leads,
+            settings, or secrets.
+          </p>
+          <UpdatesPanel
+            currentCommit={process.env.LIVINGCV_COMMIT || 'dev'}
+            repo={all[SETTING_KEYS.updatesRepo] || 'mohith-das/LivingCV'}
+            branch={all[SETTING_KEYS.updatesBranch] || 'main'}
+          />
         </section>
       )}
 
