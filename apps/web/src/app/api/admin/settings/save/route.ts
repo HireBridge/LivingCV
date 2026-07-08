@@ -44,6 +44,12 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
     keys: ['mcp.master_key'],
     checkboxKeys: ['mcp.enabled'],
   },
+  // Public MCP toggle lives in its own group so saving it never clobbers the
+  // Master Relay MCP toggle (absent checkboxes are written as '0').
+  publicmcp: {
+    keys: [],
+    checkboxKeys: [SETTING_KEYS.publicMcpEnabled],
+  },
 };
 
 export async function POST(request: Request) {

@@ -298,6 +298,9 @@ export function buildTemplateProps(db: Db): TemplateProps {
 
   const allSettings = getAllSettings(db);
   const contactEnabled = !!(allSettings['telegram.bot_token'] || allSettings['google.client_id']);
+  // Public MCP is opt-in: the TalentMCP nav button shows only when the operator
+  // enables it in Settings → MCP → Public MCP.
+  const talentMcpEnabled = (allSettings['publicmcp.enabled'] ?? '0') === '1';
 
   return TemplatePropsSchema.parse({
     hero: {
@@ -320,5 +323,6 @@ export function buildTemplateProps(db: Db): TemplateProps {
     hiddenSections,
     customSections,
     contactEnabled,
+    talentMcpEnabled,
   });
 }

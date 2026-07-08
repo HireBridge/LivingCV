@@ -64,6 +64,7 @@ export function ClassicTemplate(props: TemplateProps) {
             {!props.hiddenSections?.includes('projects') && projects.length > 0 && <li><a href="#projects">Projects</a></li>}
             {!props.hiddenSections?.includes('background') && <li><a href="#background">Background</a></li>}
             {!props.hiddenSections?.includes('footer') && <li><a href="#contact">Contact</a></li>}
+            {props.talentMcpEnabled && <li><a href="/talent-mcp" className="nav-talentmcp-btn">TalentMCP</a></li>}
             <li><a href="/blog" className="nav-blog-btn">Blog</a></li>
           </ul>
         </div>

@@ -48,6 +48,17 @@
     reverse_proxy orchestrator:8100
   }
 
+  # Public MCP: gated by the admin "Public MCP" toggle. Caddy asks the web app
+  # (forward_auth) whether it's enabled; a 2xx lets the request reach jobops,
+  # a 403 blocks it. The recruiter concierge reaches jobops internally and is
+  # unaffected. More specific than /mcp* so it matches /mcp/public first.
+  handle /mcp/public* {
+    forward_auth web:3000 {
+      uri /api/public-mcp-gate
+    }
+    reverse_proxy jobops:7891
+  }
+
   handle /mcp* {
     reverse_proxy jobops:7891
   }

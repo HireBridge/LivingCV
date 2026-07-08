@@ -231,13 +231,48 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
             Configure the Master MCP Server. This exposes the entire platform to your local LLM client (like Claude Desktop or Cursor).
           </p>
-          <McpConfigForm 
+          <McpConfigForm
             domain={all['site.domain'] || 'localhost:3000'}
             initialData={{
               'mcp.enabled': all['mcp.enabled'] || '0',
               'mcp.master_key': getSettingForBrowser(db, SETTING_KEYS.mcpMasterKey) || '',
             }}
           />
+        </section>
+      )}
+
+      {currentTab === 'mcp' && (
+        <section className="admin-card" style={{ marginTop: 20 }}>
+          <h3>Public MCP</h3>
+          <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
+            The open, read-only endpoint at <code>/mcp/public</code> that external
+            recruiter AI agents (Claude.ai, ChatGPT, any MCP client) can connect to.
+            It exposes exactly two tools: <code>get_career_packet</code> and{' '}
+            <code>get_story_bank_public</code>. When enabled, a <b>TalentMCP</b> button
+            appears in the site navigation linking to connection instructions.
+          </p>
+          <form method="post" action="/api/admin/settings/save" className="row">
+            <input type="hidden" name="group" value="publicmcp" />
+            <input type="hidden" name="redirect" value="/admin/settings?tab=mcp" />
+            <div className="row">
+              <label>
+                <input
+                  type="checkbox"
+                  name="publicmcp.enabled"
+                  defaultChecked={(all[SETTING_KEYS.publicMcpEnabled] ?? '0') === '1'}
+                  style={{ marginRight: 8 }}
+                />
+                Enable public MCP endpoint + TalentMCP button
+              </label>
+            </div>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.85rem', margin: '4px 0 12px' }}>
+              Public URL: <code>https://{all['site.domain'] || 'your-domain'}/mcp/public</code>
+              {' · '}Instructions page: <code>/talent-mcp</code>
+            </p>
+            <div className="actions">
+              <button type="submit">Save</button>
+            </div>
+          </form>
         </section>
       )}
 

@@ -126,6 +126,9 @@ export const TemplateProps = z.object({
   hiddenSections: z.array(z.string()).default([]),
   customSections: z.array(CustomSectionProps).default([]),
   contactEnabled: z.boolean().optional(),
+  // When true, the template shows a "TalentMCP" nav button linking to the
+  // public-MCP connection instructions. Driven by publicmcp.enabled.
+  talentMcpEnabled: z.boolean().optional(),
 });
 export type TemplateProps = z.infer<typeof TemplateProps>;
 
@@ -171,6 +174,7 @@ export const SETTING_KEYS = {
   gateEnabled: 'gate.enabled',
   resumeFilename: 'resume.filename',
   mcpMasterKey: 'mcp.master_key',
+  publicMcpEnabled: 'publicmcp.enabled',
   siteTwitterHandle: 'site.twitter_handle',
   siteLang: 'site.lang',
   siteKeywords: 'site.keywords',

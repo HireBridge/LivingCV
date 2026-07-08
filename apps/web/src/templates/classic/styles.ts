@@ -96,7 +96,20 @@ header.nav{
 .nav-blog-btn:hover {
   opacity: 0.85;
 }
-@media (max-width:600px){ .nav-links{ gap:14px; } .nav-links a{ font-size:0.82rem; } .nav-blog-btn{ padding:4px 10px; } }
+.nav-talentmcp-btn {
+  background: var(--paper);
+  color: var(--ink) !important;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--ink);
+  transition: background 0.2s, color 0.2s;
+  font-weight: 600;
+}
+.nav-talentmcp-btn:hover {
+  background: var(--ink);
+  color: var(--paper) !important;
+}
+@media (max-width:600px){ .nav-links{ gap:14px; } .nav-links a{ font-size:0.82rem; } .nav-blog-btn{ padding:4px 10px; } .nav-talentmcp-btn{ padding:4px 10px; } }
 
 /* HERO */
 .hero{ padding:76px 0 56px; }
