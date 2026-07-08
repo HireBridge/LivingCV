@@ -2,6 +2,7 @@ export { FREE_EMAIL_DOMAINS, isDomainDenied } from './free-email-domains.js';
 export type {
   LinkItem,
   ProjectBody,
+  ProjectBodyColumn,
   ProjectProps,
   MiniProjectProps,
   HeroProps,
@@ -16,6 +17,7 @@ export type {
 export {
   LinkItem as LinkItemSchema,
   ProjectBody as ProjectBodySchema,
+  ProjectBodyColumn as ProjectBodyColumnSchema,
   ProjectProps as ProjectPropsSchema,
   MiniProjectProps as MiniProjectPropsSchema,
   HeroProps as HeroPropsSchema,

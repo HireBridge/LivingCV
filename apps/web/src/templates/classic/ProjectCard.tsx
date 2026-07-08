@@ -35,20 +35,19 @@ export function ProjectCard({ project }: { project: ProjectProps }) {
           </div>
         ) : null}
 
-        <div className="project-body">
-          <div>
-            <h4>Design decision</h4>
-            <p>{project.body.designDecision}</p>
+        {project.body.columns.length > 0 ? (
+          <div
+            className="project-body"
+            data-cols={Math.min(project.body.columns.length, 3)}
+          >
+            {project.body.columns.map((col, i) => (
+              <div key={i}>
+                <h4>{col.heading}</h4>
+                <p>{col.body}</p>
+              </div>
+            ))}
           </div>
-          <div>
-            <h4>{'What\u2019s real'}</h4>
-            <p>{project.body.whatsReal}</p>
-          </div>
-          <div>
-            <h4>Honest constraint</h4>
-            <p>{project.body.honestConstraint}</p>
-          </div>
-        </div>
+        ) : null}
 
         {project.installCmd ? (
           <div className="install-row">

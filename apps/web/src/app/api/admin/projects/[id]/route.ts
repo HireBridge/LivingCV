@@ -29,7 +29,7 @@ export async function POST(
       JSON.parse(bodyText);
       bodyJson = bodyText;
     } catch {
-      bodyJson = JSON.stringify({ designDecision: bodyText, whatsReal: '', honestConstraint: '' });
+      bodyJson = JSON.stringify({ columns: [{ heading: 'Design decision', body: bodyText }] });
     }
   }
   updateProject(db, id, {

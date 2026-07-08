@@ -93,10 +93,16 @@ export interface FooterContent {
   note?: string;
 }
 
+// Canonical stored shape for projects.body. Older rows may still hold the
+// legacy trio ({designDecision, whatsReal, honestConstraint}); those are folded
+// into columns by normalizeProjectBody() at read time.
+export interface ProjectBodyColumnContent {
+  heading: string;
+  body: string;
+}
 export interface ProjectBodyContent {
-  designDecision: string;
-  whatsReal: string;
-  honestConstraint: string;
+  columns: ProjectBodyColumnContent[];
+  diagramCaption?: string;
 }
 
 // Case-study frontmatter JSON (stored separately from the markdown body).

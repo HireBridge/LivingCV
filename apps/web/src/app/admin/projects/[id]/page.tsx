@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation';
 import { getDb } from '@/lib/db';
 import { getProjectById } from '@/lib/content';
 import { parseJson } from '@/lib/parse-json';
-import type { ProjectBodyContent } from '@/lib/types';
+import { normalizeProjectBody } from '@/lib/project-body';
+import { ProjectBodyEditor } from '../ProjectBodyEditor';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,11 +18,9 @@ export default async function EditProjectPage({
   const db = getDb();
   const project = getProjectById(db, id);
   if (!project) notFound();
-  const body = parseJson<ProjectBodyContent>(project.body, {
-    designDecision: '',
-    whatsReal: '',
-    honestConstraint: '',
-  });
+  const { columns, diagramCaption } = normalizeProjectBody(
+    parseJson<unknown>(project.body, {}),
+  );
   return (
     <div>
       <h1>Edit project · <code>{project.slug}</code></h1>
@@ -79,10 +78,7 @@ export default async function EditProjectPage({
           <label>Diagram SVG</label>
           <textarea name="diagram_svg" defaultValue={project.diagram_svg ?? ''} placeholder="<svg viewBox=...>...</svg>" />
         </div>
-        <div className="row">
-          <label>3-column body (free text → design decision; or paste JSON below)</label>
-          <textarea name="body" defaultValue={JSON.stringify(body)} className="mono" />
-        </div>
+        <ProjectBodyEditor initialColumns={columns} diagramCaption={diagramCaption} />
         <div className="row">
           <label>Install command</label>
           <input name="install_cmd" className="mono" defaultValue={project.install_cmd ?? ''} />

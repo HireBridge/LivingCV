@@ -19,13 +19,11 @@ function readFormFields(form: FormData) {
       JSON.parse(bodyText);
       bodyJson = bodyText;
     } catch {
-      // Wrap free-text body into the 3-col shape so admins don't need raw JSON
-      // for the common case. Advanced admins can edit body JSON directly on the
-      // /api/admin/projects/[id] JSON endpoint.
+      // Wrap free-text body into a single labelled column so admins don't need
+      // raw JSON for the common case. The full column editor lives on the
+      // per-project edit page (/admin/projects/[id]).
       bodyJson = JSON.stringify({
-        designDecision: bodyText,
-        whatsReal: '',
-        honestConstraint: '',
+        columns: [{ heading: 'Design decision', body: bodyText }],
       });
     }
   }

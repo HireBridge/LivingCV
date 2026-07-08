@@ -173,8 +173,16 @@ h2.section-title{
 .diagram-box svg{ width:100%; height:auto; display:block; }
 .diagram-caption{ font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--ink-soft); margin-top:10px; text-align:center; letter-spacing:0.02em; }
 
+/* Up to three columns per row; a 4th+ column wraps to the next row. data-cols
+   (1/2/3, capped) keeps 1- and 2-column bodies from leaving trailing gaps. */
 .project-body{ display:grid; grid-template-columns: repeat(3, 1fr); gap:22px; }
-@media (max-width:760px){ .project-body{ grid-template-columns:1fr; } }
+.project-body[data-cols="1"]{ grid-template-columns: 1fr; }
+.project-body[data-cols="2"]{ grid-template-columns: repeat(2, 1fr); }
+@media (max-width:760px){
+  .project-body,
+  .project-body[data-cols="2"],
+  .project-body[data-cols="3"]{ grid-template-columns:1fr; }
+}
 .project-body h4{
   font-family:'Space Grotesk'; font-size:0.76rem; font-weight:600; text-transform:uppercase;
   letter-spacing:0.06em; color:var(--rust); margin:0 0 8px;

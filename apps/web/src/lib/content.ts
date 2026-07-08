@@ -12,6 +12,7 @@ import type {
   LinkItem,
 } from '@livingcv/shared';
 import { parseJson } from './parse-json';
+import { normalizeProjectBody } from './project-body';
 import { getAllSettings } from './settings';
 import type {
   ProjectRow,
@@ -19,7 +20,6 @@ import type {
   HeroContent,
   BackgroundContent,
   FooterContent,
-  ProjectBodyContent,
 } from './types';
 
 // ── Templates / sections ────────────────────────────────────────────────────
@@ -235,12 +235,7 @@ export function upsertCaseStudy(
 // ── Build TemplateProps from the DB ─────────────────────────────────────────
 
 function projectRowToProps(p: ProjectRow, hasCaseStudy: boolean): ProjectProps {
-  const body = parseJson<ProjectBodyContent & { diagramCaption?: string }>(p.body, {
-    designDecision: '',
-    whatsReal: '',
-    honestConstraint: '',
-    diagramCaption: '',
-  });
+  const { columns, diagramCaption } = normalizeProjectBody(parseJson<unknown>(p.body, {}));
   const links: LinkItem[] = [];
   if (p.repo_url) links.push({ label: 'repo', href: p.repo_url });
   if (p.demo_url) links.push({ label: 'demo', href: p.demo_url });
@@ -253,12 +248,8 @@ function projectRowToProps(p: ProjectRow, hasCaseStudy: boolean): ProjectProps {
     links,
     tagline: p.tagline ?? '',
     diagramSvg: p.diagram_svg ?? undefined,
-    diagramCaption: body.diagramCaption ?? undefined,
-    body: {
-      designDecision: body.designDecision,
-      whatsReal: body.whatsReal,
-      honestConstraint: body.honestConstraint,
-    },
+    diagramCaption: diagramCaption ?? undefined,
+    body: { columns },
     installCmd: p.install_cmd ?? undefined,
     hasCaseStudy,
   });

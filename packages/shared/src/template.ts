@@ -14,11 +14,19 @@ export const LinkItem = z.object({
 });
 export type LinkItem = z.infer<typeof LinkItem>;
 
-// A 3-column project body: "Design decision / What's real / Honest constraint".
+// A single body column: a custom heading + its text. The classic template
+// renders these in a grid, wrapping to a new row past three columns.
+export const ProjectBodyColumn = z.object({
+  heading: z.string(),
+  body: z.string(),
+});
+export type ProjectBodyColumn = z.infer<typeof ProjectBodyColumn>;
+
+// A project body is an ordered list of columns with author-defined headings.
+// (Historically this was a fixed trio — Design decision / What's real / Honest
+// constraint. That shape is normalized into columns at read time.)
 export const ProjectBody = z.object({
-  designDecision: z.string(),
-  whatsReal: z.string(),
-  honestConstraint: z.string(),
+  columns: z.array(ProjectBodyColumn).default([]),
 });
 export type ProjectBody = z.infer<typeof ProjectBody>;
 
