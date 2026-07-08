@@ -101,6 +101,50 @@ docker compose up -d
 docker compose exec -T web npx tsx scripts/seed-demo.ts   # optional demo persona
 ```
 
+## Where to host it
+
+This is a **stateful, single-VM docker-compose stack** — four small containers
+sharing local SQLite files on a persistent volume. It wants a plain Linux VM
+with Docker, not a serverless/PaaS platform.
+
+**Resource footprint** (measured, idle):
+
+| Container | RAM |
+| --- | --- |
+| web (Next.js) | ~90 MB |
+| orchestrator | ~130 MB |
+| jobops | ~145 MB |
+| caddy | ~15 MB |
+| **Total** | **~380 MB idle** (~0.6–1 GB under light traffic) |
+
+The one memory spike is building the web image on-box (Next.js build peaks
+~1.5 GB). Images total ~4 GB, so plan ~15–20 GB of disk.
+
+**Minimum:** 2 GB RAM, 1–2 vCPU, ~20 GB disk. (1 GB runs it, but add swap or the
+on-box image build can OOM.) The images build natively on both x86-64 and arm64,
+so any common VM works.
+
+**Cheapest options, best first:**
+
+1. **Oracle Cloud Always Free — Ampere A1 (arm64): $0, forever.** Up to 4 cores /
+   24 GB RAM / 200 GB free — wildly over-spec for this, and the intended target.
+   Oracle's signup is fussy and A1 capacity varies by region, but it's genuinely
+   free.
+2. **Hetzner CAX11 (arm) / CX22 (x86): ~€4/mo** — 2 vCPU / 4 GB / 40 GB. The
+   cheapest reliable paid VPS.
+3. **DigitalOcean / Vultr / Linode: $6/mo** (1 GB, add swap) or **$12/mo** (2 GB,
+   comfortable).
+
+**A note on Heroku / Render / Railway and similar PaaS:** they're a poor fit.
+Their dyno/container filesystems are **ephemeral** (wiped on every deploy/restart),
+which would destroy the SQLite data this app relies on, and their one-process-per-app
+model doesn't map to a multi-container compose stack with an internal network.
+Running here would mean rewriting the data layer onto a managed Postgres and
+splitting the services into separate apps — not worth it. Use a VM.
+
+> LLM and search API usage is billed separately through your own key — that's not
+> a hosting cost.
+
 ## Local dev (no Docker)
 
 Run the Node services directly against a local jobops:
