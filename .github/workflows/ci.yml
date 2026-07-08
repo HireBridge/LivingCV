@@ -20,6 +20,10 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
+      # Build the workspace packages first: lint, typecheck, and tests all
+      # resolve @livingcv/{db,crypto,shared} to their dist/, which doesn't
+      # exist on a fresh checkout until these are built.
+      - run: npm run build -w @livingcv/shared -w @livingcv/crypto -w @livingcv/db
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
