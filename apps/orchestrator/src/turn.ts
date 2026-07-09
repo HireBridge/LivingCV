@@ -108,16 +108,19 @@ export async function runTurn(
     return;
   }
 
+  const gateOff = getSetting(db, SETTING_KEYS.gateEnabled) === '0';
+
   // Build toolset.
-  const tools = session.email_verified === 0
+  const tools = !gateOff && session.email_verified === 0
     ? [submitWorkEmailToolDef()]
     : [submitWorkEmailToolDef(), ...listProjectsToolDefs(), ...getCaseStudyToolDefs()];
 
   // Web search is a post-gate tool only. Pre-gate (email_verified === 0) the LLM
   // gets exactly one tool (submit_work_email) so an unverified, anonymous visitor
   // can't burn the operator's paid search budget or use the agent as a free search
-  // proxy before providing a work email (§7 gate design).
-  if (session.email_verified === 1) {
+  // proxy before providing a work email (§7 gate design). When the gate is
+  // disabled, all tools are available immediately.
+  if (gateOff || session.email_verified === 1) {
     const searchProvider = getSetting(db, SETTING_KEYS.agentSearchProvider);
     if (searchProvider && searchProvider !== 'none') {
       tools.push(searchWebToolDef());
@@ -128,7 +131,7 @@ export async function runTurn(
   // only the submit_work_email tool (no MCP), so a hostile prompt cannot reach
   // any jobops tool at all — §2 invariant 4 in action.
   let mcp: McpSession | null = null;
-  if (session.email_verified === 1) {
+  if (gateOff || session.email_verified === 1) {
     try {
       // Connect to jobops /mcp/public iff we're post-gate.
       const jobopsBase = process.env.JOBOPS_BASE_URL || 'http://localhost:7891';

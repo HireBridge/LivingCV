@@ -82,3 +82,27 @@ describe('structural impossibility of prompt injection reaching mutating tools',
   });
 });
 
+describe('H5 — gate.enabled toggle controls toolset exposure', () => {
+  it('reads gate.enabled setting and stores it as gateOff', async () => {
+    const src = await readFile(join(srcDir, 'turn.ts'), 'utf8');
+    expect(src).toContain("gateOff = getSetting(db, SETTING_KEYS.gateEnabled) === '0'");
+  });
+
+  it('pre-gate toolset triages on gateOff as well as email_verified', async () => {
+    const src = await readFile(join(srcDir, 'turn.ts'), 'utf8');
+    expect(src).toMatch(/!gateOff\s*&&\s*session\.email_verified\s*===\s*0/);
+  });
+
+  it('search-web tool is available when gate is off regardless of email_verified', async () => {
+    const src = await readFile(join(srcDir, 'turn.ts'), 'utf8');
+    expect(src).toMatch(/gateOff\s*\|\|\s*session\.email_verified\s*===\s*1/);
+  });
+
+  it('MCP tools are available when gate is off regardless of email_verified', async () => {
+    const src = await readFile(join(srcDir, 'turn.ts'), 'utf8');
+    const lines = src.split('\n');
+    const mcpLines = lines.filter((l) => l.includes('gateOff || session.email_verified === 1'));
+    expect(mcpLines.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
