@@ -250,10 +250,10 @@ Every SEO artifact is generated at request time from your settings, so each self
 ### Backups
 
 ```bash
-# Snapshot the DB (SQLite online-backup API; safe on a live DB).
-DATA_DIR=/data sudo ./infra/scripts/backup.sh        # -> /backups/portfolio-<ts>.tar.gz
-# Restore (stops web + orchestrator, swaps the DB, restarts them).
-DATA_DIR=/data sudo ./infra/scripts/restore.sh /backups/portfolio-<ts>.tar.gz
+# Snapshot the DB from the Docker volume (safe on a live DB in WAL mode).
+./infra/scripts/backup.sh          # -> ./backups/portfolio-<ts>.tar.gz
+# Restore (stops web + orchestrator, replaces the DB, restarts them).
+./infra/scripts/restore.sh ./backups/portfolio-<ts>.tar.gz
 ```
 
 ### Security headers

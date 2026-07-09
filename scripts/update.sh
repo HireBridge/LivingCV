@@ -75,7 +75,11 @@ fi
 # ── Best-effort backup before applying ───────────────────────────────────────
 if [ -x "$ROOT/infra/scripts/backup.sh" ]; then
   echo "=== Backing up databases (best effort) ==="
-  "$ROOT/infra/scripts/backup.sh" || echo "  (backup step skipped/failed — continuing; data volumes are untouched by the update)"
+  if "$ROOT/infra/scripts/backup.sh"; then
+    echo "  Backup succeeded."
+  else
+    echo "  ⚠️  BACKUP FAILED — continuing with update, but you have no backup for this version." >&2
+  fi
 fi
 
 # ── Apply ─────────────────────────────────────────────────────────────────────

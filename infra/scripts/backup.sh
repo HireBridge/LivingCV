@@ -1,49 +1,41 @@
 #!/usr/bin/env bash
-# Backup portfolio.db + the resume/ directory under DATA_DIR into a single
-# timestamped tarball. Safe to run on a hot DB — sqlite3 .backup uses the
-# online-backup API and gets a consistent snapshot.
+# Backup portfolio.db + the resume/ directory from the Docker named volume
+# into a single timestamped tarball. WAL mode guarantees page-level consistency
+# so copying the live file is safe.
 #
 # Env:
-#   DATA_DIR     the live data directory (default /data)
-#   BACKUP_DIR   where to drop the tarball (default <parent of DATA_DIR>/backups)
-#   SQLITE_BIN   sqlite3 binary (default: sqlite3 on PATH)
+#   BACKUP_DIR  where to drop the tarball (default ./backups)
 #
 # Usage:
-#   DATA_DIR=/data sudo ./infra/scripts/backup.sh
+#   ./infra/scripts/backup.sh
 set -euo pipefail
 
-DATA_DIR="${DATA_DIR:-/data}"
-PARENT_DIR="$(dirname "$DATA_DIR")"
-OUT_DIR="${BACKUP_DIR:-${PARENT_DIR}/backups}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+OUT_DIR="${BACKUP_DIR:-${ROOT}/backups}"
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
-SNAPSHOT="${OUT_DIR}/portfolio-${TS}.snapshot.db"
 OUT="${OUT_DIR}/portfolio-${TS}.tar.gz"
-SQLITE_BIN="${SQLITE_BIN:-sqlite3}"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
 
 mkdir -p "$OUT_DIR"
 
-if [ ! -f "$DATA_DIR/portfolio.db" ]; then
-  echo "error: $DATA_DIR/portfolio.db not found" >&2
+echo "=== Backing up portfolio.db from Docker volume ==="
+
+# Copy the live DB from the web container (the volume is mounted at /data/db).
+docker compose cp "web:/data/db/portfolio.db" "$TMP/portfolio.db" 2>/dev/null || {
+  echo "error: failed to copy portfolio.db from web container" >&2
+  echo "  Is docker compose running? Try: docker compose ps" >&2
   exit 1
+}
+
+# Copy the resume/ directory if it exists.
+if docker compose exec -T web test -d /data/db/resume 2>/dev/null; then
+  docker compose cp "web:/data/db/resume/." "$TMP/resume/" 2>/dev/null || true
 fi
 
-# Online backup: writes a consistent snapshot next to the eventual tarball.
-$SQLITE_BIN "$DATA_DIR/portfolio.db" ".backup '$SNAPSHOT'"
-
-# Build the tarball. The DB goes in under the symbolic name `portfolio.db`
-# (BSD tar -s flag is the equivalent of GNU --transform). If a resume/
-# directory exists, include it as a sibling. We use two -C args so each
-# segment is positioned correctly.
-RESUME_ARG=()
-if [ -d "$DATA_DIR/resume" ]; then
-  RESUME_ARG=(-C "$DATA_DIR" resume)
-fi
-
-tar -czf "$OUT" \
-  -C "$OUT_DIR" -s "|portfolio-${TS}\.snapshot\.db|portfolio.db|" \
-  "${SNAPSHOT##*/}" \
-  "${RESUME_ARG[@]}"
-
-rm -f "$SNAPSHOT"
+tar -czf "$OUT" -C "$TMP" portfolio.db resume 2>/dev/null || \
+  tar -czf "$OUT" -C "$TMP" portfolio.db
 
 echo "Wrote $OUT ($(du -h "$OUT" | cut -f1))"
