@@ -30,7 +30,9 @@ export async function POST(request: Request) {
   // magic-link email. For self-contained testing, we return the magic link URL.
   const baseUrl = externalBase(request);
   const callbackUrl = `${baseUrl}/api/hirebridge/callback?request_id=${encodeURIComponent(requestId)}&token=${encodeURIComponent(token)}`;
-  console.log('[hirebridge] magic link:', callbackUrl);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[hirebridge] magic link:', callbackUrl);
+  }
 
   return NextResponse.json({
     ok: true,

@@ -34,7 +34,9 @@ export async function GET(request: Request) {
     return new NextResponse('Request ID mismatch. Try connecting again.', { status: 400 });
   }
 
-  if (stored.token !== receivedToken) {
+  const storedBuf = Buffer.from(stored.token);
+  const receivedBuf = Buffer.from(receivedToken);
+  if (storedBuf.length !== receivedBuf.length || !crypto.timingSafeEqual(storedBuf, receivedBuf)) {
     return new NextResponse('Invalid token. Try connecting again.', { status: 401 });
   }
 

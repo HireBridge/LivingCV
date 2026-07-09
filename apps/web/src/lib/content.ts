@@ -63,6 +63,7 @@ export function setSection(
   const json = JSON.stringify(content);
   const now = new Date().toISOString();
   
+  db.prepare('DELETE FROM site_content WHERE template_slug = ? AND section_key = ?').run(templateSlug, sectionKey);
   db.prepare(
     'INSERT INTO site_content (template_slug, section_key, content, position, updated_at) VALUES (?, ?, ?, 0, ?)',
   ).run(templateSlug, sectionKey, json, now);
@@ -119,42 +120,20 @@ export function createProject(db: Db, fields: Partial<ProjectRow> & { slug: stri
 
 export function updateProject(db: Db, id: number, fields: Partial<ProjectRow>): void {
   const now = new Date().toISOString();
-  db.prepare(
-    `UPDATE projects SET
-       title = COALESCE(@title, title),
-       tagline = COALESCE(@tagline, tagline),
-       kind = COALESCE(@kind, kind),
-       role = COALESCE(@role, role),
-       repo_url = COALESCE(@repo_url, repo_url),
-       demo_url = COALESCE(@demo_url, demo_url),
-       package_url = COALESCE(@package_url, package_url),
-       stack = COALESCE(@stack, stack),
-       status = COALESCE(@status, status),
-       sort_order = COALESCE(@sort_order, sort_order),
-       featured = COALESCE(@featured, featured),
-       diagram_svg = COALESCE(@diagram_svg, diagram_svg),
-       body = COALESCE(@body, body),
-       install_cmd = COALESCE(@install_cmd, install_cmd),
-       updated_at = @updated_at
-     WHERE id = @id`,
-  ).run({
-    id,
-    title: fields.title ?? null,
-    tagline: fields.tagline ?? null,
-    kind: fields.kind ?? null,
-    role: fields.role ?? null,
-    repo_url: fields.repo_url ?? null,
-    demo_url: fields.demo_url ?? null,
-    package_url: fields.package_url ?? null,
-    stack: fields.stack ?? null,
-    status: fields.status ?? null,
-    sort_order: fields.sort_order ?? null,
-    featured: fields.featured ?? null,
-    diagram_svg: fields.diagram_svg ?? null,
-    body: fields.body ?? null,
-    install_cmd: fields.install_cmd ?? null,
-    updated_at: now,
-  });
+  const setClauses: string[] = [];
+  const params: Record<string, unknown> = { id, updated_at: now };
+  
+  for (const [k, v] of Object.entries(fields)) {
+    if (k !== 'id' && k !== 'created_at' && k !== 'updated_at') {
+      setClauses.push(`${k} = @${k}`);
+      params[k] = v;
+    }
+  }
+  
+  if (setClauses.length === 0) return;
+  setClauses.push('updated_at = @updated_at');
+  
+  db.prepare(`UPDATE projects SET ${setClauses.join(', ')} WHERE id = @id`).run(params);
 }
 
 export function deleteProject(db: Db, id: number): void {

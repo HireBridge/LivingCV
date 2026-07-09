@@ -119,9 +119,16 @@ export default async function CaseStudyPage({
     highlights: [],
   });
   recordPageView(db, `/projects/${slug}`);
-  const { content } = await compileMDX({
-    source: cs.body_markdown ?? '',
-  });
+  let content = null;
+  try {
+    const compiled = await compileMDX({
+      source: cs.body_markdown ?? '',
+    });
+    content = compiled.content;
+  } catch (err) {
+    console.error('MDX Compilation Error:', err);
+    content = <p style={{ color: 'red', margin: '32px 0' }}>Error rendering content.</p>;
+  }
   const repo = fm.links?.repo;
   const pkg = fm.links?.package;
   const demo = fm.links?.demo;

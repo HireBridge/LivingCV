@@ -104,14 +104,21 @@ export default async function BlogPostPage({
   
   recordPageView(db, `/blog/${slug}`);
   
-  const { content } = await compileMDX({
-    source: blog.body_markdown ?? '',
-    options: {
-      mdxOptions: {
-        remarkPlugins: [remarkGfm],
+  let content = null;
+  try {
+    const compiled = await compileMDX({
+      source: blog.body_markdown ?? '',
+      options: {
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+        }
       }
-    }
-  });
+    });
+    content = compiled.content;
+  } catch (err) {
+    console.error('MDX Compilation Error:', err);
+    content = <p style={{ color: 'red', margin: '32px 0' }}>Error rendering content.</p>;
+  }
   
   const s = getAllSettings(db);
   const site = s['site.title'] || 'Portfolio';

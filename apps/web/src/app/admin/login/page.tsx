@@ -53,10 +53,10 @@ export default function LoginPage() {
           />
         </div>
         {err ? <div className="flash error">{err}</div> : null}
-        <div className="actions flex justify-between items-center mt-4">
+        <div className="actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
           <button 
             type="button" 
-            className="text-sm text-signal hover:underline bg-transparent p-0 border-none cursor-pointer"
+            style={{ fontSize: '0.875rem', color: 'var(--signal)', backgroundColor: 'transparent', padding: 0, border: 'none', cursor: 'pointer' }}
             onClick={() => setShowForgotModal(true)}
           >
             Forgot password?
@@ -66,11 +66,11 @@ export default function LoginPage() {
       </form>
 
       {showForgotModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-paper p-6 rounded-lg shadow-xl max-w-sm w-full border border-ink/10">
-            <h3 className="mt-0 text-lg font-semibold">Password reset</h3>
-            <p className="text-ink/80 my-4">Please contact the system administrator to reset your password.</p>
-            <div className="flex justify-end">
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ backgroundColor: 'var(--paper)', padding: '24px', borderRadius: '8px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)', maxWidth: '24rem', width: '100%', border: '1px solid var(--rule)' }}>
+            <h3 style={{ marginTop: 0, fontSize: '1.125rem', fontWeight: 600 }}>Password reset</h3>
+            <p style={{ color: 'var(--ink-soft)', margin: '16px 0' }}>Please contact the system administrator to reset your password.</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button 
                 className="secondary"
                 onClick={() => setShowForgotModal(false)}
