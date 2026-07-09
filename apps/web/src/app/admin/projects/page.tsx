@@ -1,6 +1,7 @@
 import { getDb } from '@/lib/db';
 import { listProjects } from '@/lib/content';
 import { FieldHelp } from '../FieldHelp';
+import { DeleteForm } from '../DeleteForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,15 +61,7 @@ export default function ProjectsPage() {
                   <td>{p.status || '—'}</td>
                   <td>
                     <a href={`/admin/projects/${p.id}`}>edit</a>{' '}
-                    <form
-                      method="post"
-                      action="/api/admin/projects"
-                      style={{ display: 'inline' }}
-                    >
-                      <input type="hidden" name="_action" value="delete" />
-                      <input type="hidden" name="id" value={p.id} />
-                      <button type="submit" className="danger">delete</button>
-                    </form>
+                    <DeleteForm action="/api/admin/projects" id={p.id} />
                   </td>
                 </tr>
               ))}

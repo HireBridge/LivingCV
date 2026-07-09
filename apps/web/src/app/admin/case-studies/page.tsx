@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/db';
 import { listCaseStudies, listProjects } from '@/lib/content';
+import { DeleteForm } from '../DeleteForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,11 +62,7 @@ export default function CaseStudiesPage() {
                   <td>{c.published === 1 ? 'yes' : 'no'}</td>
                   <td>
                     <a href={`/admin/case-studies/${c.id}`}>edit</a>{' '}
-                    <form method="post" action="/api/admin/case-studies/save" style={{ display: 'inline' }}>
-                      <input type="hidden" name="_action" value="delete" />
-                      <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className="danger">delete</button>
-                    </form>
+                    <DeleteForm action="/api/admin/case-studies/save" id={c.id} />
                   </td>
                 </tr>
               ))}

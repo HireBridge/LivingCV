@@ -1,4 +1,5 @@
 import type { CaseStudyRow, ProjectRow } from '@/lib/types';
+import { DeleteForm } from '../DeleteForm';
 
 export function CaseStudiesTab({ caseStudies, projects }: { caseStudies: CaseStudyRow[], projects: ProjectRow[] }) {
   const projectById = new Map(projects.map((p) => [p.id, p]));
@@ -54,11 +55,7 @@ export function CaseStudiesTab({ caseStudies, projects }: { caseStudies: CaseStu
                   <td>{c.published === 1 ? 'yes' : 'no'}</td>
                   <td>
                     <a href={`/admin/case-studies/${c.id}`}>edit</a>{' '}
-                    <form method="post" action="/api/admin/case-studies/save" style={{ display: 'inline' }}>
-                      <input type="hidden" name="_action" value="delete" />
-                      <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className="danger">delete</button>
-                    </form>
+                    <DeleteForm action="/api/admin/case-studies/save" id={c.id} />
                   </td>
                 </tr>
               ))}

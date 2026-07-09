@@ -45,7 +45,9 @@ export async function POST(request: Request) {
         }),
       });
     } else if (provider === 'gemini') {
-      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models`, {
+        headers: { 'x-goog-api-key': apiKey },
+      });
     } else {
       if (isJson) return NextResponse.json({ success: false, error: 'Unknown provider' }, { status: 400 });
       return NextResponse.redirect(new URL('/admin/settings?tab=connections&test_error=Unknown provider', externalBase(request)), { status: 303 });
