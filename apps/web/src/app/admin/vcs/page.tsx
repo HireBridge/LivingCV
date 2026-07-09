@@ -14,6 +14,14 @@ export default async function VCSPage({ searchParams }: { searchParams: Promise<
 
   const sp = await searchParams;
 
+  const seen = new Set<string>();
+  const rows = history.map((row) => {
+    const key = `${row.template_slug}::${row.section_key}`;
+    const isLatest = !seen.has(key);
+    seen.add(key);
+    return { row, isLatest };
+  });
+
   return (
     <div>
       <h1>Version Control</h1>
@@ -33,13 +41,13 @@ export default async function VCSPage({ searchParams }: { searchParams: Promise<
             </tr>
           </thead>
           <tbody>
-            {history.map((row, index) => (
+            {rows.map(({ row, isLatest }) => (
               <tr key={row.id} style={{ borderBottom: '1px solid var(--rule)' }}>
                 <td style={{ padding: '8px 0', color: 'var(--ink-soft)', fontSize: '0.9em' }}>#{row.id}</td>
                 <td style={{ padding: '8px 0' }}>{row.template_slug}</td>
                 <td style={{ padding: '8px 0', fontWeight: 'bold' }}>
                   {row.section_key}
-                  {index === 0 && <span style={{ marginLeft: 8, fontSize: '0.7em', padding: '2px 6px', background: 'var(--ink)', color: 'var(--paper)', borderRadius: 4 }}>LATEST</span>}
+                  {isLatest && <span style={{ marginLeft: 8, fontSize: '0.7em', padding: '2px 6px', background: 'var(--ink)', color: 'var(--paper)', borderRadius: 4 }}>LATEST</span>}
                 </td>
                 <td style={{ padding: '8px 0', color: 'var(--ink-soft)' }}>
                   {new Date(row.updated_at).toLocaleString()}
@@ -51,9 +59,9 @@ export default async function VCSPage({ searchParams }: { searchParams: Promise<
                       type="submit" 
                       className="button secondary" 
                       style={{ padding: '4px 10px', fontSize: '0.85rem' }}
-                      disabled={index === 0}
+                      disabled={isLatest}
                     >
-                      {index === 0 ? 'Current' : 'Revert to this'}
+                      {isLatest ? 'Current' : 'Revert to this'}
                     </button>
                   </form>
                 </td>
@@ -61,7 +69,7 @@ export default async function VCSPage({ searchParams }: { searchParams: Promise<
             ))}
           </tbody>
         </table>
-        {history.length === 0 && (
+        {rows.length === 0 && (
           <p style={{ marginTop: 16, color: 'var(--ink-soft)' }}>No history found.</p>
         )}
       </div>

@@ -62,11 +62,15 @@ export function setSection(
 ): void {
   const json = JSON.stringify(content);
   const now = new Date().toISOString();
-  
-  db.prepare('DELETE FROM site_content WHERE template_slug = ? AND section_key = ?').run(templateSlug, sectionKey);
+
   db.prepare(
     'INSERT INTO site_content (template_slug, section_key, content, position, updated_at) VALUES (?, ?, ?, 0, ?)',
   ).run(templateSlug, sectionKey, json, now);
+
+  db.prepare(
+    `DELETE FROM site_content WHERE template_slug = ? AND section_key = ?
+     AND id NOT IN (SELECT id FROM site_content WHERE template_slug = ? AND section_key = ? ORDER BY id DESC LIMIT 20)`,
+  ).run(templateSlug, sectionKey, templateSlug, sectionKey);
 }
 
 // ── Projects ────────────────────────────────────────────────────────────────
