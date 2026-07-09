@@ -21,7 +21,8 @@ import {
 } from './localTools.js';
 import { submitWorkEmailToolDef, submitWorkEmailImpl } from './gate.js';
 import {
-  bumpSessionActivity, getSession, recordChatMessage, setSessionBlocked,
+  bumpSessionActivity, getSession, getRecentChatMessages, recordChatMessage,
+  setSessionBlocked,
 } from './db.js';
 import { buildSystemPrompt } from './prompts.js';
 import { checkPreTurnGuards } from './limits.js';
@@ -94,6 +95,8 @@ export async function runTurn(
     return;
   }
 
+  const history = getRecentChatMessages(db, sessionId, 30);
+
   recordChatMessage(db, {
     sessionId, role: 'user', content: userText.slice(0, MAX_INPUT_CHARS),
     toolName: null, toolArgs: null, toolResult: null,
@@ -146,7 +149,10 @@ export async function runTurn(
   // ChatMessage[]. Tool results from each round are bundled as
   // `toolResults` on the next ChatRequest — each adapter constructs
   // its own native tool-role messages from them.
-  const messages: ChatMessage[] = [{ role: 'user', content: userText.slice(0, MAX_INPUT_CHARS) }];
+  const messages: ChatMessage[] = [
+    ...history.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+    { role: 'user', content: userText.slice(0, MAX_INPUT_CHARS) },
+  ];
 
 
   let finalText = '';

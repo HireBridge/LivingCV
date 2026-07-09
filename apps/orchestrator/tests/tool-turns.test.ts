@@ -8,8 +8,32 @@ import { join } from 'node:path';
 
 const SRC = join(process.cwd(), 'apps', 'orchestrator', 'src');
 const TURN = readFileSync(join(SRC, 'turn.ts'), 'utf8');
+const DB = readFileSync(join(SRC, 'db.ts'), 'utf8');
 const ANTHROPIC = readFileSync(join(SRC, 'llm', 'anthropic.ts'), 'utf8');
 const OPENAI = readFileSync(join(SRC, 'llm', 'openai.ts'), 'utf8');
+
+describe('H2 — conversation history is sent to the LLM', () => {
+  it('turn.ts imports getRecentChatMessages from db.ts', () => {
+    expect(TURN).toContain('getRecentChatMessages');
+  });
+
+  it('turn.ts loads history before building the messages array', () => {
+    const historyIdx = TURN.indexOf('getRecentChatMessages');
+    const messagesIdx = TURN.indexOf('messages: ChatMessage[]');
+    expect(historyIdx).toBeGreaterThan(0);
+    expect(messagesIdx).toBeGreaterThan(0);
+    expect(historyIdx).toBeLessThan(messagesIdx);
+  });
+
+  it('turn.ts spreads history into messages', () => {
+    expect(TURN).toMatch(/\.\.\.history\.map/);
+  });
+
+  it('db.ts exports getRecentChatMessages with role filter excluding tool rows', () => {
+    expect(DB).toContain('getRecentChatMessages');
+    expect(DB).toContain("role IN ('user', 'assistant')");
+  });
+});
 
 describe('issue 5 — native tool-role turns (no synthetic user messages)', () => {
   it('turn.ts no longer pushes synthetic "[Tool X result]" user messages', () => {

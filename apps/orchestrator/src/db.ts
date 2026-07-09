@@ -139,6 +139,20 @@ export function bumpSessionActivity(db: Db, id: string, incrementMessageCount: b
   return Number(r.changes);
 }
 
+export interface RecentMessage {
+  role: 'user' | 'assistant' | 'tool';
+  content: string;
+}
+
+export function getRecentChatMessages(db: Db, sessionId: string, limit: number): RecentMessage[] {
+  const rows = db.prepare<[string, number], RecentMessage>(
+    `SELECT role, content FROM chat_messages
+     WHERE session_id = ? AND role IN ('user', 'assistant') AND content != ''
+     ORDER BY id DESC LIMIT ?`,
+  ).all(sessionId, limit);
+  return rows.reverse();
+}
+
 export function dailyMessageCount(db: Db): number {
   const day = new Date().toISOString().slice(0, 10);
   const row = db.prepare<[string], { n: number }>(
