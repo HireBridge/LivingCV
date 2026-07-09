@@ -23,11 +23,16 @@ export async function GET(request: Request) {
     return new NextResponse('No pending connection request found. Try connecting again.', { status: 400 });
   }
 
-  let stored: { requestId: string; email: string; token: string };
+  let stored: { requestId: string; email: string; token: string; iat: number };
   try {
     stored = JSON.parse(storedRaw);
   } catch {
     return new NextResponse('Invalid stored request data.', { status: 400 });
+  }
+
+  if (Date.now() - (stored.iat ?? 0) > 15 * 60 * 1000) {
+    deleteSetting(db, SETTING_KEYS.hirebridgeRequestId);
+    return new NextResponse('Connection request expired (>15 min). Try connecting again.', { status: 400 });
   }
 
   if (stored.requestId !== receivedRequestId) {

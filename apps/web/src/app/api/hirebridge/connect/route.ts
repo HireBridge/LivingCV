@@ -20,23 +20,20 @@ export async function POST(request: Request) {
   // Generate a request_id and sign a token using the client_id as HMAC secret.
   const clientId = getSetting(db, SETTING_KEYS.hirebridgeClientId) || '';
   const requestId = crypto.randomUUID();
-  const tokenPayload = JSON.stringify({ requestId, email, iat: Date.now() });
+  const iat = Date.now();
+  const tokenPayload = JSON.stringify({ requestId, email, iat });
   const token = crypto.createHmac('sha256', clientId || 'hirebridge-dev').update(tokenPayload).digest('hex');
 
   // Store the pending request (encrypted in settings).
-  setSetting(db, SETTING_KEYS.hirebridgeRequestId, JSON.stringify({ requestId, email, token }));
+  setSetting(db, SETTING_KEYS.hirebridgeRequestId, JSON.stringify({ requestId, email, token, iat }));
 
-  // In production, the POST to HireBridge would happen here, triggering the
-  // magic-link email. For self-contained testing, we return the magic link URL.
+  // Return the magic link so the authenticated admin can open it themselves.
   const baseUrl = externalBase(request);
   const callbackUrl = `${baseUrl}/api/hirebridge/callback?request_id=${encodeURIComponent(requestId)}&token=${encodeURIComponent(token)}`;
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[hirebridge] magic link:', callbackUrl);
-  }
 
   return NextResponse.json({
     ok: true,
-    message: `Magic link sent to ${email}. Check your inbox.`,
-    ...(process.env.NODE_ENV !== 'production' ? { _devMagicLink: callbackUrl } : {}),
+    message: 'Magic link generated. Open it to complete the connection.',
+    magicLink: callbackUrl,
   });
 }
