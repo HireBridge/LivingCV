@@ -89,16 +89,14 @@ export async function POST(request: Request) {
     const raw = form.get(key);
     if (typeof raw !== 'string') continue;
     const value = raw.trim();
-    // Skip empty values for non-checkbox settings so blanks don't overwrite
-    // stored secrets with "" (this is the "set → encrypted" affordance).
-    if (!value && !ENCRYPTED_SETTING_KEYS.has(key)) continue;
+    if (!value) continue;
     // Do not overwrite existing secrets with their masked placeholders from the UI.
     if (value.startsWith('••••') && ENCRYPTED_SETTING_KEYS.has(key)) continue;
     if (key === 'site.active_template' && value) {
       setActiveTemplate(db, value);
       continue;
     }
-    setSetting(db, key, value || ' ');
+    setSetting(db, key, value);
   }
   for (const key of spec.checkboxKeys ?? []) {
     setSetting(db, key, String(form.get(key)) === 'on' ? '1' : '0');
