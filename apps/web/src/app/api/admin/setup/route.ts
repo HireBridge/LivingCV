@@ -25,6 +25,9 @@ export async function GET() {
 //   {action:'finalize'}                -- marks setup complete + mints session
 export async function POST(request: Request) {
   const db = getDb();
+  if (isSetupComplete(db)) {
+    return NextResponse.json({ error: 'Setup already completed.' }, { status: 403 });
+  }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
   const action = body.action;
   if (action === 'password') {

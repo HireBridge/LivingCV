@@ -10,8 +10,13 @@ const sourceSerif = Source_Serif_4({ subsets: ['latin'], variable: '--next-font-
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--next-font-mono', display: 'swap' });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const db = getDb();
-  const s = getAllSettings(db);
+  let s: Record<string, string> = {};
+  try {
+    const db = getDb();
+    s = getAllSettings(db);
+  } catch (e) {
+    console.error('Failed to read settings for metadata:', e);
+  }
   const domain = s['site.domain'] || '';
   const title = s['site.title'] || 'Portfolio';
   const description = s['site.meta_description'] || '';
@@ -42,8 +47,13 @@ export async function generateMetadata(): Promise<Metadata> {
 // (each template emits its own <style>). Admin pages render the admin layout
 // inside <body>. Google Fonts links are replaced by next/font.
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const db = getDb();
-  const s = getAllSettings(db);
+  let s: Record<string, string> = {};
+  try {
+    const db = getDb();
+    s = getAllSettings(db);
+  } catch (e) {
+    console.error('Failed to read settings for layout:', e);
+  }
   const lang = s['site.lang'] || 'en';
 
   return (

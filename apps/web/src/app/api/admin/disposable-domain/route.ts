@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { externalBase } from '@/lib/http';
+import { externalBase, safeRedirect } from '@/lib/http';
 import { getDb } from '@/lib/db';
 
 export async function POST(request: Request) {
   const db = getDb();
   const form = await request.formData();
   const action = String(form.get('_action') || '');
-  const redirectUrl = String(form.get('redirect') || '/admin/settings?saved=domain');
+  const redirectUrl = safeRedirect(String(form.get('redirect') || ''), '/admin/settings?saved=domain');
   
   if (action === 'add') {
     const domain = String(form.get('domain') || '').trim().toLowerCase();

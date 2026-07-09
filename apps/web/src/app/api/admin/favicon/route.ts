@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { externalBase } from '@/lib/http';
+import { externalBase, safeRedirect } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { setSetting, deleteSetting } from '@/lib/settings';
 import { getFaviconDir, removeFavicon, isAllowedFaviconType, faviconExtensionFromMime } from '@/lib/favicon';
@@ -11,8 +11,8 @@ import { Readable } from 'node:stream';
 export async function POST(request: Request) {
   const db = getDb();
   const form = await request.formData();
-  const redirectUrl = String(form.get('redirect') || '/admin/settings?tab=general');
-  const errUrl = String(form.get('redirect') ? form.get('redirect') + '&favicon_err=' : '/admin/settings?tab=general&favicon_err=');
+  const redirectUrl = safeRedirect(String(form.get('redirect') || ''), '/admin/settings?tab=general');
+  const errUrl = safeRedirect(String(form.get('redirect') || ''), '/admin/settings?tab=general') + '&favicon_err=';
 
   const action = form.get('_action');
   if (action === 'remove') {

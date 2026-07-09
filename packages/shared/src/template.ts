@@ -206,6 +206,7 @@ export const SETTING_KEYS = {
   resumeFilename: 'resume.filename',
   siteFavicon: 'site.favicon',
   mcpMasterKey: 'mcp.master_key',
+  mcpEnabled: 'mcp.enabled',
   publicMcpEnabled: 'publicmcp.enabled',
   jobopsSyncEnabled: 'mcp.jobops_sync_enabled',
   syncToJobOps: 'notify.sync_to_jobops',
@@ -222,6 +223,7 @@ export const SETTING_KEYS = {
   siteKeywords: 'site.keywords',
   seoGoogleSiteVerification: 'seo.google_site_verification',
   seoBingVerification: 'seo.bing_verification',
+  seoGoogleAnalyticsId: 'seo.google_analytics_id',
 } as const;
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
 

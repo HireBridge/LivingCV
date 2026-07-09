@@ -12,3 +12,8 @@ export function externalBase(request: Request): string {
     || new URL(request.url).host;
   return `${proto}://${host}`;
 }
+
+export function safeRedirect(url: string, fallback: string): string {
+  if (!url.startsWith('/') || url.startsWith('//')) return fallback;
+  return url;
+}

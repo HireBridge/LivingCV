@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { externalBase } from '@/lib/http';
+import { externalBase, safeRedirect } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { setSetting } from '@/lib/settings';
 import { setActiveTemplate } from '@/lib/content';
@@ -10,7 +10,17 @@ import { ENCRYPTED_SETTING_KEYS, SETTING_KEYS } from '@livingcv/shared';
 // setSetting (which auto-encrypts keys in ENCRYPTED_SETTING_KEYS).
 const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   site: {
-    keys: ['site.title', 'site.domain', 'site.meta_description', 'site.og_image_path', 'site.active_template', 'admin.email'],
+    keys: [SETTING_KEYS.siteTitle, SETTING_KEYS.siteDomain, SETTING_KEYS.siteMetaDescription, SETTING_KEYS.siteOgImagePath, SETTING_KEYS.siteActiveTemplate, SETTING_KEYS.adminEmail],
+  },
+  seo: {
+    keys: [
+      SETTING_KEYS.siteTwitterHandle,
+      SETTING_KEYS.siteLang,
+      SETTING_KEYS.siteKeywords,
+      SETTING_KEYS.seoGoogleSiteVerification,
+      SETTING_KEYS.seoBingVerification,
+      SETTING_KEYS.seoGoogleAnalyticsId,
+    ]
   },
   limits: {
     keys: [
@@ -22,29 +32,29 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   },
   connections: {
     keys: [
-      'agent.llm_provider',
-      'agent.llm_api_key',
-      'agent.llm_model',
-      'agent.system_prompt_extra',
-      'agent.search_provider',
-      'agent.search_api_key',
-      'notify.webhook_url',
+      SETTING_KEYS.agentLlmProvider,
+      SETTING_KEYS.agentLlmApiKey,
+      SETTING_KEYS.agentLlmModel,
+      SETTING_KEYS.agentSystemPromptExtra,
+      SETTING_KEYS.agentSearchProvider,
+      SETTING_KEYS.agentSearchApiKey,
+      SETTING_KEYS.notifyWebhookUrl,
     ],
   },
   connectivity: {
     keys: [
-      'telegram.bot_token',
-      'telegram.chat_id',
-      'email.provider',
-      'email.api_key',
-      'google.client_id',
-      'google.client_secret',
+      SETTING_KEYS.telegramBotToken,
+      SETTING_KEYS.telegramChatId,
+      SETTING_KEYS.emailProvider,
+      SETTING_KEYS.emailApiKey,
+      SETTING_KEYS.googleClientId,
+      SETTING_KEYS.googleClientSecret,
     ],
     checkboxKeys: [SETTING_KEYS.syncToJobOps],
   },
   mcp: {
-    keys: ['mcp.master_key'],
-    checkboxKeys: ['mcp.enabled'],
+    keys: [SETTING_KEYS.mcpMasterKey],
+    checkboxKeys: [SETTING_KEYS.mcpEnabled],
   },
   // Public MCP toggle lives in its own group so saving it never clobbers the
   // Master Relay MCP toggle (absent checkboxes are written as '0').
@@ -59,7 +69,7 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
   },
   // HireBridge federation settings (API URL + client ID).
   hirebridge: {
-    keys: ['hirebridge.api_url', 'hirebridge.client_id'],
+    keys: [SETTING_KEYS.hirebridgeApiUrl, SETTING_KEYS.hirebridgeClientId],
     checkboxKeys: [],
   },
   updates: {
@@ -93,6 +103,6 @@ export async function POST(request: Request) {
   for (const key of spec.checkboxKeys ?? []) {
     setSetting(db, key, String(form.get(key)) === 'on' ? '1' : '0');
   }
-  const redirectUrl = String(form.get('redirect') || '/admin/settings?saved=1');
+  const redirectUrl = safeRedirect(String(form.get('redirect') || ''), '/admin/settings?saved=1');
   return NextResponse.redirect(new URL(redirectUrl, externalBase(request)), { status: 303 });
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { externalBase } from '@/lib/http';
+import { externalBase, safeRedirect } from '@/lib/http';
 import { getDb } from '@/lib/db';
 import { setSetting } from '@/lib/settings';
 import { saveResumeStream } from '@/lib/resume';
@@ -12,8 +12,8 @@ import { Readable } from 'node:stream';
 export async function POST(request: Request) {
   const db = getDb();
   const form = await request.formData();
-  const redirectUrl = String(form.get('redirect') || '/admin/packet?saved=resume');
-  const errUrl = String(form.get('redirect') ? form.get('redirect') + '&err=' : '/admin/packet?err=');
+  const redirectUrl = safeRedirect(String(form.get('redirect') || ''), '/admin/packet?saved=resume');
+  const errUrl = safeRedirect(String(form.get('redirect') || ''), '/admin/packet') + '&err=';
   
   const file = form.get('resume');
   if (!(file instanceof File)) {
