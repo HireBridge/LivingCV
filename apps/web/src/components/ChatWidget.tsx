@@ -166,15 +166,16 @@ export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) 
   const [visitorName, setVisitorName] = useState('');
   const [visitorEmail, setVisitorEmail] = useState('');
   const [visitorInfo, setVisitorInfo] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // When form is submitted, send an initial silent or visible message with their info
   async function submitForm(e: React.FormEvent | React.MouseEvent, shouldStartChat: boolean, forceNew = false) {
     e.preventDefault();
     if (!visitorName.trim() || !visitorEmail.trim()) return;
+    setEmailError(null);
     
     try {
       const sid = await ensureSession(forceNew);
-      // Inform the backend of the email so it appears in the Leads tab
       const emailRes = await fetch('/api/orchestrator/api/chat/submit-email', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -184,6 +185,12 @@ export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) 
          if (typeof window !== 'undefined') window.localStorage.removeItem(STORAGE_KEY);
          setSessionId(null);
          return submitForm(e, shouldStartChat, true);
+      }
+
+      const emailData = await emailRes.json().catch(() => ({ ok: false, message: 'Invalid response' }));
+      if (!emailData.ok) {
+        setEmailError(emailData.message ?? 'Email not accepted');
+        return;
       }
 
       if (!shouldStartChat || !agentEnabled) {
@@ -246,7 +253,8 @@ export function ChatWidget({ agentEnabled = true }: { agentEnabled?: boolean }) 
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: 4, fontSize: '0.9rem' }}>Email <span style={{color: 'red'}}>*</span></label>
-            <input required type="email" value={visitorEmail} onChange={e => setVisitorEmail(e.target.value)} style={formInputStyle} placeholder="you@company.com" />
+            <input required type="email" value={visitorEmail} onChange={e => { setVisitorEmail(e.target.value); setEmailError(null); }} style={formInputStyle} placeholder="you@company.com" />
+            {emailError && <p style={{ margin: '4px 0 0 0', color: '#d32f2f', fontSize: '0.85rem' }}>{emailError}</p>}
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: 4, fontSize: '0.9rem' }}>Additional Info</label>
