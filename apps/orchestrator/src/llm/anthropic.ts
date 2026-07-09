@@ -57,7 +57,7 @@ export const anthropicAdapter: LlmAdapter = {
       system: req.system,
       tools,
       messages: rawMessages,
-    });
+    }, { signal: req.signal });
 
     let text = '';
     const toolCalls: ToolCall[] = [];

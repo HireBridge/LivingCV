@@ -79,10 +79,16 @@ app.post('/api/chat/message', async (req: Request, res: Response) => {
     res.write(`event: ${ev.type}\n`);
     res.write(`data: ${JSON.stringify(ev)}\n\n`);
   };
+
+  const ac = new AbortController();
+  res.on('close', () => ac.abort());
+
   try {
-    await runTurn(db, sessionId, text, send);
+    await runTurn(db, sessionId, text, send, ac.signal);
   } catch (e) {
-    send({ type: 'error', message: (e as Error).message });
+    if (!ac.signal.aborted) {
+      send({ type: 'error', message: (e as Error).message });
+    }
   }
   res.end();
 });

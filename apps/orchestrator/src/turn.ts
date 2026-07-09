@@ -76,6 +76,7 @@ export async function runTurn(
   sessionId: string,
   userText: string,
   onEvent: (ev: SseEvent) => void,
+  signal?: AbortSignal,
 ): Promise<void> {
   const session = getSession(db, sessionId);
   if (!session) {
@@ -162,6 +163,10 @@ export async function runTurn(
   let pendingToolResults: ToolResult[] = [];
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+    if (signal?.aborted) {
+      onEvent({ type: 'error', message: 'disconnected' });
+      break;
+    }
     const r = await llm.adapter.chat({
       system: systemPrompt,
       messages,
@@ -170,6 +175,7 @@ export async function runTurn(
       apiKey: llm.apiKey,
       onToken: (chunk: string) => onEvent({ type: 'token', text: chunk }),
       toolResults: pendingToolResults.length > 0 ? pendingToolResults : undefined,
+      signal,
     });
     finalText = r.text;
     // Pending results consumed — next round starts fresh.
