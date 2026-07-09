@@ -33,8 +33,8 @@ describe('deriveDemonstratedSignals', () => {
       () => false,
     );
     expect(signals).toHaveLength(1);
-    expect(signals[0].label).toBe('Open-source contributor');
-    expect(signals[0].evidenceType).toBe('repo');
+    expect(signals[0]!.label).toBe('Open-source contributor');
+    expect(signals[0]!.evidenceType).toBe('repo');
   });
 
   it('derives a kind signal for OSS projects', () => {
@@ -44,8 +44,8 @@ describe('deriveDemonstratedSignals', () => {
     );
     const kindSignals = signals.filter((s) => s.evidenceType === 'kind');
     expect(kindSignals).toHaveLength(1);
-    expect(kindSignals[0].label).toBe('Open-source maintainer');
-    expect(kindSignals[0].sourceSlug).toBe('oss-proj');
+    expect(kindSignals[0]!.label).toBe('Open-source maintainer');
+    expect(kindSignals[0]!.sourceSlug).toBe('oss-proj');
   });
 
   it('derives a case-study signal when a case study exists', () => {
@@ -54,9 +54,9 @@ describe('deriveDemonstratedSignals', () => {
       () => true,
     );
     expect(signals).toHaveLength(1);
-    expect(signals[0].evidenceType).toBe('case-study');
-    expect(signals[0].label).toBe('Wrote case study');
-    expect(signals[0].evidenceUrl).toBe('/projects/studied');
+    expect(signals[0]!.evidenceType).toBe('case-study');
+    expect(signals[0]!.label).toBe('Wrote case study');
+    expect(signals[0]!.evidenceUrl).toBe('/projects/studied');
   });
 
   it('deduplicates identical labels across projects', () => {
