@@ -70,8 +70,8 @@ describe('CareerPacketSchema', () => {
     });
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.experience[0].bullets[0].text).toBe('Built the thing');
-      expect(result.data.projects[0].slug).toBe('tscrate');
+      expect(result.data.experience[0]!.bullets[0]!.text).toBe('Built the thing');
+      expect(result.data.projects[0]!.slug).toBe('tscrate');
       expect(result.data.version).toBe('v42');
     }
   });
