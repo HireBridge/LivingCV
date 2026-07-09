@@ -23,6 +23,10 @@ export async function POST(
     return Number.isFinite(n) ? n : null;
   };
   const bodyText = pick('body');
+  const title = pick('title');
+  if (!title) {
+    return NextResponse.redirect(new URL(`/admin/projects/${id}?error=Title+required`, externalBase(request)), { status: 303 });
+  }
   let bodyJson: string | null = null;
   if (bodyText) {
     try {
@@ -33,7 +37,7 @@ export async function POST(
     }
   }
   updateProject(db, id, {
-    title: pick('title') || undefined,
+    title: title || undefined,
     tagline: pick('tagline') || undefined,
     kind: pick('kind') || undefined,
     repo_url: pick('repo_url') || undefined,

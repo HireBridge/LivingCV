@@ -250,7 +250,7 @@ function projectRowToProps(p: ProjectRow, hasCaseStudy: boolean): ProjectProps {
   if (p.package_url) links.push({ label: 'package', href: p.package_url });
   return ProjectPropsSchema.parse({
     slug: p.slug,
-    name: p.title,
+    name: p.title || p.slug,
     kind: p.kind ?? undefined,
     status: p.status ?? undefined,
     links,
