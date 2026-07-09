@@ -13,6 +13,7 @@ interface Props {
 export function HireBridgeConnect({ adminEmail, connected, profileUrl, apiUrl, clientId }: Props) {
   const [connecting, setConnecting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [magicLink, setMagicLink] = useState<string | null>(null);
 
   if (!adminEmail) {
     return (
@@ -51,21 +52,17 @@ export function HireBridgeConnect({ adminEmail, connected, profileUrl, apiUrl, c
     <div>
       <p style={{ color: 'var(--ink-soft)', marginBottom: 16 }}>
         Connect to HireBridge to make your portfolio discoverable on a federated talent
-        network. A magic link will be sent to <strong>{adminEmail}</strong>.
+        network. A magic link will be generated for your admin email, <strong>{adminEmail}</strong>.
       </p>
 
       {message && (
         <div style={{ padding: '10px 14px', background: 'var(--signal-soft)', borderRadius: 6, marginBottom: 12 }}>
           {message}
-          {message.includes('check your inbox') && (
-            <div style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--ink-soft)' }}>
-              Did not receive an email?{' '}
-              <button
-                onClick={() => { setConnecting(false); setMessage(null); }}
-                style={{ background: 'none', border: 'none', color: 'var(--signal)', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
-              >
-                Try again
-              </button>
+          {magicLink && (
+            <div style={{ marginTop: 8 }}>
+              <a href={magicLink} style={{ color: 'var(--signal)', fontWeight: 600 }}>
+                Open magic link to finish connecting
+              </a>
             </div>
           )}
         </div>
@@ -96,6 +93,7 @@ export function HireBridgeConnect({ adminEmail, connected, profileUrl, apiUrl, c
         onClick={async () => {
           setConnecting(true);
           setMessage(null);
+          setMagicLink(null);
 
           // Save API URL and client ID first.
           const apiUrlEl = document.getElementById('hirebridge-api-url') as HTMLInputElement;
@@ -118,13 +116,11 @@ export function HireBridgeConnect({ adminEmail, connected, profileUrl, apiUrl, c
             return;
           }
 
-          setMessage(data.message || 'Magic link sent! Check your inbox.');
-          setConnecting(false);
-
-          // In dev mode, show the magic link.
-          if (data._devMagicLink) {
-            setMessage((prev) => prev + ` Dev link: ${data._devMagicLink}`);
+          setMessage(data.message || 'Magic link generated. Open it to complete the connection.');
+          if (data.magicLink) {
+            setMagicLink(data.magicLink);
           }
+          setConnecting(false);
         }}
         disabled={connecting}
         style={{ opacity: connecting ? 0.6 : 1 }}
