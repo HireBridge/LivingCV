@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Backup portfolio.db + the resume/ directory from the Docker named volume
-# into a single timestamped tarball. WAL mode guarantees page-level consistency
-# so copying the live file is safe.
+# into a single timestamped tarball. Uses better-sqlite3's online backup API
+# inside the web container for a consistent snapshot.
 #
 # Env:
 #   BACKUP_DIR  where to drop the tarball (default ./backups)
@@ -23,12 +23,22 @@ mkdir -p "$OUT_DIR"
 
 echo "=== Backing up portfolio.db from Docker volume ==="
 
-# Copy the live DB from the web container (the volume is mounted at /data/db).
-docker compose cp "web:/data/db/portfolio.db" "$TMP/portfolio.db" 2>/dev/null || {
-  echo "error: failed to copy portfolio.db from web container" >&2
+# Use better-sqlite3's online-backup API inside the container for a consistent
+# snapshot, then copy it out via docker compose cp.
+docker compose exec -T web \
+  node -e "require('better-sqlite3')('/data/db/portfolio.db').backup('/data/db/backup.tmp.db')" 2>/dev/null || {
+  echo "error: failed to back up portfolio.db via better-sqlite3" >&2
   echo "  Is docker compose running? Try: docker compose ps" >&2
   exit 1
 }
+
+docker compose cp "web:/data/db/backup.tmp.db" "$TMP/portfolio.db" 2>/dev/null || {
+  echo "error: failed to copy backup file from web container" >&2
+  exit 1
+}
+
+# Clean up the temp file inside the container.
+docker compose exec -T web rm -f /data/db/backup.tmp.db 2>/dev/null || true
 
 # Copy the resume/ directory if it exists.
 if docker compose exec -T web test -d /data/db/resume 2>/dev/null; then
