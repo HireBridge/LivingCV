@@ -156,8 +156,8 @@ export function getRecentChatMessages(db: Db, sessionId: string, limit: number):
 export function dailyMessageCount(db: Db): number {
   const day = new Date().toISOString().slice(0, 10);
   const row = db.prepare<[string], { n: number }>(
-    `SELECT COALESCE(SUM(message_count), 0) AS n FROM recruiter_sessions
-     WHERE substr(last_active_at, 1, 10) = ?`,
+    `SELECT COUNT(*) AS n FROM chat_messages
+     WHERE role = 'user' AND substr(created_at, 1, 10) = ?`,
   ).get(day)!;
   return row.n;
 }
