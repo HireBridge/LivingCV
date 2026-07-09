@@ -35,6 +35,23 @@ describe('H2 — conversation history is sent to the LLM', () => {
   });
 });
 
+describe('H3 — Anthropic adapter accumulates streamed tool arguments', () => {
+  it('accumulates partial_json as a string, not JSON.parse on each delta', () => {
+    expect(ANTHROPIC).toContain('inputJson');
+    expect(ANTHROPIC).toMatch(/inputJson\s*\+=/);
+    expect(ANTHROPIC).not.toMatch(/partial_json.*JSON\.parse/);
+  });
+
+  it('parses the accumulated JSON only at content_block_stop with error handling', () => {
+    const stopIdx = ANTHROPIC.indexOf('content_block_stop');
+    expect(stopIdx).toBeGreaterThan(0);
+    const window = ANTHROPIC.slice(stopIdx);
+    expect(window).toContain('JSON.parse');
+    expect(window).toContain('try');
+    expect(window).toContain('catch');
+  });
+});
+
 describe('issue 5 — native tool-role turns (no synthetic user messages)', () => {
   it('turn.ts no longer pushes synthetic "[Tool X result]" user messages', () => {
     expect(TURN).not.toMatch(/\[Tool \w+ result\]/);

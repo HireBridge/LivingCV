@@ -61,25 +61,27 @@ export const anthropicAdapter: LlmAdapter = {
 
     let text = '';
     const toolCalls: ToolCall[] = [];
-    let pendingTool: { id: string; name: string; input: unknown } | null = null;
+    let pendingTool: { id: string; name: string; inputJson: string } | null = null;
     for await (const ev of stream) {
       if (ev.type === 'content_block_start') {
         const block = ev.content_block;
         if (block.type === 'tool_use') {
-          pendingTool = { id: block.id, name: block.name, input: {} };
+          pendingTool = { id: block.id, name: block.name, inputJson: '' };
         }
       } else if (ev.type === 'content_block_delta') {
         if (ev.delta.type === 'text_delta') {
           text += ev.delta.text;
           if (req.onToken) req.onToken(ev.delta.text);
         } else if (ev.delta.type === 'input_json_delta' && pendingTool) {
-          pendingTool.input = JSON.parse(ev.delta.partial_json ?? '{}');
+          pendingTool.inputJson += ev.delta.partial_json ?? '';
         }
       } else if (ev.type === 'content_block_stop' && pendingTool) {
+        let args: Record<string, unknown> = {};
+        try { args = JSON.parse(pendingTool.inputJson || '{}'); } catch { /* ignore partial-json parse failure */ }
         toolCalls.push({
           id: pendingTool.id,
           name: pendingTool.name,
-          args: (pendingTool.input ?? {}) as Record<string, unknown>,
+          args,
         });
         pendingTool = null;
       }
