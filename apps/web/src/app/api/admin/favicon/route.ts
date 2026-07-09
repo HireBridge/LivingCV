@@ -14,6 +14,13 @@ export async function POST(request: Request) {
   const redirectUrl = String(form.get('redirect') || '/admin/settings?tab=general');
   const errUrl = String(form.get('redirect') ? form.get('redirect') + '&favicon_err=' : '/admin/settings?tab=general&favicon_err=');
 
+  const action = form.get('_action');
+  if (action === 'remove') {
+    removeFavicon();
+    deleteSetting(db, SETTING_KEYS.siteFavicon);
+    return NextResponse.redirect(new URL(redirectUrl + '&favicon=removed', externalBase(request)), { status: 303 });
+  }
+
   const file = form.get('favicon');
   if (!(file instanceof File)) {
     return NextResponse.redirect(new URL(errUrl + 'file', externalBase(request)), { status: 303 });

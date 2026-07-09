@@ -134,13 +134,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 <button type="submit">Upload</button>
               </form>
               {all['site.favicon'] === '1' && (
-                <form method="post" action="/api/admin/favicon" onSubmit={async (e) => {
-                  e.preventDefault();
-                  if (confirm('Restore the default favicon?')) {
-                    await fetch('/api/admin/favicon', { method: 'DELETE' });
-                    window.location.href = '/admin/settings?tab=general&favicon=removed';
-                  }
-                }}>
+                <form method="post" action="/api/admin/favicon">
+                  <input type="hidden" name="_action" value="remove" />
+                  <input type="hidden" name="redirect" value="/admin/settings?tab=general" />
                   <button type="submit" className="danger" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>Remove</button>
                 </form>
               )}
