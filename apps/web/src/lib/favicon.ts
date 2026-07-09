@@ -16,7 +16,7 @@ export function getFaviconPath(): string {
 }
 
 export function faviconExists(): boolean {
-  return existsSync(getFaviconPath());
+  return getResolvedFaviconPath() !== null;
 }
 
 const MIME_MAP: Record<string, string> = {
