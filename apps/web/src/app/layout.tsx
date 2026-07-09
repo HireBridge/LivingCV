@@ -49,6 +49,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={lang} className={`${spaceGrotesk.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}>
       <head>
+        {s['site.favicon'] === '1' ? (
+          <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        ) : (
+          <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        )}
         <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/blog/feed.xml" />
         <noscript>
           <style>{'.reveal{opacity:1 !important; transform:none !important;}'}</style>

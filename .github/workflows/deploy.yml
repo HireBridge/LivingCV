@@ -1,0 +1,43 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/LivingCV
+            echo "=== Pulling latest ==="
+            git fetch origin main
+            LOCAL=$(git rev-parse @)
+            REMOTE=$(git rev-parse origin/main)
+            if [ "$LOCAL" = "$REMOTE" ]; then
+              echo "Already up to date ($(git rev-parse --short @))."
+              exit 0
+            fi
+            echo "Applying updates..."
+            git pull --ff-only origin main
+
+            echo "=== Rebuilding + restarting ==="
+            export GIT_SHA=$(git rev-parse --short HEAD)
+            docker compose up -d --build --wait
+
+            docker compose restart caddy
+
+            echo "=== Done ==="
+            docker compose ps
+            echo "Deployed $(git rev-parse --short HEAD)"

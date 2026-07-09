@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface Props {
@@ -12,7 +11,6 @@ interface Props {
 }
 
 export function HireBridgeConnect({ adminEmail, connected, profileUrl, apiUrl, clientId }: Props) {
-  const router = useRouter();
   const [connecting, setConnecting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 

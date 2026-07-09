@@ -109,6 +109,45 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </section>
 
           <section className="admin-card">
+            <h3>Favicon</h3>
+            <p style={{ color: 'var(--ink-soft)', marginBottom: 12 }}>
+              {all['site.favicon'] === '1'
+                ? 'A custom favicon is set. Upload a new one or remove it to restore the default.'
+                : 'Upload a custom favicon to replace the default. Accepts ICO, PNG, SVG, JPEG, GIF, or WebP (max 512 KB).'}
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 8, overflow: 'hidden',
+                border: '1px solid var(--rule)', flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'var(--paper)',
+              }}>
+                {all['site.favicon'] === '1' ? (
+                  <img src={'/favicon.ico?t=' + Date.now()} alt="Favicon" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <img src="/favicon.svg" alt="Default favicon" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                )}
+              </div>
+              <form method="post" action="/api/admin/favicon" encType="multipart/form-data" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <input type="hidden" name="redirect" value="/admin/settings?tab=general" />
+                <input type="file" name="favicon" accept=".ico,.png,.svg,.jpg,.jpeg,.gif,.webp" style={{ fontSize: '0.85rem' }} />
+                <button type="submit">Upload</button>
+              </form>
+              {all['site.favicon'] === '1' && (
+                <form method="post" action="/api/admin/favicon" onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (confirm('Restore the default favicon?')) {
+                    await fetch('/api/admin/favicon', { method: 'DELETE' });
+                    window.location.href = '/admin/settings?tab=general&favicon=removed';
+                  }
+                }}>
+                  <button type="submit" className="danger" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>Remove</button>
+                </form>
+              )}
+            </div>
+          </section>
+
+          <section className="admin-card">
             <h3>Limits & kill switches</h3>
             <form method="post" action="/api/admin/settings/save" className="row">
               <input type="hidden" name="group" value="limits" />

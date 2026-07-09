@@ -38,7 +38,7 @@ export async function syncLeadToJobOps(db: Db, lead: LeadToSync): Promise<void> 
     const client = new Client({ name: 'lead-sync', version: '1.0.0' }, { capabilities: {} });
     await client.connect(transport);
 
-    const result = await client.callTool({
+    const _result = await client.callTool({
       name: 'add_contacts',
       arguments: {
         contacts: [{

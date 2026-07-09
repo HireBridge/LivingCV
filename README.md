@@ -180,6 +180,67 @@ DATA_DIR=$PWD/../../data SESSION_SECRET=any PORTFOLIO_ENCRYPTION_KEY=any \
 
 Everything else (`update_*`, `delete_*`, `import_*`, `enrich_company`, `negotiation_brief`, `find_warm_intros`, …) lives behind the bearer-gated `/mcp` and is reachable only from the orchestrator and the operator's own tooling. The guarantee is **server-side tool registration**, not prompting: a hostile prompt that tricks the LLM into emitting a private tool name still fails, because that tool doesn't exist on the public mount. See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
 
+## HireBridge federation
+
+HireBridge is a federated talent network that makes your portfolio discoverable to
+third-party recruiters. When connected, your site can receive and respond to
+introduction requests from the HireBridge network.
+
+### Connecting
+
+1. Set your **Admin email** in Admin > Settings > General (the same email you
+   used during setup).
+2. Go to Admin > Settings > **MCP** and scroll to the HireBridge section.
+3. Enter the **HireBridge API URL** (the HireBridge instance you want to join)
+   and optionally a **Client ID** (auto-generated if left blank).
+4. Click **Connect to HireBridge**.
+
+Under the hood:
+- The connect endpoint (`POST /api/hirebridge/connect`) generates a `request_id`
+  and an HMAC-SHA256 token signed with your Client ID as the secret. The pending
+  request is stored (encrypted) in the database.
+- HireBridge sends a **magic link** to your admin email. Clicking the link hits
+  `GET /api/hirebridge/callback?request_id=…&token=…`, which validates the
+  request, generates a persistent 256-bit federation token, and marks the
+  connection as active.
+- In dev mode, the magic link URL is returned in the API response so you can
+  click through directly without a real email flow.
+
+Once connected, your portfolio appears on the HireBridge federated profile at
+`{apiUrl}/profile/{clientId}`.
+
+### Receiving introductions
+
+The inbox endpoint at `POST /api/inbox` is a public, server-to-server endpoint
+that receives introduction requests from HireBridge. Each request carries an
+`X-HireBridge-Signature` header — an HMAC-SHA256 hex digest of the JSON body,
+signed with the federation token established during connection.
+
+When a valid introduction arrives:
+- The signature is verified with timing-safe comparison.
+- The `candidate_id` in the payload is checked against your Client ID to prevent
+  cross-portfolio delivery.
+- The recruiter's identity is pushed to your jobops instance via `add_contacts`
+  (best-effort — inbox delivery succeeds even if the local sync fails).
+
+The inbox is **not gated by the admin session** — it is protected solely by the
+HMAC shared secret, so no login state needs to exist between HireBridge and your
+instance.
+
+### Discovery
+
+Your portfolio self-describes at `GET /.well-known/portfolio`, which returns the
+domain, site title, all public endpoints (`/mcp/public`, `/career-packet.json`,
+`/resume`, etc.), and the current HireBridge connection status. This is how
+HireBridge discovers and indexes your portfolio.
+
+### Disconnecting
+
+Click **Disconnect** in the MCP settings tab, which clears all HireBridge
+settings (token, profile URL, connection flag, and any pending request). The
+operation is immediate — there is no handshake with HireBridge to revoke, so the
+remote side may retain stale state until its own TTL expires.
+
 ## SEO
 
 Every SEO artifact is generated at request time from your settings, so each self-hoster gets correct SEO for their own domain with zero code edits: `metadataBase` + per-page OpenGraph/Twitter tags, a generated OG image route, JSON-LD structured data, self-referential canonicals, `sitemap.xml` (home + projects + blog + resume, with `lastmod`), `robots.txt` (admin/API disallowed), a blog RSS feed at `/blog/feed.xml`, a web manifest, and optional Google Analytics + Google/Bing site-verification tags from the admin **SEO** settings.

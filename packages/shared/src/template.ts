@@ -204,6 +204,7 @@ export const SETTING_KEYS = {
   notifyWebhookUrl: 'notify.webhook_url', // encrypted
   gateEnabled: 'gate.enabled',
   resumeFilename: 'resume.filename',
+  siteFavicon: 'site.favicon',
   mcpMasterKey: 'mcp.master_key',
   publicMcpEnabled: 'publicmcp.enabled',
   jobopsSyncEnabled: 'mcp.jobops_sync_enabled',

@@ -21,11 +21,10 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: ink,
     icons: [
       {
-        src: '/favicon.ico',
+        src: s['site.favicon'] === '1' ? '/favicon.ico' : '/favicon.svg',
         sizes: 'any',
-        type: 'image/x-icon',
+        type: s['site.favicon'] === '1' ? 'image/x-icon' : 'image/svg+xml',
       },
-      // You can add more icons here (e.g. icon-192x192.png)
     ],
   };
 }
