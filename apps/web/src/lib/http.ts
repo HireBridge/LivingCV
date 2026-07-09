@@ -17,3 +17,7 @@ export function safeRedirect(url: string, fallback: string): string {
   if (!url.startsWith('/') || url.startsWith('//')) return fallback;
   return url;
 }
+
+export function appendQuery(url: string, key: string, value: string): string {
+  return `${url}${url.includes('?') ? '&' : '?'}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+}
