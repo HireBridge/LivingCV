@@ -27,6 +27,7 @@ import { attachMasterMcp } from './masterMcp.js';
 const PORT = Number(process.env.ORCHESTRATOR_PORT || 8100);
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '256kb' }));
 
 app.get('/healthz', (_req: Request, res: Response) => res.json({ ok: true }));
