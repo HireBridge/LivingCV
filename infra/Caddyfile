@@ -32,7 +32,7 @@
     # Defence against MIME-sniffing and click-jacking; set CSP conservatively
     # to "self only" — the classic template loads its own fonts, styles, and
     # images from the same origin.
-    Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss:; frame-ancestors 'none'"
+    Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; frame-ancestors 'none'"
     # HSTS omitted on local dev (no TLS)
     Server ""   # Strip the Caddy server header (no version disclosure).
   }
