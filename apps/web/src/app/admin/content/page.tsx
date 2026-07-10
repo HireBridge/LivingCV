@@ -8,6 +8,8 @@ import { CaseStudiesTab } from './CaseStudiesTab';
 import { OrderTab } from './OrderTab';
 import { ThemeTab } from './ThemeTab';
 import { CustomSectionsTab } from './CustomSectionsTab';
+import { LabelsTab } from './LabelsTab';
+import type { SectionLabels } from '@livingcv/shared';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,6 +59,7 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
         <a href="?tab=projects" style={{ textDecoration: 'none', color: currentTab === 'projects' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'projects' ? 'bold' : 'normal' }}>Projects</a>
         <a href="?tab=case-studies" style={{ textDecoration: 'none', color: currentTab === 'case-studies' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'case-studies' ? 'bold' : 'normal' }}>Case Studies</a>
         <a href="?tab=order" style={{ textDecoration: 'none', color: currentTab === 'order' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'order' ? 'bold' : 'normal' }}>Order</a>
+        <a href="?tab=labels" style={{ textDecoration: 'none', color: currentTab === 'labels' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'labels' ? 'bold' : 'normal' }}>Labels</a>
         <a href="?tab=custom" style={{ textDecoration: 'none', color: currentTab === 'custom' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'custom' ? 'bold' : 'normal' }}>Custom Sections</a>
         <a href="?tab=signals" style={{ textDecoration: 'none', color: currentTab === 'signals' ? 'var(--signal)' : 'var(--ink-soft)', fontWeight: currentTab === 'signals' ? 'bold' : 'normal' }}>Signals</a>
       </div>
@@ -192,6 +195,13 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
         <CustomSectionsTab 
           slug={slug} 
           initialSections={getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', [])} 
+        />
+      )}
+
+      {currentTab === 'labels' && (
+        <LabelsTab
+          slug={slug}
+          initialLabels={getSection<SectionLabels>(db, slug, 'section_labels', {})}
         />
       )}
 

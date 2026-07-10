@@ -174,6 +174,34 @@ export const CustomSectionProps = z.object({
 });
 export type CustomSectionProps = z.infer<typeof CustomSectionProps>;
 
+// Per-section label override. Stored as a flat map in site_content
+// section_key='section_labels'. Every field is optional — absent fields fall
+// back to the hard-coded defaults inside the template.
+//
+// JSON CONTRACT (site_content WHERE section_key='section_labels'):
+//   {
+//     "projects":    { "kicker": "01 — Selected work", "title": "Projects",      "navLabel": "Projects" },
+//     "alsoShipped": { "kicker": "02 — Also shipped",  "title": "Smaller tools",  "navLabel": "Also Shipped" },
+//     "background":  { "kicker": "03 — Before this",   "title": "Background",     "navLabel": "Background" },
+//     "signals":     { "kicker": "Signals",             "title": "Signals",        "navLabel": "Signals" },
+//     "contact":     { "kicker": "Get in touch",        "title": "Contact",        "navLabel": "Contact" }
+//   }
+//
+// MCP SQL example:
+//   INSERT INTO site_content (template_slug, section_key, content, position, updated_at)
+//   VALUES ('classic', 'section_labels',
+//     '{"projects":{"kicker":"01 — Featured work","title":"Work"},"contact":{"title":"Say hello"}}',
+//     0, datetime('now'));
+export const SectionLabel = z.object({
+  kicker:   z.string().optional(),
+  title:    z.string().optional(),
+  navLabel: z.string().optional(),
+});
+export type SectionLabel = z.infer<typeof SectionLabel>;
+
+export const SectionLabels = z.record(z.string(), SectionLabel).default({});
+export type SectionLabels = z.infer<typeof SectionLabels>;
+
 export const TemplateProps = z.object({
   hero: HeroProps,
   projects: z.array(ProjectProps).default([]),
@@ -189,8 +217,11 @@ export const TemplateProps = z.object({
   // public-MCP connection instructions. Driven by publicmcp.enabled.
   talentMcpEnabled: z.boolean().optional(),
   signals: SignalsProps.default({ demonstrated: [], asserted: [] }),
+  // Per-section label overrides (editable kicker, title, navLabel).
+  sectionLabels: SectionLabels,
 });
 export type TemplateProps = z.infer<typeof TemplateProps>;
+
 
 // Catalog of known app_settings keys (namespaced). Kept here so the web and
 // orchestrator agree on the key strings. Secret-bearing keys are marked

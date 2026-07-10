@@ -44,6 +44,16 @@ The hero JSON may include a top-level "diagram" object to control the node diagr
 accent values: "signal" (green) | "rust" (terracotta) | "ink" (dark).
 Safe update pattern: SELECT content FROM site_content WHERE template_slug='classic' AND section_key='hero' ORDER BY id DESC LIMIT 1 — then merge and INSERT a new row (setSection appends; old rows are pruned automatically, do NOT DELETE).
 
+SECTION LABELS CONTRACT (site_content WHERE section_key='section_labels'):
+A JSON map of section IDs to overriding labels. If a field is omitted, the template defaults are used.
+  {
+    "projects":    { "kicker": "01 — Selected work", "title": "Projects",      "navLabel": "Projects" },
+    "alsoShipped": { "kicker": "02 — Also shipped",  "title": "Smaller tools", "navLabel": "Also Shipped" },
+    "background":  { "kicker": "03 — Before this",   "title": "Background",    "navLabel": "Background" },
+    "signals":     { "kicker": "Signals",            "title": "Signals",       "navLabel": "Signals" },
+    "contact":     { "kicker": "Get in touch",       "title": "Contact",       "navLabel": "Contact" }
+  }
+
 WORKFLOW for JSON columns: SELECT the current value first, merge your change into the existing JSON, then write the whole object back — never blind-overwrite.
 
 DO NOT UPDATE app_settings rows whose keys are secrets (jobops.auth_token, agent.llm_api_key, any *_api_key, notify.webhook_url, mcp.master_key, telegram.bot_token, google.client_secret). They are AES-encrypted by the app; a raw SQL write stores unusable plaintext. Change secrets through the admin UI instead.`;

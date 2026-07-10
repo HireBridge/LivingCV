@@ -242,6 +242,22 @@ footer{ padding:52px 0 70px; }
 .footer-links{ display:flex; flex-wrap:wrap; gap:22px; font-family:'JetBrains Mono', monospace; font-size:0.9rem; margin-bottom:18px; }
 .footer-note{ color:var(--ink-soft); font-size:0.86rem; }
 
+/* contact section */
+.contact-body{ display:flex; flex-direction:column; gap:24px; max-width:640px; }
+.contact-emails{ display:flex; flex-wrap:wrap; gap:14px; }
+.contact-email-cta{
+  display:inline-block; padding:12px 28px;
+  background:var(--ink); color:var(--paper);
+  font-family:'Space Grotesk', system-ui, sans-serif;
+  font-weight:600; font-size:1rem;
+  border-radius:4px; text-decoration:none;
+  transition: background 0.2s, color 0.2s;
+}
+.contact-email-cta:hover{ background:var(--signal); color:var(--paper); }
+.contact-links{ display:flex; flex-wrap:wrap; gap:10px; }
+.contact-note{ margin-top:4px; }
+
+
 /* reveal on scroll */
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity 0.6s ease, transform 0.6s ease; }
 .reveal.is-visible{ opacity:1; transform:translateY(0); }

@@ -3,16 +3,20 @@ import type { EvidenceSignal, AssertedSignal } from '@livingcv/shared';
 export function Signals({
   demonstrated,
   asserted,
+  kicker = 'Signals',
+  title = 'Signals',
 }: {
   demonstrated: EvidenceSignal[];
   asserted: AssertedSignal[];
+  kicker?: string;
+  title?: string;
 }) {
   if (demonstrated.length === 0 && asserted.length === 0) return null;
 
   return (
     <section id="signals" className="signals-section">
-      <p className="section-kicker">Signals</p>
-      <h2 className="section-title">Signals</h2>
+      <p className="section-kicker">{kicker}</p>
+      <h2 className="section-title">{title}</h2>
 
       {demonstrated.length > 0 && (
         <div className="signal-group">

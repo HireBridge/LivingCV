@@ -18,6 +18,8 @@ export type {
   EvidenceSignal,
   AssertedSignal,
   SignalsProps,
+  SectionLabel,
+  SectionLabels,
 } from './template.js';
 export {
   LinkItem as LinkItemSchema,
@@ -32,6 +34,8 @@ export {
   FooterProps as FooterPropsSchema,
   ThemeProps as ThemePropsSchema,
   TemplateProps as TemplatePropsSchema,
+  SectionLabel as SectionLabelSchema,
+  SectionLabels as SectionLabelsSchema,
   THEME_KEYS,
   SETTING_KEYS,
   ENCRYPTED_SETTING_KEYS,

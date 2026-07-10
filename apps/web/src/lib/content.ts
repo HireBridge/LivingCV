@@ -12,6 +12,7 @@ import type {
   LinkItem,
   EvidenceSignal,
   AssertedSignal,
+  SectionLabels,
 } from '@livingcv/shared';
 import { parseJson } from './parse-json';
 import { normalizeProjectBody } from './project-body';
@@ -282,6 +283,7 @@ export function buildTemplateProps(db: Db): TemplateProps {
 
   const hiddenSections = getSection<string[]>(db, slug, 'hidden', []);
   const customSections = getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', []);
+  const sectionLabels = getSection<SectionLabels>(db, slug, 'section_labels', {});
 
   const projects = listProjects(db);
   const featured: ProjectProps[] = [];
@@ -330,5 +332,6 @@ export function buildTemplateProps(db: Db): TemplateProps {
     contactEnabled,
     talentMcpEnabled,
     signals: { demonstrated, asserted },
+    sectionLabels,
   });
 }

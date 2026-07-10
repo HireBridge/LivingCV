@@ -135,6 +135,22 @@ export async function POST(request: Request) {
       );
     }
     content = parsed.value;
+  } else if (section === 'section_labels') {
+    const labels: Record<string, any> = {};
+    const SEC_IDS = ['projects', 'alsoShipped', 'background', 'signals', 'contact'];
+    for (const id of SEC_IDS) {
+      const kicker = String(form.get(`${id}_kicker`) || '').trim();
+      const title = String(form.get(`${id}_title`) || '').trim();
+      const navLabel = String(form.get(`${id}_navLabel`) || '').trim();
+      
+      if (kicker || title || navLabel) {
+        labels[id] = {};
+        if (kicker) labels[id].kicker = kicker;
+        if (title) labels[id].title = title;
+        if (navLabel) labels[id].navLabel = navLabel;
+      }
+    }
+    content = labels;
   } else {
     return NextResponse.redirect(new URL('/admin/content', externalBase(request)), { status: 303 });
   }
@@ -143,6 +159,6 @@ export async function POST(request: Request) {
   revalidatePath('/');
   revalidatePath('/admin/content');
   
-  const tabParam = ['order', 'theme', 'custom_sections'].includes(section) ? `?tab=${section === 'custom_sections' ? 'custom' : section}` : '';
+  const tabParam = ['order', 'theme', 'custom_sections', 'section_labels'].includes(section) ? `?tab=${section === 'custom_sections' ? 'custom' : section === 'section_labels' ? 'labels' : section}` : '';
   return NextResponse.redirect(new URL(`/admin/content${tabParam}`, externalBase(request)), { status: 303 });
 }
