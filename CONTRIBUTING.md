@@ -43,6 +43,11 @@ and what we don't.
 
 ## Development setup
 
+Use Node 24 (`nvm use` — a `.nvmrc` at the repo root pins the version). The
+repo's `better-sqlite3` native module is ABI-locked to the Node version it
+was installed under; Node 25/26 breaks both the local orchestrator and the
+test suite.
+
 ```bash
 # Node services
 npm ci
