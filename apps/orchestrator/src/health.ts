@@ -10,7 +10,7 @@ async function main() {
   if (!masterKey || !url) {
     try {
       const db = getDb();
-      masterKey = masterKey || getSetting(db, 'mcp.master_key') ?? undefined;
+      masterKey = masterKey || (getSetting(db, 'mcp.master_key') ?? undefined);
       url = url || 'http://127.0.0.1:8100/api/mcp/sse';
     } catch (e) {
       console.warn('Could not read from local DB:', (e as Error).message);
