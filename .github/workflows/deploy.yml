@@ -11,7 +11,7 @@ jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
@@ -19,7 +19,10 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 30m
+          # Pull + up only — image builds happen in build.yml on GHCR.
+          # The 30-minute window was the symptom of building next on a 1 GB
+          # box; with pre-built images the whole deploy finishes in ~2 min.
+          command_timeout: 10m
           script: |
             set -e
             cd ~/LivingCV
@@ -34,9 +37,9 @@ jobs:
             echo "Applying updates..."
             git pull --ff-only origin main
 
-            echo "=== Rebuilding + restarting ==="
-            export GIT_SHA=$(git rev-parse --short HEAD)
-            docker compose up -d --build --wait
+            echo "=== Pulling pre-built images + restarting ==="
+            docker compose pull
+            docker compose up -d --wait
 
             docker compose restart caddy
 

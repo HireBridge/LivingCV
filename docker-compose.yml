@@ -21,6 +21,10 @@ services:
         condition: service_healthy
 
   web:
+    # GHCR image is used on the box at deploy time (docker compose pull). The
+    # `build:` block stays as the local-dev fallback for `docker compose build`
+    # without a registry round-trip.
+    image: ghcr.io/mohith-das/livingcv-web:latest
     build:
       context: .
       dockerfile: infra/web.Dockerfile
@@ -47,6 +51,7 @@ services:
       start_period: 60s
 
   orchestrator:
+    image: ghcr.io/mohith-das/livingcv-orchestrator:latest
     build:
       context: .
       dockerfile: infra/orchestrator.Dockerfile
@@ -78,6 +83,7 @@ services:
 
 
   jobops:
+    image: ghcr.io/mohith-das/livingcv-jobops:latest
     build:
       context: .
       dockerfile: infra/jobops/Dockerfile
