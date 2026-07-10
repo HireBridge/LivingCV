@@ -313,6 +313,7 @@ export function buildTemplateProps(db: Db): TemplateProps {
       roleLine: hero.roleLine,
       links: hero.links,
       diagramCenterLabel: hero.diagramCenterLabel,
+      diagram: hero.diagram,
     },
     projects: featured,
     alsoShipped,

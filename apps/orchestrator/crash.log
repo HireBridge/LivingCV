@@ -1,0 +1,694 @@
+[2026-07-10T04:06:49.144Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:06:51.619Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:06:54.058Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:06:56.514Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:06:58.970Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:01.423Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:03.864Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:06.302Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:08.737Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:11.212Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:13.682Z] FATAL uncaughtException: Error: The module '/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+was compiled against a different Node.js version using
+NODE_MODULE_VERSION 137. This version of Node.js requires
+NODE_MODULE_VERSION 147. Please try re-compiling or re-installing
+the module (for instance, using `npm rebuild` or `npm install`).
+    at Object..node (node:internal/modules/cjs/loader:2111:18)
+    at Module.load (node:internal/modules/cjs/loader:1666:32)
+    at Module._load (node:internal/modules/cjs/loader:1447:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:260:19)
+    at Module.require (node:internal/modules/cjs/loader:1689:12)
+    at require (node:internal/modules/helpers:191:16)
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:112:48)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+[2026-07-10T04:07:16.185Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:18.657Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:21.121Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:23.582Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:26.049Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:28.514Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:30.984Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:33.425Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:35.886Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:38.328Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:40.767Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:43.195Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/26.4.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v147-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:630:28)
+    at Server.emit (node:events:521:24)
+    at emitListeningNT (node:net:2210:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+[2026-07-10T04:07:58.214Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:00.818Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:03.407Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:06.108Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:08.694Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:11.279Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:13.997Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:16.618Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:19.233Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:21.822Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+[2026-07-10T04:08:24.449Z] FATAL uncaughtException: Error: Could not locate the bindings file. Tried:
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Debug/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/out/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/Release/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/build/default/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/compiled/24.12.0/darwin/arm64/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/release/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/debug/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/addon-build/default/install-root/better_sqlite3.node
+ → /Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/binding/node-v137-darwin-arm64/better_sqlite3.node
+    at bindings (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/bindings/bindings.js:126:9)
+    at new Database (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/node_modules/better-sqlite3/lib/database.js:48:64)
+    at openDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/packages/db/src/index.ts:24:14)
+    at getDb (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/db.ts:18:31)
+    at Server.<anonymous> (/Users/mohithdas/Projects/Code/open_source/HireOps_suite/LivingCV/apps/orchestrator/src/server.ts:129:14)
+    at Object.onceWrapper (node:events:622:28)
+    at Server.emit (node:events:520:35)
+    at emitListeningNT (node:net:1983:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:88:21)

@@ -46,13 +46,42 @@ export async function POST(request: Request) {
   }
   let content: unknown;
   if (section === 'hero') {
+    // Read the existing stored hero JSON so we can preserve the diagram field
+    // (which is not exposed as individual form inputs — just the JSON textarea).
+    const db = getDb();
+    const existing = (() => {
+      const row = db
+        .prepare<[string, string], { content: string }>(
+          'SELECT content FROM site_content WHERE template_slug = ? AND section_key = ? ORDER BY id DESC LIMIT 1',
+        )
+        .get(templateSlug, 'hero');
+      try { return row?.content ? JSON.parse(row.content) as Record<string, unknown> : {}; }
+      catch { return {}; }
+    })();
+
+    // Parse the diagram textarea — may be empty (unchanged) or new JSON.
+    const diagramRaw = String(form.get('diagram_json') || '').trim();
+    let diagram: unknown = existing['diagram'];
+    if (diagramRaw) {
+      const parsed = parseJsonField(diagramRaw);
+      if (!parsed.ok) {
+        return NextResponse.redirect(
+          new URL(`/admin/content?err=${encodeURIComponent(parsed.error)}`, externalBase(request)),
+          { status: 303 },
+        );
+      }
+      diagram = parsed.value;
+    }
+
     content = {
       eyebrow: String(form.get('eyebrow') || ''),
       name: String(form.get('name') || ''),
       roleLine: String(form.get('roleLine') || ''),
       links: parseLinkLines(String(form.get('hero_links') || '')),
       diagramCenterLabel: String(form.get('diagramCenterLabel') || '') || undefined,
+      ...(diagram !== undefined ? { diagram } : {}),
     };
+
   } else if (section === 'background') {
     content = {
       kicker: String(form.get('kicker') || ''),

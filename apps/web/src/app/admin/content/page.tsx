@@ -94,6 +94,26 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
             <label>Hero diagram center label (optional)</label>
             <input name="diagramCenterLabel" defaultValue={hero.diagramCenterLabel ?? ''} />
           </div>
+          <div className="row">
+            <label>
+              Hero diagram config JSON{' '}
+              <span style={{ fontWeight: 400, color: 'var(--ink-soft)', fontSize: '0.86rem' }}>
+                — optional. Leave blank to use defaults (auto-derive nodes from projects).
+              </span>
+            </label>
+            <textarea
+              name="diagram_json"
+              rows={10}
+              defaultValue={hero.diagram ? JSON.stringify(hero.diagram, null, 2) : ''}
+              placeholder={`{\n  "enabled": true,\n  "centerLabel": "Mohith",\n  "layout": "arc",\n  "animate": true,\n  "nodes": [\n    { "label": "jobops", "sublabel": "npm", "href": "#jobops", "accent": "signal" },\n    { "label": "HireBridge", "sublabel": "Go", "href": "#hirebridge", "accent": "rust" }\n  ]\n}`}
+              style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+            />
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.82rem', marginTop: 6 }}>
+              <code>layout</code>: <code>corners</code> (default, max 4) | <code>arc</code> | <code>radial</code> — 
+              <code>accent</code>: <code>signal</code> | <code>rust</code> | <code>ink</code> — 
+              <code>enabled: false</code> hides the diagram entirely.
+            </p>
+          </div>
           <div className="actions">
             <button type="submit">Save hero</button>
           </div>

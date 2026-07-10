@@ -15,7 +15,16 @@ function renderRoleLine(text: string) {
 }
 
 export function Hero({ hero, projects, contactEnabled }: { hero: HeroProps; projects: ProjectProps[]; contactEnabled?: boolean }) {
-  const centerLabel = hero.diagramCenterLabel || hero.name.split(' ')[0] || '';
+  // diagram.centerLabel supersedes the top-level diagramCenterLabel
+  const centerLabel =
+    hero.diagram?.centerLabel ||
+    hero.diagramCenterLabel ||
+    hero.name.split(' ')[0] ||
+    '';
+
+  // enabled:false hides the diagram; if no diagram key at all, show when there are projects
+  const diagramEnabled = hero.diagram?.enabled !== false;
+
   return (
     <section className="hero no-rule">
       {hero.eyebrow ? <span className="eyebrow">{hero.eyebrow}</span> : null}
@@ -39,9 +48,13 @@ export function Hero({ hero, projects, contactEnabled }: { hero: HeroProps; proj
           ))}
         </div>
       ) : null}
-      {projects.length > 0 ? (
+      {diagramEnabled && projects.length > 0 ? (
         <RevealOnScroll>
-          <HeroDiagram centerLabel={centerLabel} projects={projects} />
+          <HeroDiagram
+            centerLabel={centerLabel}
+            projects={projects}
+            diagramConfig={hero.diagram}
+          />
         </RevealOnScroll>
       ) : null}
     </section>

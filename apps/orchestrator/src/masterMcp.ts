@@ -27,6 +27,23 @@ CRITICAL — these columns hold JSON and are parsed by the site renderer. Write 
 • site_content.content → JSON whose shape depends on section_key (hero, background, footer, theme, order, hidden, custom_sections).
 • case_studies.frontmatter → JSON: { title, summary, stack:[], status, links:{}, highlights:[] }.
 
+HERO DIAGRAM CONTRACT (site_content WHERE section_key='hero'):
+The hero JSON may include a top-level "diagram" object to control the node diagram:
+  {
+    "diagram": {
+      "enabled":     true,         // false → hides the diagram entirely
+      "centerLabel": "Mohith",     // center-node text; falls back to diagramCenterLabel then first name
+      "nodes": [                   // 1–6 explicit nodes; omit to auto-derive from featured projects
+        { "label": "jobops",    "sublabel": "npm",  "href": "#jobops",     "accent": "signal" },
+        { "label": "HireBridge","sublabel": "Go",   "href": "#hirebridge", "accent": "rust"   }
+      ],
+      "layout":  "corners",        // "corners" (default, 4 max) | "arc" | "radial" (both up to 6)
+      "animate": true              // draw-in animation; always off when prefers-reduced-motion
+    }
+  }
+accent values: "signal" (green) | "rust" (terracotta) | "ink" (dark).
+Safe update pattern: SELECT content FROM site_content WHERE template_slug='classic' AND section_key='hero' ORDER BY id DESC LIMIT 1 — then merge and INSERT a new row (setSection appends; old rows are pruned automatically, do NOT DELETE).
+
 WORKFLOW for JSON columns: SELECT the current value first, merge your change into the existing JSON, then write the whole object back — never blind-overwrite.
 
 DO NOT UPDATE app_settings rows whose keys are secrets (jobops.auth_token, agent.llm_api_key, any *_api_key, notify.webhook_url, mcp.master_key, telegram.bot_token, google.client_secret). They are AES-encrypted by the app; a raw SQL write stores unusable plaintext. Change secrets through the admin UI instead.`;

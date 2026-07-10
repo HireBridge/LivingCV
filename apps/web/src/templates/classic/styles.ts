@@ -139,9 +139,40 @@ h1.name{
 
 /* HERO DIAGRAM */
 .hero-diagram{ margin-top:8px; }
-.hero-diagram svg{ width:100%; height:auto; display:block; }
+.hero-diagram svg{ width:100%; height:auto; display:block; overflow:visible; }
 .node-label{ font-family:'JetBrains Mono', monospace; font-size:11px; fill:var(--ink); }
 .node-sub{ font-family:'Source Serif 4', serif; font-size:11px; fill:var(--ink-soft); font-style:italic; }
+
+/* Draw-in animation for diagram nodes */
+@keyframes hd-node-in{
+  from{ opacity:0; transform:translateY(6px); }
+  to  { opacity:1; transform:translateY(0);   }
+}
+@keyframes hd-connector-in{
+  from{ stroke-dashoffset:1; }
+  to  { stroke-dashoffset:0; }
+}
+.hd-node{
+  opacity:0;
+  animation: hd-node-in 0.4s ease forwards;
+}
+.hd-node-rect{
+  opacity:0;
+  animation: hd-node-in 0.35s ease forwards;
+}
+.hd-connector{
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  stroke-dasharray:600;
+  stroke-dashoffset:600;
+  animation: hd-connector-in 0.5s ease forwards;
+}
+/* Mobile: keep diagram readable at narrow widths */
+@media(max-width:500px){
+  .hero-diagram{ overflow-x:auto; }
+  .hero-diagram svg{ min-width:480px; }
+}
+
 
 /* SECTIONS */
 section{ padding:64px 0; border-top:1px solid var(--rule); }

@@ -54,6 +54,32 @@ export const MiniProjectProps = z.object({
 });
 export type MiniProjectProps = z.infer<typeof MiniProjectProps>;
 
+// A single node in the hero diagram. All fields are optional except label.
+export const DiagramNodeSpec = z.object({
+  label: z.string(),
+  sublabel: z.string().optional(),
+  href: z.string().optional(),
+  accent: z.enum(['signal', 'rust', 'ink']).optional().default('signal'),
+});
+export type DiagramNodeSpec = z.infer<typeof DiagramNodeSpec>;
+
+// The full diagram configuration stored inside the hero section JSON.
+// Every field is optional — absent ≡ default. When the object itself is absent
+// the diagram renders exactly as before (projects-derived nodes, corners layout).
+export const HeroDiagramConfig = z.object({
+  // false → hide the diagram entirely
+  enabled: z.boolean().optional().default(true),
+  // Label drawn at the center node. Supersedes the top-level diagramCenterLabel.
+  centerLabel: z.string().optional(),
+  // 1–6 explicit nodes. When absent, nodes are auto-derived from featured projects.
+  nodes: z.array(DiagramNodeSpec).min(1).max(6).optional(),
+  // "corners" = current 4-slot layout | "arc" = semicircle | "radial" = full circle
+  layout: z.enum(['corners', 'arc', 'radial']).optional().default('corners'),
+  // CSS draw-in animation. Always respects prefers-reduced-motion.
+  animate: z.boolean().optional().default(true),
+}).optional();
+export type HeroDiagramConfig = z.infer<typeof HeroDiagramConfig>;
+
 export const HeroProps = z.object({
   eyebrow: z.string(),
   name: z.string(),
@@ -62,10 +88,13 @@ export const HeroProps = z.object({
   roleLine: z.string(),
   links: z.array(LinkItem).default([]),
   // Short label drawn at the center of the hero node diagram (defaults to the
-  // first name / initials when omitted).
+  // first name / initials when omitted). Superseded by diagram.centerLabel.
   diagramCenterLabel: z.string().optional(),
+  // Optional diagram configuration. Absent → same as today.
+  diagram: HeroDiagramConfig,
 });
 export type HeroProps = z.infer<typeof HeroProps>;
+
 
 export const BackgroundProps = z.object({
   kicker: z.string(),

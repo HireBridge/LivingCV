@@ -80,6 +80,15 @@ export interface HeroContent {
   roleLine: string;
   links: { label: string; href: string }[];
   diagramCenterLabel?: string;
+  // Optional diagram config — mirrors HeroDiagramConfig from @livingcv/shared.
+  // Stored as-is; validated/defaulted in the component.
+  diagram?: {
+    enabled?: boolean;
+    centerLabel?: string;
+    nodes?: { label: string; sublabel?: string; href?: string; accent?: 'signal' | 'rust' | 'ink' }[];
+    layout?: 'corners' | 'arc' | 'radial';
+    animate?: boolean;
+  };
 }
 
 export interface BackgroundContent {
