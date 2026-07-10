@@ -60,6 +60,8 @@ services:
       # Cap V8 heap below the container's cgroup limit so it OOMs cleanly
       # inside the slice instead of starving the host.
       NODE_OPTIONS: --max-old-space-size=256
+      NEXT_TELEMETRY_DISABLED: "1"
+      NPM_CONFIG_UPDATE_NOTIFIER: "false"
     volumes:
       - portfolio-data:/data/db
     depends_on:
@@ -93,6 +95,7 @@ services:
       # must advertise that external path for the client's message POSTs.
       MCP_MESSAGES_PATH: /mcp-admin/messages
       NODE_OPTIONS: --max-old-space-size=160
+      NPM_CONFIG_UPDATE_NOTIFIER: "false"
     volumes:
       - portfolio-data:/data/db
     depends_on:
