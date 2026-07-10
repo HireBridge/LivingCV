@@ -213,14 +213,19 @@ export function attachMasterMcp(app: express.Express) {
   });
 
   app.post('/api/mcp/messages', async (req, res) => {
-    const sessionId = req.query.sessionId as string;
-    const transport = transports.get(sessionId);
-    if (!transport) {
-      return res.status(404).send('Session not found');
+    try {
+      const sessionId = req.query.sessionId as string;
+      const transport = transports.get(sessionId);
+      if (!transport) {
+        return res.status(404).send('Session not found');
+      }
+      // The global express.json() middleware has already consumed and parsed the
+      // request stream, so pass the parsed body — otherwise handlePostMessage tries
+      // to re-read the stream and fails with "stream is not readable".
+      await transport.handlePostMessage(req, res, req.body);
+    } catch (e) {
+      console.error('[masterMcp] post messages error', e);
+      if (!res.headersSent) res.status(500).send('Internal Server Error');
     }
-    // The global express.json() middleware has already consumed and parsed the
-    // request stream, so pass the parsed body — otherwise handlePostMessage tries
-    // to re-read the stream and fails with "stream is not readable".
-    await transport.handlePostMessage(req, res, req.body);
   });
 }

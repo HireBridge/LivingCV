@@ -12,6 +12,24 @@
 // gated by an operator key (see masterMcp.ts).
 
 import express from 'express';
+import fs from 'node:fs';
+
+// (a) route all console/debug output to stderr, never stdout
+console.log = console.error;
+console.info = console.error;
+console.debug = console.error;
+console.warn = console.error;
+
+// (b) add a global uncaughtException / unhandledRejection handler
+function fatalError(err: Error | unknown, type: string) {
+  const msg = `[${new Date().toISOString()}] FATAL ${type}: ${err instanceof Error ? err.stack : String(err)}\n`;
+  fs.appendFileSync('crash.log', msg);
+  console.error(msg);
+  process.exit(1);
+}
+process.on('uncaughtException', (err) => fatalError(err, 'uncaughtException'));
+process.on('unhandledRejection', (err) => fatalError(err, 'unhandledRejection'));
+
 
 import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
