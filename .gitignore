@@ -33,7 +33,6 @@ docs/claude_conv_*
 
 # Internal planning docs — kept local for the implementing agent, not published
 # (they contain the operator's real name, domain, and local filesystem paths).
-PLAN.md
 REMEDIATION.md
 VOICE.md
 AUDIT_AND_SEO_PLAN.md
