@@ -1,8 +1,15 @@
 name: Deploy
 
 on:
+  # Chained off the image-build workflow, NOT CI directly. CI and the build
+  # workflow both trigger off CI's completion independently, so if this
+  # workflow also triggered off CI it could race build.yml's GHCR push (build
+  # takes several minutes; a plain `docker compose pull` + restart takes
+  # seconds) and deploy a stale — or on the very first run, nonexistent —
+  # image. Triggering off "Build container images" guarantees the images
+  # this workflow pulls were pushed for the commit that just finished CI.
   workflow_run:
-    workflows: [CI]
+    workflows: ["Build container images"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
