@@ -279,7 +279,7 @@ export function buildTemplateProps(db: Db): TemplateProps {
   });
   const footer = getSection<FooterContent>(db, slug, 'footer', { links: [], note: '' });
   const theme = getSection<ThemeProps>(db, slug, 'theme', {});
-  const sectionOrder = getSection<string[]>(db, slug, 'order', ['hero', 'projects', 'alsoShipped', 'background']);
+  const sectionOrder = getSection<string[]>(db, slug, 'order', ['hero', 'projects', 'alsoShipped', 'signals', 'background', 'contact']);
 
   const hiddenSections = getSection<string[]>(db, slug, 'hidden', []);
   const customSections = getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', []);

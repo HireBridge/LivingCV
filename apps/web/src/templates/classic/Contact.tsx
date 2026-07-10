@@ -53,9 +53,6 @@ export function Contact({
               ))}
             </div>
           )}
-          {footer.note && (
-            <p className="contact-note footer-note">{footer.note}</p>
-          )}
         </div>
       </RevealOnScroll>
     </section>

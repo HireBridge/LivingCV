@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 export function OrderTab({ initialOrder, initialHidden, customSections, slug }: { initialOrder: string[]; initialHidden: string[]; customSections: { id: string; title: string }[]; slug: string }) {
   // Default order if none is set
-  const defaultOrder = ['hero', 'projects', 'alsoShipped', 'background'];
+  const defaultOrder = ['hero', 'projects', 'alsoShipped', 'signals', 'background', 'contact'];
   
   // Ensure all custom sections are present in the list
   const baseOrder = initialOrder.length > 0 ? initialOrder : defaultOrder;
