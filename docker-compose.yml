@@ -1,9 +1,26 @@
 name: portfolio
 
+# Per-service memory caps + log rotation (optimize.md O4).
+#
+# Total ~960 MB reserved; the 1 GB free-tier box keeps the remaining ~40 MB
+# for OS + dockerd. If a single service leaks, only its slice is OOM-killed
+# instead of taking the whole box down.
+#
+# Container logs are bounded at 3 × 10 MB per service via the json-file
+# driver — without this a runaway logger can eat the disk over months.
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
 services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    mem_limit: 64m
+    <<: *logging
     environment:
       # Bare domain → automatic HTTPS; ":80" (default) → plain HTTP for local.
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
@@ -31,6 +48,8 @@ services:
       args:
         GIT_SHA: ${GIT_SHA:-dev}
     restart: unless-stopped
+    mem_limit: 384m
+    <<: *logging
     environment:
       DATA_DIR: /data/db
       PORTFOLIO_ENCRYPTION_KEY: ${PORTFOLIO_ENCRYPTION_KEY}
@@ -38,6 +57,9 @@ services:
       JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
       IP_HASH_SALT: ${IP_HASH_SALT}
       ORCHESTRATOR_URL: http://orchestrator:8100
+      # Cap V8 heap below the container's cgroup limit so it OOMs cleanly
+      # inside the slice instead of starving the host.
+      NODE_OPTIONS: --max-old-space-size=256
     volumes:
       - portfolio-data:/data/db
     depends_on:
@@ -56,6 +78,8 @@ services:
       context: .
       dockerfile: infra/orchestrator.Dockerfile
     restart: unless-stopped
+    mem_limit: 256m
+    <<: *logging
     environment:
       DATA_DIR: /data/db
       PORTFOLIO_ENCRYPTION_KEY: ${PORTFOLIO_ENCRYPTION_KEY}
@@ -68,6 +92,7 @@ services:
       # Master relay MCP is exposed at Caddy's /mcp-admin/*; the SSE transport
       # must advertise that external path for the client's message POSTs.
       MCP_MESSAGES_PATH: /mcp-admin/messages
+      NODE_OPTIONS: --max-old-space-size=160
     volumes:
       - portfolio-data:/data/db
     depends_on:
@@ -88,6 +113,8 @@ services:
       context: .
       dockerfile: infra/jobops/Dockerfile
     restart: unless-stopped
+    mem_limit: 256m
+    <<: *logging
     environment:
       JOBOPS_HOST: 0.0.0.0
       JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
