@@ -275,11 +275,13 @@ export const SETTING_KEYS = {
   jobopsSyncEnabled: 'mcp.jobops_sync_enabled',
   syncToJobOps: 'notify.sync_to_jobops',
   hirebridgeApiUrl: 'hirebridge.api_url',
-  hirebridgeClientId: 'hirebridge.client_id',
-  hirebridgeToken: 'hirebridge.token', // encrypted
+  hirebridgeClientId: 'hirebridge.client_id', // derived from admin email (sha256[:32]); persisted after a successful connect/poll, not operator-entered
+  hirebridgeToken: 'hirebridge.token', // encrypted — stores the HireBridge-issued intro_secret, used to verify X-HireBridge-Signature on /api/inbox
+  hirebridgeAccessToken: 'hirebridge.access_token', // encrypted — bearer for any future HireBridge API calls
+  hirebridgeNodeId: 'hirebridge.node_id', // HireBridge-assigned node identifier, returned with the device token
   hirebridgeConnected: 'hirebridge.connected',
-  hirebridgeProfileUrl: 'hirebridge.profile_url',
-  hirebridgeRequestId: 'hirebridge.request_id', // encrypted
+  hirebridgePendingAuth: 'hirebridge.pending_auth', // encrypted — {device_code, interval, expires_at, user_code, verification_uri_complete}
+  hirebridgeRequestId: 'hirebridge.request_id', // encrypted — kept for backward-compat reads, no longer written
   updatesRepo: 'updates.repo',
   updatesBranch: 'updates.branch',
   siteTwitterHandle: 'site.twitter_handle',
@@ -304,6 +306,8 @@ export const ENCRYPTED_SETTING_KEYS: ReadonlySet<string> = new Set<string>([
   SETTING_KEYS.googleClientSecret,
   SETTING_KEYS.mcpMasterKey,
   SETTING_KEYS.hirebridgeToken,
+  SETTING_KEYS.hirebridgeAccessToken,
+  SETTING_KEYS.hirebridgePendingAuth,
   SETTING_KEYS.hirebridgeRequestId,
 ]);
 

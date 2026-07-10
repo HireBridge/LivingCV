@@ -3,7 +3,7 @@
 The portfolio exposes a small, curated MCP surface for external recruiter-side
 AI agents (Claude.ai connectors, ChatGPT custom MCP, OpenAI's MCP adapter, your
 own agent, etc.). It is **always-open**, **read-only**, and **server-registered**
-to list exactly two tools.
+to list exactly the three public tools.
 
 > **The public endpoint lives at `{site.domain}/mcp/public`.** That is the
 > single URL you give to a client. The other jobops surface (`/mcp`) is bearer
@@ -14,24 +14,25 @@ read someone's career packet from your AI tool, jump to [§3](#3-quickstart).
 
 ## 1. What is exposed
 
-Two tools, both mutates=`false`, both publicSafe=`true`, both server-registered
+Three tools, all mutates=`false`, all publicSafe=`true`, all server-registered
 on the `jobops /mcp/public` mount (see `open_source/jobops/src/mcp/server.ts`):
 
 | Tool | Purpose |
 | --- | --- |
 | `get_career_packet` | Returns the active career_packet row (markdown + version + cv-hash). One row per site, edited via `jobops`'s chat or `jobops init` in the source repo. |
+| `get_career_packet_json` | Returns the compiled canonical career-packet.json — JSON Resume superset with Lightcast Open Skills IDs and verifiable provenance claims. Read-only. Safe to expose publicly. |
 | `get_story_bank_public` | Returns the STAR+R stories from `story_bank` — only `story_text`, `reflection`, and `competency_tags`. No joins to `jobs`/`companies`, no application context, no timestamps. Safe to surface to any external client. |
 
-Both are read-only. The orchestrator's recruiter chat goes through a *different*
-MCP mount (`/mcp` on the same jobops container) that is bearer-gated and
-inaccessible from the public internet; that is where the agent does its work
-on the operator's behalf. The public mount is the read-only curtain for
-external agents.
+All three are read-only. The orchestrator's recruiter chat goes through a
+*different* MCP mount (`/mcp` on the same jobops container) that is
+bearer-gated and inaccessible from the public internet; that is where the
+agent does its work on the operator's behalf. The public mount is the
+read-only curtain for external agents.
 
 ## 2. What is **NOT** exposed
 
 Everything else. The operator's jobops has ~50 tools; the public mount ships
-the two above and **only** the two. In particular the following are not
+the three above and **only** the three. In particular the following are not
 reachable from the public internet, ever, regardless of how a hostile prompt
 attempts to elicit them:
 
@@ -68,10 +69,11 @@ test run (live HTTP against the `/mcp/public` mount).
 1. Open Settings → Connectors → Add custom connector.
 2. Name it (e.g. "Portfolio career packet").
 3. Set the URL to `https://{site.domain}/mcp/public` (no token).
-4. Save. Claude will call `tools/list` and show the two tools.
-5. In a chat, Claude can now call `get_career_packet` to summarize the
-   candidate's background, or `get_story_bank_public` to surface STAR+R
-   stories scoped to a competency tag (`competency` argument).
+4. Save. Claude will call `tools/list` and show the three tools.
+5. In a chat, Claude can now call `get_career_packet` or
+   `get_career_packet_json` to summarize the candidate's background, or
+   `get_story_bank_public` to surface STAR+R stories scoped to a competency
+   tag (`competency` argument).
 
 ### ChatGPT (Plus/Pro/Edu with custom MCP)
 
@@ -94,6 +96,7 @@ $ curl -sS \
   "result": {
     "tools": [
       { "name": "get_career_packet", "title": "Get the active career packet", ... },
+      { "name": "get_career_packet_json", "title": "Compiled career-packet.json (Lightcast IDs, provenance)", ... },
       { "name": "get_story_bank_public", "title": "Public story bank (competencies only)", ... }
     ]
   },
@@ -154,10 +157,11 @@ existing `mountMcp` behavior — see `open_source/jobops/src/mcp/server.ts`).
 
 ### Pinned version
 
-`infra/jobops/Dockerfile` consumes `@mohith_das/jobops@^0.15.0`. The patched
-release that ships the public mount was tagged at `0.15.0`. Two build paths:
+`infra/jobops/Dockerfile` consumes `@mohith_das/jobops@^0.16.0`. The patched
+release that ships the public mount with `get_career_packet_json` was tagged
+at `0.16.0`. Two build paths:
 
-- **Default** — pull from npm: `npm install -g @mohith_das/jobops@^0.15.0`.
+- **Default** — pull from npm: `npm install -g @mohith_das/jobops@^0.16.0`.
 - **Local tarball** — if you have a fork or are mid-publish, run
   `./scripts/build-jobops-tarball.sh` from the portfolio root. The script
   rebuilds jobops and writes `infra/jobops/jobops-local.tgz`, which the
@@ -169,7 +173,7 @@ release that ships the public mount was tagged at `0.15.0`. Two build paths:
 proxies the full `/mcp` path tree to jobops. Two routes are served by
 jobops on that prefix:
 
-- `/mcp/public` — open, the 2 public tools.
+- `/mcp/public` — open, the 3 public tools.
 - `/mcp` — bearer-gated, the full 51-tool surface. Caddy does not add a
   token, so only clients that present their own bearer reach it (the
   orchestrator and the admin dashboard).
@@ -183,7 +187,7 @@ canonical path.
 After `docker compose up`:
 
 ```bash
-# 1. Should list exactly 2 tools, no auth required.
+# 1. Should list exactly 3 tools, no auth required.
 curl -sS -X POST -H 'content-type: application/json' \
     -H 'accept: application/json, text/event-stream' \
     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
@@ -217,8 +221,8 @@ between themselves and jobops.
 - **Tools/list returns 401** — you're hitting `/mcp` (the auth-gated
   mount), not `/mcp/public`. Caddy is correct; fix the client URL.
 - **Tools/list returns 0 tools** — you may be on a jobops version earlier
-  than 0.15.0. Update the image (`infra/jobops/Dockerfile` pins
-  `^0.15.0`) or rebuild the local tarball.
+  than 0.16.0. Update the image (`infra/jobops/Dockerfile` pins
+  `^0.16.0`) or rebuild the local tarball.
 - **Empty `competency_tags` on stories** — the operator hasn't seeded
   stories. Have them run `jobops init` or add a few via the dashboard.
 - **Cloudflare 404 / no-routes-yet** — make sure Caddy is running and

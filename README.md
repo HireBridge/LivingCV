@@ -11,7 +11,7 @@ A self-hosted, open-source portfolio platform that doubles as an **AI recruiter 
 - **Drag-and-drop section ordering** and a **live theme editor** (colors, typography, plus a JSON fallback for fine-grained CSS overrides).
 - **A recruiter chat concierge** — a text agent powered by a self-hosted [jobops](https://www.npmjs.com/package/@mohith_das/jobops) instance plus a portfolio-side orchestrator. Multi-provider LLM (**Anthropic, OpenAI, Gemini, DeepSeek** — bring your own key), tool use over MCP, a work-email gate, per-IP/per-session/daily limits, transcripts, and an optional lead webhook.
 - **Optional web search** — when a search provider (Tavily) is configured, the agent can search the web to answer with fresh context. Gated to verified recruiters only.
-- **A public MCP endpoint** at `{site.domain}/mcp/public` exposing exactly two read-only tools (`get_career_packet`, `get_story_bank_public`) to external MCP clients (Claude.ai, ChatGPT, anything MCP). See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
+- **A public MCP endpoint** at `{site.domain}/mcp/public` exposing exactly three read-only tools (`get_career_packet`, `get_career_packet_json`, `get_story_bank_public`) to external MCP clients (Claude.ai, ChatGPT, anything MCP). See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
 - **A full SEO layer** — dynamic per-domain metadata, OpenGraph/Twitter cards, generated OG images, JSON-LD (Person/WebSite/Article/BreadcrumbList), canonical URLs, `sitemap.xml`, `robots.txt`, a blog RSS feed, a web manifest, Google Analytics + search-engine verification hooks, and a machine-readable [`/llms.txt`](https://llmstxt.org).
 - **Optional integrations** — Telegram and Google/email settings, plus an operator-only **master relay MCP** (`/mcp-admin`) for privileged access to your own data.
 - **Cookieless analytics** (server-side path × day counter), **admin system logs**, a **leads CSV export**, and a **backup/restore** pair.
@@ -35,8 +35,8 @@ A self-hosted, open-source portfolio platform that doubles as an **AI recruiter 
         ▼
    portfolio.db   ◄── packages/db (better-sqlite3+WAL) · crypto (AES-256-GCM) · shared (types)
 
-   orchestrator ──tools/list, tools/call──► jobops /mcp/public   (recruiter tier, no auth, 2 tools)
-   master relay ──bearer──────────────────► jobops /mcp          (operator tier, full toolset)
+orchestrator ──tools/list, tools/call──► jobops /mcp/public   (recruiter tier, no auth, 3 tools)
+    master relay ──bearer──────────────────► jobops /mcp          (operator tier, full toolset)
 ```
 
 - **web** (Next.js App Router) owns `portfolio.db` and serves the public site, admin console, and REST API.
@@ -171,11 +171,12 @@ DATA_DIR=$PWD/../../data SESSION_SECRET=any PORTFOLIO_ENCRYPTION_KEY=any \
 
 ## Public MCP surface
 
-`{site.domain}/mcp/public` is the canonical recruiter-side AI endpoint — open, unauthenticated, POST-only. Exactly two read-only tools:
+`{site.domain}/mcp/public` is the canonical recruiter-side AI endpoint — open, unauthenticated, POST-only. Exactly three read-only tools:
 
 | Tool | Purpose |
 | --- | --- |
 | `get_career_packet` | Returns the operator's `career_packet` (markdown + version + cv-hash). |
+| `get_career_packet_json` | Returns the compiled canonical `career-packet.json` — JSON Resume superset with Lightcast Open Skills IDs and verifiable provenance claims. |
 | `get_story_bank_public` | STAR+R stories from `story_bank` — only `story_text`, `reflection`, `competency_tags`. No joins, no application context, no timestamps. |
 
 Everything else (`update_*`, `delete_*`, `import_*`, `enrich_company`, `negotiation_brief`, `find_warm_intros`, …) lives behind the bearer-gated `/mcp` and is reachable only from the orchestrator and the operator's own tooling. The guarantee is **server-side tool registration**, not prompting: a hostile prompt that tricks the LLM into emitting a private tool name still fails, because that tool doesn't exist on the public mount. See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
@@ -183,63 +184,65 @@ Everything else (`update_*`, `delete_*`, `import_*`, `enrich_company`, `negotiat
 ## HireBridge federation
 
 HireBridge is a federated talent network that makes your portfolio discoverable to
-third-party recruiters. When connected, your site can receive and respond to
-introduction requests from the HireBridge network.
+third-party recruiters. When connected, your site can receive signed introduction
+requests from HireBridge's outbox and have them appear in your jobops contacts.
 
-### Connecting
+### Connecting (device auth)
 
-1. Set your **Admin email** in Admin > Settings > General (the same email you
-   used during setup).
+1. Set your **Admin email** in Admin > Settings > General.
 2. Go to Admin > Settings > **MCP** and scroll to the HireBridge section.
-3. Enter the **HireBridge API URL** (the HireBridge instance you want to join)
-   and optionally a **Client ID** (auto-generated if left blank).
-4. Click **Connect to HireBridge**.
+3. Enter the **HireBridge API URL** (the HireBridge instance you want to join).
+4. Click **Connect to HireBridge**. The page calls HireBridge's
+   `POST /auth/device` (announcing this site) and `POST /auth/request` (which
+   emails the admin a magic link). When you click the magic link on
+   HireBridge's side, the page polls `POST /api/hirebridge/poll` (a wrapper
+   around `POST /auth/token`) until it succeeds, then persists the
+   `access_token`, `intro_secret` (= `hirebridge.token`), `node_id`, and the
+   derived `client_id`.
 
-Under the hood:
-- The connect endpoint (`POST /api/hirebridge/connect`) generates a `request_id`
-  and an HMAC-SHA256 token signed with your Client ID as the secret. The pending
-  request is stored (encrypted) in the database.
-- HireBridge sends a **magic link** to your admin email. Clicking the link hits
-  `GET /api/hirebridge/callback?request_id=…&token=…`, which validates the
-  request, generates a persistent 256-bit federation token, and marks the
-  connection as active.
-- In dev mode, the magic link URL is returned in the API response so you can
-  click through directly without a real email flow.
-
-Once connected, your portfolio appears on the HireBridge federated profile at
-`{apiUrl}/profile/{clientId}`.
+The **Client ID** is **derived**, not entered: it is the first 32 hex chars of
+`sha256(lowercase(trim(admin_email)))` — identical to what jobops derives from
+its HireBridge email. **The admin email must match across this site and jobops**
+for introductions to land in your inbox. jobops is being fixed in parallel;
+see `plans_fixes_federation_interop.md`.
 
 ### Receiving introductions
 
 The inbox endpoint at `POST /api/inbox` is a public, server-to-server endpoint
 that receives introduction requests from HireBridge. Each request carries an
 `X-HireBridge-Signature` header — an HMAC-SHA256 hex digest of the JSON body,
-signed with the federation token established during connection.
+signed with the per-node `intro_secret` HireBridge returned at token time. We
+store that secret in `hirebridge.token`, so the existing verification code
+works unchanged.
 
 When a valid introduction arrives:
 - The signature is verified with timing-safe comparison.
-- The `candidate_id` in the payload is checked against your Client ID to prevent
-  cross-portfolio delivery.
+- The `candidate_id` in the payload is checked against the derived Client ID
+  to prevent cross-portfolio delivery.
 - The recruiter's identity is pushed to your jobops instance via `add_contacts`
   (best-effort — inbox delivery succeeds even if the local sync fails).
 
 The inbox is **not gated by the admin session** — it is protected solely by the
 HMAC shared secret, so no login state needs to exist between HireBridge and your
-instance.
+instance. **The site must be publicly reachable** for HireBridge to POST to
+`/api/inbox`; behind a private LAN, deliveries will silently fail.
 
-### Discovery
+### Discovery (forward-looking)
 
 Your portfolio self-describes at `GET /.well-known/portfolio`, which returns the
 domain, site title, all public endpoints (`/mcp/public`, `/career-packet.json`,
-`/resume`, etc.), and the current HireBridge connection status. This is how
-HireBridge discovers and indexes your portfolio.
+`/resume`, etc.), and the current HireBridge connection flag. HireBridge does
+not yet consume this document — the device-auth flow above and the
+outbox-signed delivery are the real paths. Treat `/.well-known/portfolio` as
+forward-looking discovery metadata.
 
 ### Disconnecting
 
 Click **Disconnect** in the MCP settings tab, which clears all HireBridge
-settings (token, profile URL, connection flag, and any pending request). The
-operation is immediate — there is no handshake with HireBridge to revoke, so the
-remote side may retain stale state until its own TTL expires.
+settings (`access_token`, `token`/intro_secret, `node_id`, derived `client_id`,
+connection flag, and any pending device-auth state). The operation is immediate
+locally — there is no handshake with HireBridge to revoke, so the remote side
+may retain stale state until its own TTL expires.
 
 ## SEO
 

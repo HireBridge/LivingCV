@@ -67,9 +67,10 @@ const GROUPS: Record<string, { keys: string[]; checkboxKeys?: string[] }> = {
     keys: [],
     checkboxKeys: [SETTING_KEYS.jobopsSyncEnabled],
   },
-  // HireBridge federation settings (API URL + client ID).
+  // HireBridge federation settings (API URL only). The client_id is derived
+  // from the admin email at connect time — it is not operator-editable.
   hirebridge: {
-    keys: [SETTING_KEYS.hirebridgeApiUrl, SETTING_KEYS.hirebridgeClientId],
+    keys: [SETTING_KEYS.hirebridgeApiUrl],
     checkboxKeys: [],
   },
   updates: {

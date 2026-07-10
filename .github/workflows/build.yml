@@ -24,6 +24,16 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+  # Fired by the jobops repo's publish workflow right after `npm publish`
+  # succeeds, so a new jobops release rolls onto the box within minutes.
+  repository_dispatch:
+    types: [jobops-release]
+  # Daily fallback: even without the cross-repo dispatch (e.g. the PAT secret
+  # is missing or the dispatch failed), the jobops image re-resolves `latest`
+  # from npm once a day. If the version is unchanged the resolved build-arg is
+  # identical, the install layer cache hits, and the pushed image is a no-op.
+  schedule:
+    - cron: "17 6 * * *"
 
 permissions:
   contents: read
@@ -31,7 +41,7 @@ permissions:
 
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -64,6 +74,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Resolve the concrete latest jobops version so the Docker install layer
+      # is cache-busted exactly when a new version ships (Dockerfile ARG
+      # JOBOPS_VERSION). Passed to every matrix build; web/orchestrator don't
+      # declare the ARG and simply ignore it (buildx warns, harmless).
+      - name: Resolve latest jobops version
+        id: jobops
+        run: |
+          V=$(npm view @mohith_das/jobops version)
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "latest @mohith_das/jobops = $V"
+
       - name: Build and push ${{ matrix.name }}
         uses: docker/build-push-action@v6
         with:
@@ -78,6 +99,9 @@ jobs:
             org.opencontainers.image.title=livingcv-${{ matrix.name }}
             org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/LivingCV
             org.opencontainers.image.revision=${{ github.sha }}
-          build-args: ${{ matrix.build_args }}
+            dev.livingcv.jobops-version=${{ steps.jobops.outputs.version }}
+          build-args: |
+            ${{ matrix.build_args }}
+            JOBOPS_VERSION=${{ steps.jobops.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -49,11 +49,15 @@ jobs:
             LOCAL=$(git rev-parse @)
             REMOTE=$(git rev-parse origin/main)
             if [ "$LOCAL" = "$REMOTE" ]; then
-              echo "Already up to date ($(git rev-parse --short @))."
-              exit 0
+              # No repo changes — but do NOT exit: the images may still be
+              # newer (e.g. the jobops image was rebuilt for a new npm
+              # release with no LivingCV commit). `docker compose pull` is
+              # cheap and `up -d` is a no-op when digests are unchanged.
+              echo "Repo already up to date ($(git rev-parse --short @)); checking images."
+            else
+              echo "Applying updates..."
+              git pull --ff-only origin main
             fi
-            echo "Applying updates..."
-            git pull --ff-only origin main
 
             echo "=== Pulling pre-built images + restarting ==="
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin

@@ -5,9 +5,16 @@ import { SETTING_KEYS } from '@livingcv/shared';
 import { verifyHireBridgeSignature } from '@/lib/hirebridge-signature';
 import { getMcpClient } from '@/lib/mcp';
 
-// The shared-secret HMAC model below is a stub pending a real HireBridge spec.
-// In production, signature verification should use the protocol documented by
-// the HireBridge federation contract (key rotation, replay protection, etc.).
+// Canonical Federation Contract v1 (see plans_fixes_federation_interop.md):
+// HireBridge delivers introductions here after the operator has approved the
+// device-auth flow at /api/hirebridge/{connect,poll}. Each request body is
+// signed with HMAC-SHA256 using the per-node intro_secret HireBridge returned
+// at token time — which we store at SETTING_KEYS.hirebridgeToken (kept as
+// "token" so the existing verification code works unchanged).
+//
+// The hirebridge.client_id persisted at connect time is the canonical
+// candidate_id (first 32 hex of sha256(lowercase(trim(admin_email)))) — it
+// must match payload.candidate_id to prevent cross-portfolio delivery.
 
 // Intentionally public and protected by HMAC signature verification only.
 // Not gated by admin session — this is a server-to-server endpoint.

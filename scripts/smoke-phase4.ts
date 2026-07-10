@@ -10,9 +10,10 @@
 //
 // Walks the end-to-end shape of the public MCP mount from the recruiter
 // side: tools/list, tools/call get_career_packet, tools/call
-// get_story_bank_public, the gated /mcp response without a token, the 405
-// on GET, and the prompt-injection impossibility (no update_* route is
-// reachable on /mcp/public). Mirrors docs/PUBLIC_MCP.md exactly.
+// get_career_packet_json, tools/call get_story_bank_public, the gated /mcp
+// response without a token, the 405 on GET, and the prompt-injection
+// impossibility (no update_* route is reachable on /mcp/public). Mirrors
+// docs/PUBLIC_MCP.md exactly.
 //
 // CI status: this smoke is a runnable script, NOT a vitest case. The vitest
 // suite covers the same contract statically via
@@ -114,13 +115,14 @@ async function main() {
   await waitForHealth(`http://127.0.0.1:${PORT}/healthz`);
   console.log(`[smoke] jobops up at :${PORT}`);
 
-  // 1. /mcp/public lists exactly the two public tools.
+  // 1. /mcp/public lists exactly the three public read-only tools.
   const list = await postMcp('/mcp/public', { jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} });
   if (list.status !== 200) throw new Error(`/mcp/public status ${list.status}`);
   const listJson = (await list.json()) as { result?: { tools?: Array<{ name: string }> } };
   const names = (listJson.result?.tools ?? []).map((t) => t.name).sort();
-  if (names.join(',') !== 'get_career_packet,get_story_bank_public') {
-    throw new Error(`/mcp/public listed: ${names.join(',')}`);
+  const expected = ['get_career_packet', 'get_career_packet_json', 'get_story_bank_public'].sort();
+  if (names.join(',') !== expected.join(',')) {
+    throw new Error(`/mcp/public listed: ${names.join(',')} (expected ${expected.join(',')})`);
   }
   console.log(`[smoke] PASS: /mcp/public lists exactly ${names.join(', ')}`);
 
@@ -137,9 +139,9 @@ async function main() {
   const fullJson = (await full.json()) as { result?: { tools?: Array<{ name: string }> } };
   const fullNames = (fullJson.result?.tools ?? []).map((t) => t.name);
   if (!fullNames.includes('get_career_packet') || !fullNames.includes('get_story_bank_public')) {
-    throw new Error('/mcp must contain the two public tools as a strict subset');
+    throw new Error('/mcp must contain the public tools as a strict subset');
   }
-  if (fullNames.length < 3) throw new Error(`/mcp must list more than just the 2 public tools; got ${fullNames.length}`);
+  if (fullNames.length < 3) throw new Error(`/mcp must list more than just the 3 public tools; got ${fullNames.length}`);
   console.log(`[smoke] PASS: /mcp with bearer lists ${fullNames.length} tools (full surface)`);
 
   // 4. GET on /mcp/public is 405 (POST-only MCP transport).

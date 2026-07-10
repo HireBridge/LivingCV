@@ -11,6 +11,9 @@ export async function GET() {
   const title = s['site.title'] || 'Portfolio';
   const hirebridgeConnected = s['hirebridge.connected'] === '1';
 
+  // The .well-known/portfolio document is forward-looking discovery metadata.
+  // HireBridge itself does not yet consume this; the inbox endpoint remains
+  // the authoritative path for introductions.
   const doc = {
     version: '1.0',
     domain,
@@ -27,7 +30,6 @@ export async function GET() {
     },
     hirebridge: {
       connected: hirebridgeConnected,
-      ...(hirebridgeConnected ? { profile_url: s['hirebridge.profile_url'] || null } : {}),
     },
   };
 

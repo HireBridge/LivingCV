@@ -1,15 +1,21 @@
-# Build a jobops image that consumes the patched v0.15+ release. Two paths:
+# Build a jobops image that tracks the LATEST published release. Two paths:
 #   1. `infra/jobops/jobops-local.tgz` is in the build context (produced by
 #      `scripts/build-jobops-tarball.sh`) → install that.
-#   2. Otherwise pull `@mohith_das/jobops@^0.15.0` from npm (operator must have
-#      published the patched version, or be on a registry that has it).
+#   2. Otherwise install `@mohith_das/jobops@${JOBOPS_VERSION}` from npm.
+#      JOBOPS_VERSION defaults to `latest`; CI (build.yml) resolves the
+#      concrete latest version at build time and passes it in, so the install
+#      layer's cache is busted exactly when a new jobops version is published
+#      and the image is reproducible from its build args.
 #
 # Phase 4 §13 acceptance: the public MCP mount at /mcp/public must list exactly
-# the two public tools (`get_career_packet`, `get_story_bank_public`). Both
-# paths install the same patched code; the only difference is origin.
+# the three public read-only tools (`get_career_packet`, `get_career_packet_json`,
+# `get_story_bank_public`). Both paths install the same code; the only
+# difference is origin.
 
 FROM node:20-bookworm-slim AS deps
 WORKDIR /app
+
+ARG JOBOPS_VERSION=latest
 
 # Bring only the build manifest (and the optional local tarball) so Docker
 # caches the install step when only source changes.
@@ -18,7 +24,7 @@ COPY jobops-local.tgz* ./
 RUN if [ -f jobops-local.tgz ]; then \
       npm install -g ./jobops-local.tgz; \
     else \
-      npm install -g @mohith_das/jobops@^0.15.0; \
+      npm install -g "@mohith_das/jobops@${JOBOPS_VERSION}"; \
     fi
 
 FROM deps AS run

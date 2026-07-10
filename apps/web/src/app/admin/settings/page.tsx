@@ -351,8 +351,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <HireBridgeConnect
             adminEmail={all['admin.email'] ?? ''}
             connected={(all['hirebridge.connected'] ?? '0') === '1'}
-            profileUrl={all['hirebridge.profile_url'] ?? null}
             apiUrl={all['hirebridge.api_url'] ?? ''}
+            nodeId={all['hirebridge.node_id'] ?? ''}
             clientId={all['hirebridge.client_id'] ?? ''}
           />
         </section>

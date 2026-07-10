@@ -1,4 +1,5 @@
 export { FREE_EMAIL_DOMAINS, isDomainDenied } from './free-email-domains.js';
+export { deriveCandidateId } from './candidate-id.js';
 export type {
   LinkItem,
   ProjectBody,
