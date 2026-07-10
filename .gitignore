@@ -19,6 +19,7 @@ __pycache__/
 *.pyc
 apps/voice/src/voice_service.egg-info/
 infra/jobops/jobops-local.tgz
+apps/web/public/uploads/
 
 # Private / personal reference material — never commit to the public repo.
 # (A resume PDF, a Claude conversation, and internal planning docs were
