@@ -20,7 +20,8 @@ h1.article-title{ font-family:'Space Grotesk', sans-serif; font-size:clamp(2.5re
 .prose h2{ font-family:'Space Grotesk', sans-serif; font-size:1.8rem; font-weight:700; letter-spacing:-0.01em; margin:48px 0 16px; color:var(--ink); }
 .prose h3{ font-family:'Space Grotesk', sans-serif; font-size:1.4rem; font-weight:600; margin:32px 0 12px; color:var(--ink); }
 .prose p{ margin:0 0 24px; }
-.prose img, .prose video { max-width: 100%; border-radius: 8px; margin: 32px 0; border: 1px solid var(--rule); }
+.prose img, .prose video, .prose iframe { max-width: 100%; width: 100%; border-radius: 8px; margin: 32px 0; border: 1px solid var(--rule); }
+.prose iframe { aspect-ratio: 16/9; }
 .prose code{ font-family:'JetBrains Mono', monospace; font-size:0.85em; background:var(--paper-deep); padding:3px 6px; border-radius:4px; color: var(--rust); }
 .prose pre{ background: #111; color: #eee; border-radius:8px; padding:20px; overflow-x:auto; margin: 32px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .prose pre code{ background:none; border:none; padding:0; color: inherit; font-size: 0.9em; }

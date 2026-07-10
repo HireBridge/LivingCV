@@ -73,16 +73,16 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--signal); outline-
 /* NAV */
 header.nav{
   position:sticky; top:0; z-index:20;
-  background:rgba(242,240,234,0.92);
+  background:color-mix(in srgb, var(--paper) 92%, transparent);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--rule);
 }
 .nav-inner{
   max-width:var(--max); margin:0 auto; padding:16px 28px;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
 }
 .nav-brand{ font-weight:600; font-size:1.05rem; color:var(--ink); text-decoration:none; letter-spacing:-0.01em; }
-.nav-links{ display:flex; gap:24px; list-style:none; margin:0; padding:0; }
+.nav-links{ display:flex; gap:24px; list-style:none; margin:0; padding:0; flex-wrap:wrap; align-items:center; }
 .nav-links a{ color:var(--ink-soft); font-size:0.92rem; font-weight:500; text-decoration:none; }
 .nav-links a:hover{ color:var(--signal); }
 .nav-blog-btn {
@@ -221,7 +221,7 @@ h2.section-title{
 .project-body p{ font-size:0.94rem; margin:0; color:var(--ink); }
 
 .install-row{
-  margin-top:22px; background:#EDEAE0; border:1px solid var(--rule); border-radius:5px;
+  margin-top:22px; background:var(--paper-deep); border:1px solid var(--rule); border-radius:5px;
   padding:11px 16px; display:flex; align-items:center; gap:10px; overflow-x:auto;
 }
 .install-row .prompt{ color:var(--ink-soft); user-select:none; }
@@ -262,6 +262,10 @@ footer{ padding:52px 0 70px; }
 .reveal{ opacity:0; transform:translateY(14px); transition:opacity 0.6s ease, transform 0.6s ease; }
 .reveal.is-visible{ opacity:1; transform:translateY(0); }
 
+/* custom sections */
+.custom-section-content img, .custom-section-content video, .custom-section-content iframe { max-width:100%; width:100%; height:auto; border-radius:6px; margin:16px 0; border: 1px solid var(--rule); }
+.custom-section-content iframe { aspect-ratio: 16/9; }
+
 /* signals section */
 .signals-section{  }
 .signal-group{ margin-bottom:24px; }
@@ -295,10 +299,15 @@ export function themeOverrides(theme: ThemeProps): string {
   const lines: string[] = [];
   (Object.keys(THEME_VAR) as (keyof ThemeProps)[]).forEach((key) => {
     const value = theme[key];
-    if (value) {
+    if (value && key !== 'customCss') {
       lines.push(`  ${THEME_VAR[key]}: ${value};`);
     }
   });
-  if (lines.length === 0) return '';
-  return `:root{\n${lines.join('\n')}\n}`;
+  
+  let rootVars = '';
+  if (lines.length > 0) {
+    rootVars = `:root{\n${lines.join('\n')}\n}`;
+  }
+  
+  return rootVars + (theme.customCss ? `\n${theme.customCss}` : '');
 }

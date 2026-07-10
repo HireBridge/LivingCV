@@ -7,6 +7,7 @@ import { Background } from './Background';
 import { Footer } from './Footer';
 import { Signals } from './Signals';
 import { Contact } from './Contact';
+import { RevealOnScroll } from './RevealOnScroll';
 
 // ── Section metadata ─────────────────────────────────────────────────────────
 // Hard-coded defaults for every built-in section. Admin-overrides from
@@ -63,7 +64,13 @@ export function ClassicTemplate(props: TemplateProps) {
       const custom = props.customSections?.find(c => c.id === key);
       if (!custom) return null;
       return (
-        <section key={key} id={key} dangerouslySetInnerHTML={{ __html: custom.content }} />
+        <section key={key} id={key}>
+          {custom.kicker && <p className="section-kicker">{custom.kicker}</p>}
+          {custom.title && !custom.kicker && <h2 className="section-title">{custom.title}</h2>}
+          <RevealOnScroll>
+            <div className="custom-section-content" dangerouslySetInnerHTML={{ __html: custom.content }} />
+          </RevealOnScroll>
+        </section>
       );
     }
 
@@ -140,14 +147,15 @@ export function ClassicTemplate(props: TemplateProps) {
   const navLinks: { href: string; label: string }[] = [];
   for (const key of sectionOrder) {
     if (hiddenSections.includes(key)) continue;
-    if (!NAV_ELIGIBLE.has(key)) continue;
-
-    // Custom sections with a title are also nav-eligible
+    // Custom sections with a title or navLabel are also nav-eligible
     if (key.startsWith('custom_')) {
       const custom = props.customSections?.find(c => c.id === key);
-      if (custom?.title) navLinks.push({ href: `#${key}`, label: custom.title });
+      const label = custom?.navLabel || custom?.title;
+      if (label) navLinks.push({ href: `#${key}`, label });
       continue;
     }
+
+    if (!NAV_ELIGIBLE.has(key)) continue;
 
     const lbl = labelFor(key);
     navLinks.push({ href: `#${lbl.id}`, label: lbl.navLabel });

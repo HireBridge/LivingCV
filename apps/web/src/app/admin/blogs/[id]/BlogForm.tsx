@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import 'easymde/dist/easymde.min.css';
+import { ImageUploader } from '../../components/ImageUploader';
 
 // Dynamically import SimpleMdeReact so it only loads on the client side
 const SimpleMdeReact = dynamic(() => import('react-simplemde-editor'), { ssr: false });
@@ -100,6 +101,7 @@ export default function BlogForm({ blog }: { blog: BlogData }) {
       
       <div className="row">
         <label>Content</label>
+        <ImageUploader format="markdown" />
         <input type="hidden" name="body_markdown" value={markdown} />
         <div style={{ backgroundColor: 'white', borderRadius: '4px' }}>
           <SimpleMdeReact 

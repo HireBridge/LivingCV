@@ -4,9 +4,12 @@ import { useState } from 'react';
 type CustomSection = {
   id: string;
   title: string;
+  kicker?: string;
+  navLabel?: string;
   content: string;
 };
 
+import { ImageUploader } from '../components/ImageUploader';
 export function CustomSectionsTab({ slug, initialSections }: { slug: string; initialSections: CustomSection[] }) {
   const [sections, setSections] = useState<CustomSection[]>(initialSections);
 
@@ -31,6 +34,8 @@ export function CustomSectionsTab({ slug, initialSections }: { slug: string; ini
         </p>
         <button type="button" onClick={addSection}>+ Add Section</button>
       </div>
+
+      <ImageUploader />
 
       <form method="post" action="/api/admin/content/save">
         <input type="hidden" name="template_slug" value={slug} />
@@ -57,6 +62,22 @@ export function CustomSectionsTab({ slug, initialSections }: { slug: string; ini
                     onChange={e => updateSection(s.id, 'title', e.target.value)} 
                     required
                   />
+                </div>
+                <div className="row" style={{ display: 'flex', gap: 16 }}>
+                  <div style={{ flex: 1 }}>
+                    <label>Kicker (optional eyebrow text)</label>
+                    <input 
+                      value={s.kicker || ''} 
+                      onChange={e => updateSection(s.id, 'kicker', e.target.value)} 
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label>Nav Label (overrides Title in nav)</label>
+                    <input 
+                      value={s.navLabel || ''} 
+                      onChange={e => updateSection(s.id, 'navLabel', e.target.value)} 
+                    />
+                  </div>
                 </div>
                 <div className="row">
                   <label>Content (HTML/Markdown)</label>

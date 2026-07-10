@@ -129,6 +129,7 @@ export const THEME_KEYS = [
 export type ThemeKey = (typeof THEME_KEYS)[number];
 
 export const ThemeProps = z.object({
+  preset: z.string().optional(),
   paper: z.string().optional(),
   paperDeep: z.string().optional(),
   ink: z.string().optional(),
@@ -142,6 +143,7 @@ export const ThemeProps = z.object({
   fontHeading: z.string().optional(),
   fontMono: z.string().optional(),
   fontSizeBase: z.string().optional(),
+  customCss: z.string().optional(),
 });
 export type ThemeProps = z.infer<typeof ThemeProps>;
 
@@ -170,6 +172,8 @@ export type SignalsProps = z.infer<typeof SignalsProps>;
 export const CustomSectionProps = z.object({
   id: z.string(),
   title: z.string(),
+  kicker: z.string().optional(),
+  navLabel: z.string().optional(),
   content: z.string(),
 });
 export type CustomSectionProps = z.infer<typeof CustomSectionProps>;

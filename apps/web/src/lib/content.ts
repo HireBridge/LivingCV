@@ -283,6 +283,13 @@ export function buildTemplateProps(db: Db): TemplateProps {
 
   const hiddenSections = getSection<string[]>(db, slug, 'hidden', []);
   const customSections = getSection<{ id: string, title: string, content: string }[]>(db, slug, 'custom_sections', []);
+  
+  // Append any custom sections that haven't been added to the order yet
+  const missingCustoms = customSections.map(c => c.id).filter(id => !sectionOrder.includes(id));
+  if (missingCustoms.length > 0) {
+    sectionOrder.push(...missingCustoms);
+  }
+
   const sectionLabels = getSection<SectionLabels>(db, slug, 'section_labels', {});
 
   const projects = listProjects(db);
