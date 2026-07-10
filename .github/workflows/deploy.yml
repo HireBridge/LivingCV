@@ -14,6 +14,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# packages:read lets the job's GITHUB_TOKEN pull this repo's GHCR images; the
+# token is forwarded to the box for a docker login scoped to this deploy (it
+# expires when the job ends), so no long-lived registry PAT lives on the box.
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
@@ -22,10 +29,14 @@ jobs:
     steps:
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.repository_owner }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: GHCR_TOKEN,GHCR_USER
           # Pull + up only — image builds happen in build.yml on GHCR.
           # The 30-minute window was the symptom of building next on a 1 GB
           # box; with pre-built images the whole deploy finishes in ~2 min.
@@ -45,7 +56,9 @@ jobs:
             git pull --ff-only origin main
 
             echo "=== Pulling pre-built images + restarting ==="
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker compose pull
+            docker logout ghcr.io
             docker compose up -d --wait
 
             docker compose restart caddy
