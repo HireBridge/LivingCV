@@ -309,5 +309,5 @@ export function themeOverrides(theme: ThemeProps): string {
     rootVars = `:root{\n${lines.join('\n')}\n}`;
   }
   
-  return rootVars + (theme.customCss ? `\n${theme.customCss}` : '');
+  return rootVars + (theme.customCss ? `\n${theme.customCss.replace(/<\//g, '<\\/')}` : '');
 }
