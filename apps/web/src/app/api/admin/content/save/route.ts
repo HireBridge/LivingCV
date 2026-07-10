@@ -136,7 +136,7 @@ export async function POST(request: Request) {
     }
     content = parsed.value;
   } else if (section === 'section_labels') {
-    const labels: Record<string, any> = {};
+    const labels: Record<string, { kicker?: string; title?: string; navLabel?: string }> = {};
     const SEC_IDS = ['projects', 'alsoShipped', 'background', 'signals', 'contact'];
     for (const id of SEC_IDS) {
       const kicker = String(form.get(`${id}_kicker`) || '').trim();

@@ -26,7 +26,7 @@ const PRESETS = [
   { id: 'solar', name: 'Solar', description: 'Warm amber and orange gradients for a cozy feel.' }
 ];
 
-const PRESET_DATA: Record<string, any> = {
+const PRESET_DATA: Record<string, Record<string, string>> = {
   classic: {
     preset: 'classic',
     paper: '#F2F0EA',
@@ -97,7 +97,7 @@ header.nav { background: rgba(7, 9, 14, 0.92) !important; border-bottom-color: r
 };
 
 export function ThemeTab({ slug, initialTheme }: { slug: string, initialTheme: string }) {
-  const [themeObj, setThemeObj] = useState<Record<string, string>>(() => {
+  const [themeObj, setThemeObj] = useState<Record<string, string | undefined>>(() => {
     try { return JSON.parse(initialTheme || '{}'); } catch { return {}; }
   });
   const [jsonText, setJsonText] = useState(initialTheme || '{}');
@@ -112,7 +112,7 @@ export function ThemeTab({ slug, initialTheme }: { slug: string, initialTheme: s
 
   const handleCssChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    const newObj = { ...themeObj, customCss: value, preset: 'custom' };
+    const newObj: Record<string, string | undefined> = { ...themeObj, customCss: value, preset: 'custom' };
     if (!value) delete newObj.customCss;
     setThemeObj(newObj);
     setJsonText(JSON.stringify(newObj, null, 2));

@@ -16,11 +16,7 @@ export async function POST(request: Request) {
 
     // Create uploads directory if it doesn't exist
     const uploadDir = join(process.cwd(), 'public', 'uploads');
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // Ignore directory exists error
-    }
+    await mkdir(uploadDir, { recursive: true });
 
     // Clean filename
     const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;

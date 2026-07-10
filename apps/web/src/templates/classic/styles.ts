@@ -1,4 +1,4 @@
-import type { ThemeProps } from '@livingcv/shared';
+import type { ThemeProps, ThemeKey } from '@livingcv/shared';
 
 // CSS ported from docs/index.html. The palette is exposed as CSS custom
 // properties so the admin can override any token at runtime (§9) via a second
@@ -7,7 +7,7 @@ import type { ThemeProps } from '@livingcv/shared';
 // Map our camelCase theme keys to the CSS custom-property names the template
 // uses. Keeping this mapping in one place lets a future template reuse the
 // contract without coupling to these exact names.
-const THEME_VAR: Record<keyof ThemeProps, string> = {
+const THEME_VAR: Record<ThemeKey, string> = {
   paper: '--paper',
   paperDeep: '--paper-deep',
   ink: '--ink',
@@ -297,9 +297,9 @@ footer{ padding:52px 0 70px; }
 // non-empty tokens are emitted, so partial overrides don't wipe defaults.
 export function themeOverrides(theme: ThemeProps): string {
   const lines: string[] = [];
-  (Object.keys(THEME_VAR) as (keyof ThemeProps)[]).forEach((key) => {
+  (Object.keys(THEME_VAR) as ThemeKey[]).forEach((key) => {
     const value = theme[key];
-    if (value && key !== 'customCss') {
+    if (value) {
       lines.push(`  ${THEME_VAR[key]}: ${value};`);
     }
   });

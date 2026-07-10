@@ -10,7 +10,8 @@ export function ImageUploader({ format = 'html' }: { format?: 'html' | 'markdown
     setUploading(true);
     setUploadedUrl(null);
     
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
 
@@ -25,7 +26,7 @@ export function ImageUploader({ format = 'html' }: { format?: 'html' | 'markdown
       } else {
         alert('Upload failed: ' + data.error);
       }
-    } catch (err) {
+    } catch {
       alert('Upload failed.');
     } finally {
       setUploading(false);
