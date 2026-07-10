@@ -12,23 +12,29 @@
 // gated by an operator key (see masterMcp.ts).
 
 import express from 'express';
-import fs from 'node:fs';
 
-// (a) route all console/debug output to stderr, never stdout
-console.log = console.error;
-console.info = console.error;
-console.debug = console.error;
-console.warn = console.error;
-
-// (b) add a global uncaughtException / unhandledRejection handler
-function fatalError(err: Error | unknown, type: string) {
-  const msg = `[${new Date().toISOString()}] FATAL ${type}: ${err instanceof Error ? err.stack : String(err)}\n`;
-  fs.appendFileSync('crash.log', msg);
+// Global crash handlers.
+//
+// uncaughtException is fatal: state is unknowable after it, so we let the
+// process die and rely on `restart: unless-stopped` in docker-compose to
+// bring it back. unhandledRejection is logged but NOT fatal: a single
+// rejected promise (e.g. an SSE write after a client disconnect) shouldn't
+// drop every in-memory MCP session in the transports map.
+//
+// Logs go to stderr only — Docker captures them via the json-file driver
+// (see O4 for log rotation). Writing a crash.log file would just be lost on
+// the ephemeral container FS or bloat the data volume with server noise.
+function logErr(err: unknown, type: string) {
+  const msg = `[${new Date().toISOString()}] ${type}: ${err instanceof Error ? err.stack : String(err)}`;
   console.error(msg);
-  process.exit(1);
 }
-process.on('uncaughtException', (err) => fatalError(err, 'uncaughtException'));
-process.on('unhandledRejection', (err) => fatalError(err, 'unhandledRejection'));
+process.on('uncaughtException', (err) => {
+  logErr(err, 'FATAL uncaughtException');
+  process.exit(1);
+});
+process.on('unhandledRejection', (err) => {
+  logErr(err, 'WARN unhandledRejection');
+});
 
 
 import type { Request, Response } from 'express';
