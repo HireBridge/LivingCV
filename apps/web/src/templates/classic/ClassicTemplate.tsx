@@ -66,7 +66,7 @@ export function ClassicTemplate(props: TemplateProps) {
       return (
         <section key={key} id={key}>
           {custom.kicker && <p className="section-kicker">{custom.kicker}</p>}
-          {custom.title && !custom.kicker && <h2 className="section-title">{custom.title}</h2>}
+          {custom.title && <h2 className="section-title">{custom.title}</h2>}
           <RevealOnScroll>
             <div className="custom-section-content" dangerouslySetInnerHTML={{ __html: custom.content }} />
           </RevealOnScroll>
