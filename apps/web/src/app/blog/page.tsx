@@ -1,7 +1,9 @@
 import { getDb } from '@/lib/db';
 import { listBlogs } from '@/lib/blogs';
 import { getAllSettings } from '@/lib/settings';
-import { BASE_CSS } from '@/templates/classic/styles';
+import { getActiveTemplateSlug, getSection } from '@/lib/content';
+import { BASE_CSS, themeOverrides } from '@/templates/classic/styles';
+import type { ThemeProps } from '@livingcv/shared';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -44,6 +46,8 @@ export default async function BlogIndexPage({ searchParams }: { searchParams: Pr
   const q = sp.q?.toLowerCase() || '';
   const tag = sp.tag?.toLowerCase() || '';
   const db = getDb();
+  const tplSlug = getActiveTemplateSlug(db);
+  const theme = getSection<ThemeProps>(db, tplSlug, 'theme', {});
   type BlogListEntry = { id: number; slug: string; title: string; summary: string; tags: string | null; created_at: string; };
   let blogs: BlogListEntry[] = [];
   try {
@@ -74,6 +78,7 @@ export default async function BlogIndexPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: themeOverrides(theme) }} />
       <style dangerouslySetInnerHTML={{ __html: `
         .blog-header { max-width: 800px; margin: 60px auto 40px; padding: 0 24px; }
         .blog-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; margin: 0; }
