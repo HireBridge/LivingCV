@@ -21,11 +21,18 @@ permissions:
   contents: read
   packages: read
 
+# Never run two deploys at once: overlapping `docker compose up` runs on the
+# 1-vCPU box starve each other and time out mid-recreate, leaving the stack
+# half-up (happened 2026-07-11 with two pushes ~3 min apart). Queue instead.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
@@ -38,9 +45,10 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           envs: GHCR_TOKEN,GHCR_USER
           # Pull + up only — image builds happen in build.yml on GHCR.
-          # The 30-minute window was the symptom of building next on a 1 GB
-          # box; with pre-built images the whole deploy finishes in ~2 min.
-          command_timeout: 10m
+          # Normally ~2 min, but `up -d --wait` can legitimately take much
+          # longer when a new jobops image downloads Playwright browsers
+          # (~115 MB) on first start, so give the health-wait headroom.
+          command_timeout: 25m
           script: |
             set -e
             cd ~/LivingCV
