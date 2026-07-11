@@ -473,8 +473,16 @@ export function attachMasterMcp(app: express.Express) {
       const messagesPath = process.env.MCP_MESSAGES_PATH || '/api/mcp/messages';
       const transport = new SSEServerTransport(messagesPath, res);
       transports.set(transport.sessionId, transport);
-      
+
+      // SSE keepalive: undici-based clients (Node >= 26 defaults bodyTimeout
+      // 300_000, gap between body chunks) sever idle streams. A comment frame
+      // every 25 s keeps the connection open without `Connection: keep-alive`.
+      const keepalive = setInterval(() => {
+        res.write(': keepalive\n\n');
+      }, 25_000);
+
       res.on('close', () => {
+        clearInterval(keepalive);
         transports.delete(transport.sessionId);
         jobopsClient.close().catch(console.error);
       });

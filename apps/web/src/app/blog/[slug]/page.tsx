@@ -6,7 +6,9 @@ import { getDb } from '@/lib/db';
 import { getBlogBySlug } from '@/lib/blogs';
 import { getAllSettings } from '@/lib/settings';
 import { recordPageView } from '@/lib/page-views';
-import { BASE_CSS } from '@/templates/classic/styles';
+import { getActiveTemplateSlug, getSection } from '@/lib/content';
+import { BASE_CSS, themeOverrides } from '@/templates/classic/styles';
+import type { ThemeProps } from '@livingcv/shared';
 import { jsonLdSafe } from '@/lib/jsonld';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +18,7 @@ main.article-wrap{ max-width: 720px; margin:0 auto; padding:56px 24px 90px; }
 .article-kicker{ font-family:'JetBrains Mono', monospace; font-size:0.85rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em; margin:0 0 16px; }
 h1.article-title{ font-family:'Space Grotesk', sans-serif; font-size:clamp(2.5rem,5vw,3.5rem); font-weight:700; letter-spacing:-0.02em; margin:0 0 24px; line-height:1.1; color:var(--ink); }
 .article-meta{ display:flex; flex-wrap:wrap; gap:14px 24px; font-size:0.9rem; font-family:'JetBrains Mono', monospace; color:var(--ink-soft); margin:0 0 40px; padding:16px 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
-.prose{ font-family:'Source Serif 4', Georgia, serif; font-size: 1.15rem; line-height: 1.7; color: #222; }
+.prose{ font-family:'Source Serif 4', Georgia, serif; font-size: 1.15rem; line-height: 1.7; color: var(--ink); }
 .prose h2{ font-family:'Space Grotesk', sans-serif; font-size:1.8rem; font-weight:700; letter-spacing:-0.01em; margin:48px 0 16px; color:var(--ink); }
 .prose h3{ font-family:'Space Grotesk', sans-serif; font-size:1.4rem; font-weight:600; margin:32px 0 12px; color:var(--ink); }
 .prose p{ margin:0 0 24px; }
@@ -32,9 +34,6 @@ h1.article-title{ font-family:'Space Grotesk', sans-serif; font-size:clamp(2.5re
 .prose a:hover{ color:var(--rust); text-decoration-color: var(--rust); }
 .back-link{ display:inline-block; margin-top:60px; font-family:'JetBrains Mono', monospace; font-size:0.95rem; color:var(--signal); text-decoration:none; padding: 8px 16px; border: 1px solid var(--rule); border-radius: 20px; }
 .back-link:hover{ background: var(--signal-soft); color: var(--ink); border-color: var(--signal); }
-@media (prefers-color-scheme: dark) {
-  .prose { color: #ddd; }
-}
 `;
 
 export async function generateMetadata({
@@ -96,6 +95,8 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
   const db = getDb();
+  const tplSlug = getActiveTemplateSlug(db);
+  const theme = getSection<ThemeProps>(db, tplSlug, 'theme', {});
   let blog = null;
   try {
     blog = getBlogBySlug(db, slug);
@@ -164,6 +165,7 @@ export default async function BlogPostPage({
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSafe(jsonLd) }} />
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: themeOverrides(theme) }} />
       <style dangerouslySetInnerHTML={{ __html: ARTICLE_CSS }} />
       <main className="article-wrap">
         <p className="article-kicker">Blog Post</p>
