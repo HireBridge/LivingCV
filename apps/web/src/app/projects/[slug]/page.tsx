@@ -5,12 +5,15 @@ import { getDb } from '@/lib/db';
 import {
   getProjectBySlug,
   getPublishedCaseStudyByProject,
+  getActiveTemplateSlug,
+  getSection,
 } from '@/lib/content';
 import { getAllSettings } from '@/lib/settings';
 import { recordPageView } from '@/lib/page-views';
 import { parseJson } from '@/lib/parse-json';
 import type { CaseStudyFrontmatter } from '@/lib/types';
-import { BASE_CSS } from '@/templates/classic/styles';
+import { BASE_CSS, themeOverrides } from '@/templates/classic/styles';
+import type { ThemeProps } from '@livingcv/shared';
 import { jsonLdSafe } from '@/lib/jsonld';
 
 export const dynamic = 'force-dynamic';
@@ -106,6 +109,8 @@ export default async function CaseStudyPage({
 }) {
   const { slug } = await params;
   const db = getDb();
+  const tplSlug = getActiveTemplateSlug(db);
+  const theme = getSection<ThemeProps>(db, tplSlug, 'theme', {});
   const project = getProjectBySlug(db, slug);
   if (!project) notFound();
   const cs = getPublishedCaseStudyByProject(db, project.id);
@@ -175,6 +180,7 @@ export default async function CaseStudyPage({
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdSafe(jsonLd) }} />
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: themeOverrides(theme) }} />
       <style dangerouslySetInnerHTML={{ __html: ARTICLE_CSS }} />
       <main className="article-wrap">
         <p className="article-kicker">Case study</p>

@@ -3,8 +3,9 @@ import type { Metadata } from 'next';
 import { getDb } from '@/lib/db';
 import { getAllSettings } from '@/lib/settings';
 import { recordPageView } from '@/lib/page-views';
-import { SETTING_KEYS } from '@livingcv/shared';
-import { BASE_CSS } from '@/templates/classic/styles';
+import { SETTING_KEYS, type ThemeProps } from '@livingcv/shared';
+import { getActiveTemplateSlug, getSection } from '@/lib/content';
+import { BASE_CSS, themeOverrides } from '@/templates/classic/styles';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TalentMcpPage() {
   const db = getDb();
+  const tplSlug = getActiveTemplateSlug(db);
+  const theme = getSection<ThemeProps>(db, tplSlug, 'theme', {});
   const s = getAllSettings(db);
   const enabled = (s[SETTING_KEYS.publicMcpEnabled] ?? '0') === '1';
   if (!enabled) notFound();
@@ -60,6 +63,7 @@ export default async function TalentMcpPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: BASE_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: themeOverrides(theme) }} />
       <style dangerouslySetInnerHTML={{ __html: PAGE_CSS }} />
       <main className="mcp-wrap">
         <a href="/" className="mcp-back">← Back to {site}</a>
