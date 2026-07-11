@@ -29,9 +29,7 @@ and what we don't.
 
 ## Pull request checklist
 
-- [ ] `npm run ci` is green (lint + typecheck + 33 vitest tests).
-- [ ] `apps/voice`: `uv run pytest -q` is green (20 voice tests).
-- [ ] `apps/voice`: `uv run ruff check src tests` is clean.
+- [ ] `npm run ci` is green (lint + typecheck + the full vitest suite).
 - [ ] If you changed a tool, the matching jobops-side test in
       `open_source/jobops/tests/public-mcp-surface.test.mjs` is still green.
 - [ ] If you added a tool to the public MCP surface, you updated
@@ -51,13 +49,9 @@ test suite.
 ```bash
 # Node services
 npm ci
-npm run build -w @portfolio/shared -w @portfolio/crypto -w @portfolio/db
-
-# Python voice service
-cd apps/voice && uv sync
+npm run build -w @livingcv/shared -w @livingcv/crypto -w @livingcv/db
 
 # Jobops source — needed for the smoke tests
-cd ../../
 git clone <jobops-source> /tmp/jobops
 (cd /tmp/jobops && npm run build)
 ```
@@ -76,11 +70,8 @@ an empty career packet for a brand-new install.
    patch in `PLAN.md §5` is a hard prerequisite for the portfolio's
    `/mcp/public` route).
 3. Bump `infra/jobops/Dockerfile` to the new jobops tag.
-4. Tag the portfolio's `apps/voice` once Phase 5 polish lands the real
-   STT/TTS adapters (Deepgram + Cartesia on cloud; whisper.cpp + Piper on
-   local). The harness is already shaped for that swap.
 
 ## Reporting a security issue
 
-`SECURITY.md` (forthcoming) will detail the disclosure process. In the
-meantime, file a private issue via GitHub's security advisory flow.
+See [`SECURITY.md`](./SECURITY.md) for the disclosure process — report
+privately via GitHub's security advisory flow, not a public issue.
