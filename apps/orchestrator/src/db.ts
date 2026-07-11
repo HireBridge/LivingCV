@@ -218,3 +218,122 @@ export function recordChatMessage(db: Db, params: {
     now,
   });
 }
+
+// ── blogs (master MCP local tools) ──────────────────────────────────────────
+//
+// Mirrors apps/web/src/lib/blogs.ts's BlogRow, but the orchestrator's writer
+// semantics differ — see insertBlog / updateBlogBySlugOrId below.
+
+export interface BlogRow {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  body_markdown: string;
+  published: number;
+  tags: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BlogListItem {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  published: number;
+  tags: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export function getBlogBySlug(db: Db, slug: string): BlogRow | null {
+  const row = db.prepare<[string], BlogRow>('SELECT * FROM blogs WHERE slug = ?').get(slug);
+  return row ?? null;
+}
+
+export function getBlogById(db: Db, id: number): BlogRow | null {
+  const row = db.prepare<[number], BlogRow>('SELECT * FROM blogs WHERE id = ?').get(id);
+  return row ?? null;
+}
+
+export function listBlogPosts(db: Db, publishedOnly = false): BlogListItem[] {
+  let query = `SELECT id, slug, title, summary, published, tags, created_at, updated_at FROM blogs`;
+  if (publishedOnly) query += ' WHERE published = 1';
+  query += ' ORDER BY datetime(created_at) DESC, id DESC';
+  return db.prepare<[], BlogListItem>(query).all();
+}
+
+// Insert a new blog row. Throws on slug collision (UNIQUE constraint).
+// Caller is responsible for slug validation / kebab-case generation.
+export function insertBlog(db: Db, fields: {
+  slug: string;
+  title: string;
+  summary: string;
+  body_markdown: string;
+  tags: string;
+  published: number;
+}): number {
+  const now = new Date().toISOString();
+  const r = db.prepare(
+    `INSERT INTO blogs (slug, title, summary, body_markdown, published, tags, created_at, updated_at)
+     VALUES (@slug, @title, @summary, @body, @published, @tags, @now, @now)`,
+  ).run({
+    slug: fields.slug,
+    title: fields.title,
+    summary: fields.summary,
+    body: fields.body_markdown,
+    published: fields.published,
+    tags: fields.tags,
+    now,
+  });
+  return Number(r.lastInsertRowid);
+}
+
+// Partial update — only the fields passed in `patch` are written. Always bumps
+// updated_at. Slug rename via `new_slug`. Returns the number of rows changed
+// (0 if no row matched the locator).
+export function updateBlogBySlugOrId(
+  db: Db,
+  locator: { slug?: string; id?: number },
+  patch: {
+    title?: string;
+    summary?: string;
+    body_markdown?: string;
+    tags?: string;
+    published?: number;
+    new_slug?: string;
+  },
+): number {
+  const now = new Date().toISOString();
+  const sets: string[] = [];
+  const params: Record<string, unknown> = { now };
+
+  if (patch.title !== undefined) { sets.push('title = @title'); params.title = patch.title; }
+  if (patch.summary !== undefined) { sets.push('summary = @summary'); params.summary = patch.summary; }
+  if (patch.body_markdown !== undefined) { sets.push('body_markdown = @body'); params.body = patch.body_markdown; }
+  if (patch.tags !== undefined) { sets.push('tags = @tags'); params.tags = patch.tags; }
+  if (patch.published !== undefined) { sets.push('published = @published'); params.published = patch.published; }
+  if (patch.new_slug !== undefined) { sets.push('slug = @new_slug'); params.new_slug = patch.new_slug; }
+
+  if (sets.length === 0) {
+    // Nothing to change — still bump updated_at to record the touch? No:
+    // a no-op update is misleading. Require at least one field.
+    throw new Error('updateBlogBySlugOrId called with no patch fields');
+  }
+  sets.push('updated_at = @now');
+
+  let where: string;
+  if (locator.id !== undefined) {
+    where = 'WHERE id = @id';
+    params.id = locator.id;
+  } else if (locator.slug !== undefined) {
+    where = 'WHERE slug = @slug';
+    params.slug = locator.slug;
+  } else {
+    throw new Error('updateBlogBySlugOrId requires slug or id');
+  }
+
+  const r = db.prepare(`UPDATE blogs SET ${sets.join(', ')} ${where}`).run(params);
+  return r.changes;
+}
