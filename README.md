@@ -2,18 +2,26 @@
 
 A self-hosted, open-source portfolio platform that doubles as an **AI recruiter concierge**. It renders a polished portfolio site from a database (runtime-editable, never build-time), lets recruiters chat with an AI agent that knows your real career data, and exposes a **public MCP endpoint** so third-party recruiter-side AI agents can query a curated, read-only view of you. It is **persona-neutral** — anyone can self-host it with their own content.
 
+Deploy on any Linux VM with Docker in one command:
+
+```bash
+git clone https://github.com/mohith-das/LivingCV && cd LivingCV && ./scripts/start.sh
+```
+
+See [Quickstart](#quickstart--one-command) for what it does and [Where to host it](#where-to-host-it) for VM options (there's a genuinely free one).
+
 ## What you get
 
 - **A public website** rendered from the database — content, projects, case studies, custom sections, and theme are all editable at runtime, never baked in at build time.
 - **A classic bundled template** (paper/ink/signal/rust); third parties can add templates against a typed props contract without touching core code (see [`TEMPLATES.md`](./TEMPLATES.md)).
 - **Admin console** — first-boot setup wizard, `iron-session` auth, AES-256-GCM-encrypted secrets, and full CRUD for content, projects, case studies, blog posts, custom sections, and the resume PDF.
 - **A writing/blog section** with an admin editor, published/draft states, tags, and per-post SEO.
-- **Drag-and-drop section ordering** and a **live theme editor** (colors, typography, plus a JSON fallback for fine-grained CSS overrides).
+- **Drag-and-drop section ordering** and a **live theme editor** (colors, typography, plus a JSON fallback for fine-grained CSS overrides) with a **custom theme library** — name and save your own themes, then apply, edit, or delete them alongside the four built-in presets.
 - **A recruiter chat concierge** — a text agent powered by a self-hosted [jobops](https://www.npmjs.com/package/@mohith_das/jobops) instance plus a portfolio-side orchestrator. Multi-provider LLM (**Anthropic, OpenAI, Gemini, DeepSeek** — bring your own key), tool use over MCP, a work-email gate, per-IP/per-session/daily limits, transcripts, and an optional lead webhook.
 - **Optional web search** — when a search provider (Tavily) is configured, the agent can search the web to answer with fresh context. Gated to verified recruiters only.
 - **A public MCP endpoint** at `{site.domain}/mcp/public` exposing exactly three read-only tools (`get_career_packet`, `get_career_packet_json`, `get_story_bank_public`) to external MCP clients (Claude.ai, ChatGPT, anything MCP). See [`docs/PUBLIC_MCP.md`](./docs/PUBLIC_MCP.md).
 - **A full SEO layer** — dynamic per-domain metadata, OpenGraph/Twitter cards, generated OG images, JSON-LD (Person/WebSite/Article/BreadcrumbList), canonical URLs, `sitemap.xml`, `robots.txt`, a blog RSS feed, a web manifest, Google Analytics + search-engine verification hooks, and a machine-readable [`/llms.txt`](https://llmstxt.org).
-- **Optional integrations** — Telegram and Google/email settings, plus an operator-only **master relay MCP** (`/mcp-admin`) for privileged access to your own data.
+- **Optional integrations** — Telegram and Google/email settings, plus an operator-only **master relay MCP** (`/mcp-admin`) for privileged access to your own data — including blog tools (`publish_blog_post`, `update_blog_post`, `list_blog_posts`) so an MCP client like Claude Desktop can write and edit posts directly.
 - **Cookieless analytics** (server-side path × day counter), **admin system logs**, a **leads CSV export**, and a **backup/restore** pair.
 - **A demo seed** so a fresh clone renders a complete, clearly-fictional persona ("Alex Rivera") before you enter any real content.
 
@@ -297,7 +305,7 @@ the upstream repo/branch there too (useful if you run your own fork).
 
 ```bash
 npm run ci           # eslint + tsc (5 workspaces) + vitest
-# 34 vitest tests across 6 files
+# 131 vitest tests across 17 files
 
 # Operational end-to-end smokes (require the jobops source tree + a free port)
 ./scripts/build-jobops-tarball.sh

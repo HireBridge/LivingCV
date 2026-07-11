@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/db';
 import { getActiveTemplateSlug, listProjects, listCaseStudies, getSection } from '@/lib/content';
+import { listCustomThemes } from '@/lib/custom-themes';
 import type { HeroContent, BackgroundContent, FooterContent } from '@/lib/types';
 
 import { parseJson } from '@/lib/parse-json';
@@ -47,6 +48,7 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
     note: '',
   });
   const theme = rawSection(db, slug, 'theme') || '{}';
+  const customThemes = listCustomThemes(db);
 
   return (
     <div>
@@ -171,7 +173,7 @@ export default async function ContentEditor({ searchParams }: { searchParams: Pr
       )}
 
       {currentTab === 'theme' && (
-        <ThemeTab slug={slug} initialTheme={theme} />
+        <ThemeTab slug={slug} initialTheme={theme} customThemes={customThemes} />
       )}
 
       {currentTab === 'projects' && (

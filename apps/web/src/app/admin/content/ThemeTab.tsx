@@ -1,6 +1,15 @@
 'use client';
 import { useState } from 'react';
 
+interface CustomThemeCard {
+  id: number;
+  name: string;
+  description: string;
+  theme_json: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const THEME_KEYS = [
   { key: 'paper', label: 'Paper (Background)' },
   { key: 'paperDeep', label: 'Paper Deep (Secondary Background)' },
@@ -96,12 +105,17 @@ header.nav { background: rgba(7, 9, 14, 0.92) !important; border-bottom-color: r
   }
 };
 
-export function ThemeTab({ slug, initialTheme }: { slug: string, initialTheme: string }) {
+export function ThemeTab({ slug, initialTheme, customThemes }: { slug: string, initialTheme: string, customThemes: CustomThemeCard[] }) {
   const [themeObj, setThemeObj] = useState<Record<string, string | undefined>>(() => {
     try { return JSON.parse(initialTheme || '{}'); } catch { return {}; }
   });
   const [jsonText, setJsonText] = useState(initialTheme || '{}');
   const [activeSubTab, setActiveSubTab] = useState<'preset' | 'custom'>('preset');
+
+  // ── Custom-theme library state ────────────────────────────────────────────
+  const [themeName, setThemeName] = useState('');
+  const [themeDescription, setThemeDescription] = useState('');
+  const [editingThemeId, setEditingThemeId] = useState<number | null>(null);
 
   const handleColorChange = (key: string, value: string) => {
     const newObj = { ...themeObj, [key]: value, preset: 'custom' };
@@ -124,7 +138,37 @@ export function ThemeTab({ slug, initialTheme }: { slug: string, initialTheme: s
     setJsonText(JSON.stringify(newObj, null, 2));
   };
 
+  const selectCustomTheme = (t: CustomThemeCard) => {
+    let newObj: Record<string, string | undefined>;
+    try {
+      newObj = JSON.parse(t.theme_json);
+    } catch {
+      return;
+    }
+    // Stamp the preset marker so the picker can highlight the card.
+    newObj = { ...newObj, preset: `saved:${t.id}` };
+    setThemeObj(newObj);
+    setJsonText(JSON.stringify(newObj, null, 2));
+  };
+
+  const editCustomTheme = (t: CustomThemeCard) => {
+    let newObj: Record<string, string | undefined>;
+    try {
+      newObj = JSON.parse(t.theme_json);
+    } catch {
+      return;
+    }
+    setThemeObj(newObj);
+    setJsonText(JSON.stringify(newObj, null, 2));
+    setThemeName(t.name);
+    setThemeDescription(t.description);
+    setEditingThemeId(t.id);
+    setActiveSubTab('custom');
+  };
+
+  // -- Highlighting: matches preset ids and saved:<id> markers.
   const currentPreset = themeObj.preset || 'classic';
+  const activeSavedId = currentPreset.startsWith('saved:') ? parseInt(currentPreset.slice(6), 10) : null;
 
   return (
     <div>
@@ -180,6 +224,71 @@ export function ThemeTab({ slug, initialTheme }: { slug: string, initialTheme: s
                 );
               })}
             </div>
+
+            {/* ── Custom themes section ─────────────────────────────── */}
+            {customThemes.length > 0 && (
+              <div style={{ marginBottom: 30 }}>
+                <h3 style={{ fontSize: '1rem', marginBottom: 12, color: 'var(--ink-soft)' }}>Your themes</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+                  {customThemes.map((t) => {
+                    const isActive = activeSavedId === t.id;
+                    return (
+                      <div
+                        key={t.id}
+                        style={{
+                          border: isActive ? '2px solid var(--signal)' : '1px solid var(--rule)',
+                          borderRadius: 8, padding: 16,
+                          background: isActive ? 'var(--paper-deep)' : 'transparent',
+                          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                        }}
+                      >
+                        <div
+                          onClick={() => selectCustomTheme(t)}
+                          style={{ cursor: 'pointer', flex: 1 }}
+                        >
+                          <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>{t.name}</h4>
+                          {t.description && (
+                            <p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: 'var(--ink-soft)' }}>{t.description}</p>
+                          )}
+                          <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--ink-soft)' }}>Click to select</p>
+                        </div>
+                        <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); editCustomTheme(t); }}
+                            style={{
+                              fontSize: '0.8rem', padding: '4px 12px',
+                              border: '1px solid var(--rule)', borderRadius: 4,
+                              background: 'var(--paper)', color: 'var(--ink)', cursor: 'pointer',
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <form
+                            method="post"
+                            action="/api/admin/themes/delete"
+                            onSubmit={(e) => { if (!confirm(`Delete "${t.name}"?`)) e.preventDefault(); }}
+                          >
+                            <input type="hidden" name="id" value={t.id} />
+                            <button
+                              type="submit"
+                              style={{
+                                fontSize: '0.8rem', padding: '4px 12px',
+                                border: '1px solid var(--rule)', borderRadius: 4,
+                                background: 'var(--paper)', color: 'var(--rust)', cursor: 'pointer',
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <form method="post" action="/api/admin/content/save" style={{ borderTop: '1px solid var(--rule)', paddingTop: 20, paddingBottom: 20 }}>
               <input type="hidden" name="template_slug" value={slug} />
               <input type="hidden" name="section" value="theme" />
@@ -252,6 +361,46 @@ export function ThemeTab({ slug, initialTheme }: { slug: string, initialTheme: s
 
               <div className="actions">
                 <button type="submit">Save Custom Theme</button>
+              </div>
+            </form>
+
+            {/* ── Save to My Themes ──────────────────────────────────── */}
+            <form
+              method="post"
+              action="/api/admin/themes/save"
+              style={{ borderTop: '1px solid var(--rule)', paddingTop: 20, paddingBottom: 20 }}
+            >
+              {editingThemeId !== null && <input type="hidden" name="id" value={editingThemeId} />}
+              <input type="hidden" name="theme_json" value={jsonText} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 15, marginBottom: 20 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: 5 }}>Theme name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={themeName}
+                    onChange={(e) => setThemeName(e.target.value)}
+                    placeholder="My Custom Theme"
+                    required
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: 5 }}>Description (optional)</label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={themeDescription}
+                    onChange={(e) => setThemeDescription(e.target.value)}
+                    placeholder="A quick note about this theme..."
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+              <div className="actions">
+                <button type="submit">
+                  {editingThemeId !== null ? `Update ${themeName}` : 'Save to My Themes'}
+                </button>
               </div>
             </form>
           </div>
