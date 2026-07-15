@@ -52,6 +52,12 @@ export async function GET() {
 
     let behind: number | null = null;
     let upToDate = current === latestShort || current === latestSha;
+    // When deployed from a personal fork, the running build is stamped with a
+    // fork commit that doesn't exist in the upstream repo — the compare then
+    // 404s on its base. That's expected, not an error: we can't compute an
+    // exact drift against upstream, so say so honestly instead of reporting a
+    // permanent, count-less "update available".
+    let currentNotInUpstream = false;
     try {
       const cmpRes = await fetch(
         `https://api.github.com/repos/${repo}/compare/${current}...${encodeURIComponent(branch)}`,
@@ -61,6 +67,9 @@ export async function GET() {
         const cmp = await cmpRes.json();
         behind = typeof cmp.ahead_by === 'number' ? cmp.ahead_by : null; // commits head is ahead of us
         upToDate = cmp.status === 'identical' || behind === 0;
+      } else if (cmpRes.status === 404 && !upToDate) {
+        // Base commit not found in the upstream repo — a fork build.
+        currentNotInUpstream = true;
       }
     } catch {
       /* compare is best-effort; fall back to sha equality above */
@@ -68,6 +77,7 @@ export async function GET() {
 
     return NextResponse.json({
       current, latestShort, latestDate, latestMessage, repo, branch, repoUrl, behind, upToDate,
+      currentNotInUpstream,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

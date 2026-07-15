@@ -26,7 +26,8 @@
 #      automated, GitHub only lets a human create these.
 #   5. On the server: clones your fork to ~/LivingCV (or repoints an
 #      existing checkout's `origin` at it if you already ran the plain
-#      Quickstart there) and runs ./scripts/start.sh if it isn't already up.
+#      Quickstart there). If LivingCV isn't running there yet, it prints the
+#      start.sh command to finish setup — it does NOT run start.sh for you.
 #
 # Safe to re-run — every step checks whether it's already done first.
 #
@@ -41,6 +42,7 @@ DEPLOY_USER="${2:-ubuntu}"
 UPSTREAM_REPO="HireBridge/LivingCV"
 
 command -v gh >/dev/null 2>&1 || { echo "❌ gh CLI is required: https://cli.github.com" >&2; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo "❌ curl is required." >&2; exit 1; }
 gh auth status >/dev/null 2>&1 || { echo "❌ Run 'gh auth login' first." >&2; exit 1; }
 ssh -o BatchMode=yes -o ConnectTimeout=5 "$DEPLOY_USER@$DEPLOY_HOST" true 2>/dev/null || {
   echo "❌ Can't SSH to $DEPLOY_USER@$DEPLOY_HOST non-interactively. Set up your own SSH key/agent access first." >&2
@@ -66,8 +68,14 @@ fi
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 # gh repo clone (not plain git clone) so this also works once the fork is
-# private — it uses gh's own authenticated credential helper.
-gh repo clone "$FORK_REPO" "$WORKDIR/fork" -- --quiet
+# private — it uses gh's own authenticated credential helper. A just-created
+# fork can take a few seconds to become cloneable, so retry before giving up.
+cloned=0
+for _ in $(seq 1 10); do
+  if gh repo clone "$FORK_REPO" "$WORKDIR/fork" -- --quiet 2>/dev/null; then cloned=1; break; fi
+  sleep 3
+done
+[ "$cloned" = "1" ] || { echo "❌ Could not clone $FORK_REPO (fork may still be provisioning — re-run in a moment)." >&2; exit 1; }
 cd "$WORKDIR/fork"
 
 echo "=== 2. deploy.yml ==="

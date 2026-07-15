@@ -14,6 +14,7 @@ type CheckResult = {
   behind?: number | null;
   upToDate?: boolean;
   unknownCurrent?: boolean;
+  currentNotInUpstream?: boolean;
 };
 
 export function UpdatesPanel({
@@ -60,6 +61,35 @@ export function UpdatesPanel({
             <p style={{ color: 'var(--rust)' }}>⚠️ {result.error}</p>
           ) : result.upToDate ? (
             <p style={{ color: 'var(--signal)' }}>✅ You&apos;re on the latest version.</p>
+          ) : result.currentNotInUpstream ? (
+            <div style={{ border: '1px solid var(--rule)', borderRadius: 6, padding: '12px 16px' }}>
+              <p style={{ margin: '0 0 6px', fontWeight: 600 }}>ℹ️ Running a fork build</p>
+              <p style={{ margin: '0 0 4px', color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
+                This build (<code style={mono}>{result.current}</code>) isn&apos;t a commit in{' '}
+                <code style={mono}>{result.repo}</code>, so the exact gap can&apos;t be computed —
+                that&apos;s normal when you deploy from your own fork.
+              </p>
+              <p style={{ margin: '0 0 4px', color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
+                Latest upstream: <code style={mono}>{result.latestShort}</code>
+                {result.latestDate ? ` · ${new Date(result.latestDate).toLocaleDateString()}` : ''}
+              </p>
+              {result.latestMessage && (
+                <p style={{ margin: '0 0 6px', color: 'var(--ink-soft)', fontSize: '0.9rem' }}>
+                  “{result.latestMessage}”
+                </p>
+              )}
+              <p style={{ margin: '6px 0 0', color: 'var(--ink-soft)', fontSize: '0.85rem' }}>
+                To pull upstream changes into your fork, run{' '}
+                <code style={mono}>./scripts/sync-upstream.sh</code> (or{' '}
+                <code style={mono}>sync-and-deploy.sh</code>).
+              </p>
+              {result.repoUrl && (
+                <a href={`${result.repoUrl}/commits/${result.branch}`} target="_blank" rel="noreferrer"
+                   style={{ fontSize: '0.85rem' }}>
+                  View upstream commits on GitHub →
+                </a>
+              )}
+            </div>
           ) : (
             <div style={{ border: '1px solid var(--rust)', borderRadius: 6, padding: '12px 16px' }}>
               <p style={{ margin: '0 0 6px', fontWeight: 600 }}>
