@@ -1,0 +1,85 @@
+name: Deploy
+
+# This file lives at scripts/deploy.yml.template (not .github/workflows/) so
+# it's inert on the upstream template repo — copying it into your own fork's
+# .github/workflows/deploy.yml is what activates it. See README "Deploying
+# your own fork" and scripts/setup-deploy-fork.sh, which does this for you.
+
+on:
+  # Chained off the image-build workflow, NOT CI directly. CI and the build
+  # workflow both trigger off CI's completion independently, so if this
+  # workflow also triggered off CI it could race build.yml's GHCR push (build
+  # takes several minutes; a plain `docker compose pull` + restart takes
+  # seconds) and deploy a stale — or on the very first run, nonexistent —
+  # image. Triggering off "Build container images" guarantees the images
+  # this workflow pulls were pushed for the commit that just finished CI.
+  workflow_run:
+    workflows: ["Build container images"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# packages:read lets the job's GITHUB_TOKEN pull this repo's GHCR images; the
+# token is forwarded to the box for a docker login scoped to this deploy (it
+# expires when the job ends), so no long-lived registry PAT lives on the box.
+permissions:
+  contents: read
+  packages: read
+
+# Never run two deploys at once: overlapping `docker compose up` runs on a
+# small box can starve each other and time out mid-recreate, leaving the
+# stack half-up. Queue instead.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.repository_owner }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: GHCR_TOKEN,GHCR_USER
+          # Pull + up only — image builds happen in build.yml on GHCR.
+          # Normally ~2 min, but `up -d --wait` can legitimately take much
+          # longer when a new jobops image downloads Playwright browsers
+          # (~115 MB) on first start, so give the health-wait headroom.
+          command_timeout: 25m
+          script: |
+            set -e
+            cd ~/LivingCV
+            echo "=== Pulling latest ==="
+            git fetch origin main
+            LOCAL=$(git rev-parse @)
+            REMOTE=$(git rev-parse origin/main)
+            if [ "$LOCAL" = "$REMOTE" ]; then
+              # No repo changes — but do NOT exit: the images may still be
+              # newer (e.g. a dependency image was rebuilt with no LivingCV
+              # commit). `docker compose pull` is cheap and `up -d` is a
+              # no-op when digests are unchanged.
+              echo "Repo already up to date ($(git rev-parse --short @)); checking images."
+            else
+              echo "Applying updates..."
+              git pull --ff-only origin main
+            fi
+
+            echo "=== Pulling pre-built images + restarting ==="
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker compose pull
+            docker logout ghcr.io
+            docker compose up -d --wait
+
+            docker compose restart caddy
+
+            echo "=== Done ==="
+            docker compose ps
+            echo "Deployed $(git rev-parse --short HEAD)"

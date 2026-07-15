@@ -299,15 +299,58 @@ browser — the web app runs in a container and can't safely rebuild the host
 stack — so it points you to `./scripts/update.sh` on the server. You can retarget
 the upstream repo/branch there too (useful if you run your own fork).
 
-### Staying in sync with upstream (if you run your own deploy fork)
+### Deploying your own fork (auto-deploy via GitHub Actions)
 
 Don't wire your own deploy secrets directly into `HireBridge/LivingCV` — it's
 a shared, public repo, and anyone who ever gets write access there would be
 able to trigger a deploy to *your* server. Instead, fork it to your own
-account, put your `DEPLOY_HOST` / `DEPLOY_USER` / `DEPLOY_SSH_KEY` secrets on
-**your fork**, and point Settings → Updates → "Upstream repo" at
-`HireBridge/LivingCV` so the admin panel shows you when you're behind. Then,
-from your fork:
+account and put your deploy secrets on **your fork** only. There are two ways
+to set this up:
+
+**One command**, from your own machine (needs [`gh`](https://cli.github.com)
+authenticated and working SSH access to your server already set up):
+
+```bash
+./scripts/setup-deploy-fork.sh your-server.example.com ubuntu
+```
+
+This forks the repo to your account, adds the `deploy.yml` workflow (upstream
+deliberately doesn't ship it — it's specific to one operator's server and
+shouldn't live on a shared repo), generates a fresh SSH deploy key and
+installs it on your server, sets `DEPLOY_HOST` / `DEPLOY_USER` /
+`DEPLOY_SSH_KEY` as secrets on your fork, and clones your fork onto the
+server (or repoints an existing `~/LivingCV` checkout's `origin` at it, if
+you already ran the plain Quickstart there). It'll prompt you for one thing
+it can't automate — see below. Run `PRIVATE_FORK=1 ./scripts/setup-deploy-fork.sh
+...` instead if you want your fork private (nothing sensitive is actually in
+the repo's code, but it's your call); that also sets up a read-only GitHub
+deploy key so the server can still pull it.
+
+**Or by hand**, if you'd rather see every step: fork on GitHub, copy
+[`scripts/deploy.yml.template`](./scripts/deploy.yml.template) to
+`.github/workflows/deploy.yml` on your fork and push it, generate an SSH
+keypair for deploys, add the public half to your server's
+`~/.ssh/authorized_keys`, and set `DEPLOY_HOST` / `DEPLOY_USER` /
+`DEPLOY_SSH_KEY` as secrets on your fork (`gh secret set NAME --repo
+you/LivingCV`).
+
+Either way, one manual step is unavoidable: **GHCR image pushes from a fork
+need a personal access token.** GitHub hard-restricts the default Actions
+token to read-only on any forked repo — no setting overrides it — so your
+fork's `build.yml` can't push container images without one. Create a
+classic PAT at [github.com/settings/tokens/new](https://github.com/settings/tokens/new)
+with only the `write:packages` scope checked, then:
+
+```bash
+gh secret set GHCR_PAT --repo you/LivingCV
+```
+
+Settings → Updates already defaults to comparing against `HireBridge/LivingCV`,
+so the admin panel will show you when you're behind without any extra config.
+
+### Staying in sync with upstream
+
+Once your fork is deployed, from your fork:
 
 ```bash
 ./scripts/sync-upstream.sh       # pull the latest from HireBridge/LivingCV into your fork
