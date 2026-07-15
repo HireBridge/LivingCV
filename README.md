@@ -5,7 +5,7 @@ A self-hosted, open-source portfolio platform that doubles as an **AI recruiter 
 Deploy on any Linux VM with Docker in one command:
 
 ```bash
-git clone https://github.com/mohith-das/LivingCV && cd LivingCV && ./scripts/start.sh
+git clone https://github.com/HireBridge/LivingCV && cd LivingCV && ./scripts/start.sh
 ```
 
 See [Quickstart](#quickstart--one-command) for what it does and [Where to host it](#where-to-host-it) for VM options (there's a genuinely free one).
