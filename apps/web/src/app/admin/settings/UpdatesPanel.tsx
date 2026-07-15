@@ -114,7 +114,7 @@ export function UpdatesPanel({
         <h4 style={{ margin: '0 0 10px' }}>Advanced</h4>
         <div className="row">
           <label>Upstream repo (owner/name)</label>
-          <input name="updates.repo" defaultValue={repo} placeholder="mohith-das/LivingCV" />
+          <input name="updates.repo" defaultValue={repo} placeholder="HireBridge/LivingCV" />
         </div>
         <div className="row">
           <label>Branch</label>

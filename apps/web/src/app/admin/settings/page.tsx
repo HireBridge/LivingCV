@@ -440,7 +440,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </p>
           <UpdatesPanel
             currentCommit={process.env.LIVINGCV_COMMIT || 'dev'}
-            repo={all[SETTING_KEYS.updatesRepo] || 'mohith-das/LivingCV'}
+            repo={all[SETTING_KEYS.updatesRepo] || 'HireBridge/LivingCV'}
             branch={all[SETTING_KEYS.updatesBranch] || 'main'}
           />
         </section>
