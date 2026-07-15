@@ -6,8 +6,10 @@
 #
 # Only for people running their own deploy fork (see README "Staying in sync
 # with upstream"). Just updates the repo — it does not deploy anything.
-# Fast-forward only: if your fork has commits upstream doesn't, this refuses
-# rather than merge/rebase for you.
+# A plain merge, not fast-forward-only: your fork is expected to carry its
+# own deploy.yml (and secrets) that upstream deliberately doesn't have, so a
+# strict ff-only would refuse forever after the first such commit. Real
+# content conflicts still abort with nothing changed.
 
 set -euo pipefail
 
@@ -20,13 +22,18 @@ git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$UPSTREA
 echo "=== Fetching $UPSTREAM_REPO@$BRANCH ==="
 git fetch upstream "$BRANCH"
 
-if [ "$(git rev-parse HEAD)" = "$(git rev-parse "upstream/$BRANCH")" ]; then
+if git merge-base --is-ancestor "upstream/$BRANCH" HEAD; then
   echo "✅ Already up to date with $UPSTREAM_REPO@$BRANCH."
   exit 0
 fi
 
-echo "=== Fast-forwarding $BRANCH ==="
-git merge --ff-only "upstream/$BRANCH"
+echo "=== Merging $UPSTREAM_REPO@$BRANCH ==="
+if ! git merge --no-edit "upstream/$BRANCH"; then
+  git merge --abort
+  echo "❌ Merge conflict syncing with upstream. Resolve manually:" >&2
+  echo "   git fetch upstream $BRANCH && git merge upstream/$BRANCH" >&2
+  exit 1
+fi
 
 echo "=== Pushing to your fork (origin) ==="
 git push origin "$BRANCH"
