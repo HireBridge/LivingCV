@@ -74,7 +74,7 @@ LivingCV/
 You need **Docker** (with compose v2) and `openssl`. Then:
 
 ```bash
-git clone https://github.com/mohith-das/LivingCV
+git clone https://github.com/HireBridge/LivingCV
 cd LivingCV
 ./scripts/start.sh
 ```
@@ -298,6 +298,24 @@ by how many commits). It intentionally does **not** apply updates from the
 browser — the web app runs in a container and can't safely rebuild the host
 stack — so it points you to `./scripts/update.sh` on the server. You can retarget
 the upstream repo/branch there too (useful if you run your own fork).
+
+### Staying in sync with upstream (if you run your own deploy fork)
+
+Don't wire your own deploy secrets directly into `HireBridge/LivingCV` — it's
+a shared, public repo, and anyone who ever gets write access there would be
+able to trigger a deploy to *your* server. Instead, fork it to your own
+account, put your `DEPLOY_HOST` / `DEPLOY_USER` / `DEPLOY_SSH_KEY` secrets on
+**your fork**, and point Settings → Updates → "Upstream repo" at
+`HireBridge/LivingCV` so the admin panel shows you when you're behind. Then,
+from your fork:
+
+```bash
+./scripts/sync-upstream.sh       # pull the latest from HireBridge/LivingCV into your fork
+./scripts/sync-and-deploy.sh     # same, and wait for it to build + deploy to your server
+```
+
+Both fast-forward only — if your fork has diverged from upstream, they'll
+tell you to reconcile manually instead of guessing.
 
 `/admin/setup` is idempotent — re-running it updates the operator password and encryption-key acknowledgement. Encrypted settings persist because the key lives in `.env` and the row format is stable.
 

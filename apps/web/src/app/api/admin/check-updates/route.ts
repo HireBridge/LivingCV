@@ -9,7 +9,7 @@ import { SETTING_KEYS } from '@livingcv/shared';
 // it never modifies anything. Applying updates is done on the host with
 // scripts/update.sh — the admin panel only tells you if/what to update.
 
-const DEFAULT_REPO = 'mohith-das/LivingCV';
+const DEFAULT_REPO = 'HireBridge/LivingCV';
 const DEFAULT_BRANCH = 'main';
 
 export const dynamic = 'force-dynamic';
