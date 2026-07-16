@@ -324,3 +324,10 @@ npx tsx scripts/smoke-phase4.ts
 ## License
 
 MIT — see [`LICENSE`](./LICENSE).
+## JobOps career-packet import
+
+When JobOps sync is enabled, `sync_career_packet` receives and stores the latest
+validated packet. Open **Admin → Career Data → JobOps import review** to compare
+the packet with the current portfolio. Each profile, background, skills, or project
+change must be explicitly approved before it updates the public site; rejected
+changes remain recorded for that packet and are never published.
