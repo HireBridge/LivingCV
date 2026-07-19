@@ -360,6 +360,15 @@ Once your fork is deployed, from your fork:
 Both fast-forward only — if your fork has diverged from upstream, they'll
 tell you to reconcile manually instead of guessing.
 
+> **Note:** `.github/workflows/deploy.yml` is materialized once onto your
+> fork by `setup-deploy-fork.sh` and isn't touched by `sync-upstream.sh` —
+> upstream only carries the inert `scripts/deploy.yml.template`, on a
+> different path, so a merge has no way to patch your already-copied
+> workflow file. If upstream fixes something in the deploy template, you
+> won't get it automatically; diff your `deploy.yml` against the current
+> [`scripts/deploy.yml.template`](./scripts/deploy.yml.template) occasionally
+> and re-copy it by hand if it's changed.
+
 `/admin/setup` is idempotent — re-running it updates the operator password and encryption-key acknowledgement. Encrypted settings persist because the key lives in `.env` and the row format is stable.
 
 ## Testing
