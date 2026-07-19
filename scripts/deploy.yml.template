@@ -80,6 +80,14 @@ jobs:
 
             docker compose restart caddy
 
+            # `compose pull` re-tags `latest` in place, leaving the old
+            # digest dangling (untagged, no container). These never get
+            # cleaned up on their own and silently fill the disk over
+            # repeated deploys. `-f` only (not `-a`) so we only ever remove
+            # untagged images, never anything still tagged/in use.
+            echo "=== Pruning dangling images ==="
+            docker image prune -f
+
             echo "=== Done ==="
             docker compose ps
             echo "Deployed $(git rev-parse --short HEAD)"
