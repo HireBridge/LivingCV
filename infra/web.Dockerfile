@@ -47,6 +47,9 @@ COPY --chown=nodejs:nodejs --from=build /app/tsconfig.base.json ./
 # (by scripts/start.sh and the README) — it must exist in the runtime image.
 COPY --chown=nodejs:nodejs --from=build /app/scripts ./scripts
 USER nodejs
-CMD ["npm", "run", "start", "-w", "@livingcv/web"]
+# Run next directly rather than via `npm run start`: the npm + sh wrappers are
+# extra resident processes and sit between docker's SIGTERM and the server.
+# WORKDIR stays /app so `docker compose exec web npx tsx scripts/seed-demo.ts` works.
+CMD ["node", "node_modules/next/dist/bin/next", "start", "apps/web"]
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
   CMD ["node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]

@@ -33,6 +33,7 @@ COPY --chown=nodejs:nodejs --from=build /app/apps/orchestrator ./apps/orchestrat
 COPY --chown=nodejs:nodejs --from=build /app/packages ./packages
 COPY --chown=nodejs:nodejs --from=build /app/tsconfig.base.json ./
 USER nodejs
-CMD ["npm", "run", "start:prod", "-w", "@livingcv/orchestrator"]
+# node directly, not `npm run start:prod`: skips the npm + sh wrapper processes.
+CMD ["node", "apps/orchestrator/dist/server.js"]
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
   CMD ["node", "-e", "fetch('http://127.0.0.1:8100/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
