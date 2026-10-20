@@ -7,11 +7,10 @@ name: Build container images
 # point of optimize.md O1: deploys used to take 20–30 minutes on the 1 GB
 # free-tier box and risked OOM; with pre-built images they take ~2 minutes.
 #
-# The image source for jobops is infra/jobops/Dockerfile, which is read but
-# NEVER modified by this workflow (and per the audit-round-3 constraints, it
-# must not be). The Dockerfile pulls the patched @mohith_das/jobops package
-# from npm, so building it here doesn't grant access to anything the operator
-# hasn't already published.
+# The image source for jobops is infra/jobops/Dockerfile. It pulls the
+# published @mohith_das/jobops package from npm (plus a matching Playwright
+# Chromium), so building it here doesn't grant access to anything the
+# operator hasn't already published.
 #
 # Each image is tagged twice: `latest` (used by deploy.yml's `docker compose
 # pull`) and the full commit SHA (for reproducibility / rollback). The

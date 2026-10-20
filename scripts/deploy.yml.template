@@ -50,10 +50,9 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           envs: GHCR_TOKEN,GHCR_USER
           # Pull + up only — image builds happen in build.yml on GHCR.
-          # Normally ~2 min, but `up -d --wait` can legitimately take much
-          # longer when a new jobops image downloads Playwright browsers
-          # (~115 MB) on first start, so give the health-wait headroom.
-          command_timeout: 25m
+          # Normally ~2 min; Chromium is baked into the jobops image, so a
+          # first start no longer downloads browsers. Headroom for slow pulls.
+          command_timeout: 15m
           script: |
             set -e
             cd ~/LivingCV

@@ -47,6 +47,9 @@ services:
       dockerfile: infra/web.Dockerfile
       args:
         GIT_SHA: ${GIT_SHA:-dev}
+    # Tiny init as PID 1: forwards SIGTERM so node exits on `compose up`/stop
+    # instead of being SIGKILLed after 10 s, and reaps zombie processes.
+    init: true
     restart: unless-stopped
     mem_limit: 384m
     <<: *logging
@@ -79,6 +82,7 @@ services:
     build:
       context: .
       dockerfile: infra/orchestrator.Dockerfile
+    init: true
     restart: unless-stopped
     mem_limit: 256m
     <<: *logging
@@ -115,6 +119,8 @@ services:
     build:
       context: .
       dockerfile: infra/jobops/Dockerfile
+    # (For jobops this also reaps Chromium's exited child processes.)
+    init: true
     restart: unless-stopped
     mem_limit: 256m
     <<: *logging
@@ -122,7 +128,6 @@ services:
       JOBOPS_HOST: 0.0.0.0
       JOBOPS_AUTH_TOKEN: ${JOBOPS_AUTH_TOKEN}
       JOBOPS_SCHEDULER_ENABLED: 'false'
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     volumes:
       - jobops-data:/data
     # Override the image's healthcheck with a longer start_period so `--wait`

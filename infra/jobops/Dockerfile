@@ -27,6 +27,17 @@ RUN if [ -f jobops-local.tgz ]; then \
       npm install -g "@mohith_das/jobops@${JOBOPS_VERSION}"; \
     fi
 
+# Bake Chromium (+ its system libs) into the image. Without this, `jobops start`
+# downloads ~680 MB of browsers into the container's writable layer on every
+# recreate — the heaviest step of a deploy on a small box — and exits (taking
+# orchestrator + caddy down with it via depends_on) if the download fails.
+# Installed via jobops's own playwright so the browser revision always matches.
+# Full `chromium` (not --only-shell): jobops `doctor` checks the full binary.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN cd "$(npm root -g)/@mohith_das/jobops" \
+ && npx playwright install --with-deps chromium \
+ && rm -rf /var/lib/apt/lists/*
+
 FROM deps AS run
 ENV JOBOPS_HOST=0.0.0.0
 ENV JOBOPS_PORT=7891
